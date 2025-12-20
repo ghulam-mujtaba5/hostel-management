@@ -36,6 +36,8 @@ const MOCK_TASKS: Task[] = [
     created_by: "admin",
     created_at: new Date().toISOString(),
     due_date: new Date().toISOString(),
+    assigned_to: null,
+    proof_image_url: null,
   },
   {
     id: "2",
@@ -49,6 +51,7 @@ const MOCK_TASKS: Task[] = [
     created_at: new Date().toISOString(),
     assigned_to: "demo-user",
     due_date: new Date(Date.now() + 86400000).toISOString(),
+    proof_image_url: null,
   }
 ];
 
