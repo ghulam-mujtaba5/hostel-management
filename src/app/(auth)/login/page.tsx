@@ -92,73 +92,81 @@ function LoginContent() {
   };
 
   return (
-    <div className="flex min-h-[90vh] items-center justify-center p-4">
+    <div className="flex min-h-screen items-center justify-center p-4 relative overflow-hidden">
       {/* Background decoration */}
-      <div className="absolute inset-0 -z-10 overflow-hidden">
-        <div className="absolute top-1/4 left-1/4 w-64 h-64 bg-primary/10 rounded-full blur-3xl" />
-        <div className="absolute bottom-1/4 right-1/4 w-64 h-64 bg-purple-500/10 rounded-full blur-3xl" />
+      <div className="absolute inset-0 -z-10">
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-7xl h-[500px] bg-gradient-to-b from-primary/20 via-transparent to-transparent blur-3xl opacity-50" />
+        <div className="absolute -top-24 -left-24 w-96 h-96 bg-primary/10 rounded-full blur-3xl animate-pulse" />
+        <div className="absolute -bottom-24 -right-24 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl animate-pulse delay-1000" />
       </div>
 
       <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
+        initial={{ opacity: 0, scale: 0.95 }}
+        animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: 0.5 }}
-        className="w-full max-w-sm"
+        className="w-full max-w-md"
       >
-        <Card className="border-0 shadow-xl bg-card/80 backdrop-blur-lg">
-          <CardHeader className="text-center pb-2">
-            <div className="flex justify-center mb-4">
-              <Logo size="lg" showText={false} />
+        <Card className="border-0 shadow-2xl bg-card/40 backdrop-blur-2xl rounded-[2.5rem] overflow-hidden">
+          <CardHeader className="text-center pt-10 pb-2">
+            <div className="flex justify-center mb-6">
+              <motion.div
+                initial={{ scale: 0 }}
+                animate={{ scale: 1 }}
+                transition={{ type: "spring", stiffness: 200, damping: 15 }}
+                className="h-20 w-20 rounded-3xl bg-gradient-to-br from-primary to-purple-600 flex items-center justify-center shadow-xl shadow-primary/20"
+              >
+                <Home className="h-10 w-10 text-white" />
+              </motion.div>
             </div>
             <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.3 }}
+              className="space-y-2"
             >
-              <CardTitle className="text-3xl font-bold bg-gradient-to-r from-primary to-purple-600 bg-clip-text text-transparent">
-                HostelMate
+              <CardTitle className="text-4xl font-black tracking-tight">
+                {isLogin ? "Welcome Back" : "Join the Community"}
               </CardTitle>
-              <CardDescription className="mt-2">
+              <CardDescription className="text-base font-medium">
                 <AnimatePresence mode="wait">
                   <motion.span
                     key={isLogin ? 'login' : 'signup'}
-                    initial={{ opacity: 0, y: 10 }}
+                    initial={{ opacity: 0, y: 5 }}
                     animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -10 }}
+                    exit={{ opacity: 0, y: -5 }}
                   >
                     {hostelName ? (
-                      <span className="text-primary font-bold">Creating "{hostelName}"</span>
+                      <span className="text-primary font-bold">Setting up "{hostelName}"</span>
                     ) : (
-                      isLogin ? "Welcome back! Sign in to continue" : "Join your hostel community"
+                      isLogin ? "Sign in to manage your hostel" : "Start your journey with HostelMate"
                     )}
                   </motion.span>
                 </AnimatePresence>
               </CardDescription>
             </motion.div>
           </CardHeader>
-          <CardContent className="pt-4">
-            <form onSubmit={handleSubmit} className="grid gap-4">
-              <AnimatePresence>
+          <CardContent className="p-8 pt-4">
+            <form onSubmit={handleSubmit} className="grid gap-5">
+              <AnimatePresence mode="popLayout">
                 {!isLogin && (
                   <motion.div 
-                    initial={{ opacity: 0, height: 0 }}
-                    animate={{ opacity: 1, height: 'auto' }}
-                    exit={{ opacity: 0, height: 0 }}
-                    className="grid gap-2 overflow-hidden"
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    exit={{ opacity: 0, x: 20 }}
+                    className="grid gap-2"
                   >
-                    <label htmlFor="username" className="text-sm font-medium flex items-center gap-2">
-                      <User className="h-4 w-4 text-muted-foreground" />
-                      Username
-                    </label>
-                    <Input
-                      id="username"
-                      type="text"
-                      placeholder="johndoe"
-                      value={username}
-                      onChange={(e) => setUsername(e.target.value)}
-                      required={!isLogin}
-                      className="h-12"
-                    />
+                    <div className="relative">
+                      <User className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+                      <Input
+                        id="username"
+                        type="text"
+                        placeholder="Username"
+                        value={username}
+                        onChange={(e) => setUsername(e.target.value)}
+                        required={!isLogin}
+                        className="h-14 pl-12 rounded-2xl bg-muted/50 border-0 focus-visible:ring-2 focus-visible:ring-primary transition-all"
+                      />
+                    </div>
                   </motion.div>
                 )}
               </AnimatePresence>
@@ -169,19 +177,18 @@ function LoginContent() {
                 transition={{ delay: 0.4 }}
                 className="grid gap-2"
               >
-                <label htmlFor="email" className="text-sm font-medium flex items-center gap-2">
-                  <Mail className="h-4 w-4 text-muted-foreground" />
-                  Email
-                </label>
-                <Input
-                  id="email"
-                  type="email"
-                  placeholder="you@example.com"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  required
-                  className="h-12"
-                />
+                <div className="relative">
+                  <Mail className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+                  <Input
+                    id="email"
+                    type="email"
+                    placeholder="Email Address"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    required
+                    className="h-14 pl-12 rounded-2xl bg-muted/50 border-0 focus-visible:ring-2 focus-visible:ring-primary transition-all"
+                  />
+                </div>
               </motion.div>
               
               <motion.div 
@@ -190,32 +197,32 @@ function LoginContent() {
                 transition={{ delay: 0.5 }}
                 className="grid gap-2"
               >
-                <label htmlFor="password" className="text-sm font-medium flex items-center gap-2">
-                  <Lock className="h-4 w-4 text-muted-foreground" />
-                  Password
-                </label>
-                <Input
-                  id="password"
-                  type="password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  required
-                  minLength={6}
-                  className="h-12"
-                  placeholder="••••••••"
-                />
+                <div className="relative">
+                  <Lock className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+                  <Input
+                    id="password"
+                    type="password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    required
+                    minLength={6}
+                    className="h-14 pl-12 rounded-2xl bg-muted/50 border-0 focus-visible:ring-2 focus-visible:ring-primary transition-all"
+                    placeholder="Password"
+                  />
+                </div>
               </motion.div>
               
               <AnimatePresence>
                 {error && (
-                  <motion.p 
-                    initial={{ opacity: 0, y: -10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -10 }}
-                    className="text-sm text-destructive bg-destructive/10 p-3 rounded-lg"
+                  <motion.div 
+                    initial={{ opacity: 0, scale: 0.95 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.95 }}
+                    className="text-sm font-bold text-destructive bg-destructive/10 p-4 rounded-2xl border border-destructive/20 flex items-center gap-2"
                   >
+                    <div className="h-2 w-2 rounded-full bg-destructive animate-pulse" />
                     {error}
-                  </motion.p>
+                  </motion.div>
                 )}
               </AnimatePresence>
               
@@ -223,66 +230,44 @@ function LoginContent() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.6 }}
-                className="space-y-3"
+                className="space-y-4 pt-2"
               >
-                <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
-                  <Button 
-                    type="submit" 
-                    className="w-full h-12 bg-gradient-to-r from-primary to-purple-600 hover:from-primary/90 hover:to-purple-600/90 text-base font-medium" 
-                    disabled={loading}
-                  >
-                    <AnimatePresence mode="wait">
-                      {loading ? (
-                        <motion.span
-                          key="loading"
-                          initial={{ opacity: 0 }}
-                          animate={{ opacity: 1 }}
-                          exit={{ opacity: 0 }}
-                          className="flex items-center gap-2"
-                        >
-                          <motion.div
-                            animate={{ rotate: 360 }}
-                            transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-                            className="h-4 w-4 border-2 border-white border-t-transparent rounded-full"
-                          />
-                          Please wait...
-                        </motion.span>
-                      ) : (
-                        <motion.span
-                          key="submit"
-                          initial={{ opacity: 0 }}
-                          animate={{ opacity: 1 }}
-                          exit={{ opacity: 0 }}
-                          className="flex items-center gap-2"
-                        >
-                          {isLogin ? (
-                            <>
-                              Sign In
-                              <ArrowRight className="h-4 w-4" />
-                            </>
-                          ) : (
-                            <>
-                              <Sparkles className="h-4 w-4" />
-                              {hostelName ? "Create Hostel & Account" : "Create Account"}
-                            </>
-                          )}
-                        </motion.span>
-                      )}
-                    </AnimatePresence>
-                  </Button>
-                </motion.div>
+                <Button 
+                  type="submit" 
+                  className="w-full h-14 rounded-2xl bg-gradient-to-r from-primary to-purple-600 hover:opacity-90 text-lg font-bold shadow-xl shadow-primary/20 transition-all active:scale-[0.98]" 
+                  disabled={loading}
+                >
+                  {loading ? (
+                    <div className="flex items-center gap-3">
+                      <div className="h-5 w-5 border-3 border-white/30 border-t-white rounded-full animate-spin" />
+                      Processing...
+                    </div>
+                  ) : (
+                    <div className="flex items-center gap-2">
+                      {isLogin ? "Sign In" : "Create Account"}
+                      <ArrowRight className="h-5 w-5" />
+                    </div>
+                  )}
+                </Button>
 
-                <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
-                  <Button 
-                    type="button"
-                    variant="outline"
-                    className="w-full h-12 border-primary/20 hover:bg-primary/5"
-                    onClick={() => router.push('/demo')}
-                  >
-                    <Sparkles className="mr-2 h-4 w-4 text-primary" />
-                    Try Demo Mode
-                  </Button>
-                </motion.div>
+                <div className="relative py-2">
+                  <div className="absolute inset-0 flex items-center">
+                    <span className="w-full border-t border-muted" />
+                  </div>
+                  <div className="relative flex justify-center text-xs uppercase">
+                    <span className="bg-transparent px-2 text-muted-foreground font-bold">Or</span>
+                  </div>
+                </div>
+
+                <Button 
+                  type="button"
+                  variant="outline"
+                  className="w-full h-12 rounded-xl border-primary/10 hover:bg-primary/5 font-bold"
+                  onClick={() => router.push('/demo')}
+                >
+                  <Sparkles className="mr-2 h-4 w-4 text-primary" />
+                  Try Live Demo
+                </Button>
               </motion.div>
             </form>
             
@@ -290,55 +275,21 @@ function LoginContent() {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.7 }}
-              className="mt-6 text-center text-sm"
+              className="mt-8 text-center"
             >
-              {isLogin ? (
-                <>
-                  Don&apos;t have an account?{" "}
-                  <button
-                    type="button"
-                    onClick={() => { setIsLogin(false); setError(""); }}
-                    className="font-medium text-primary hover:underline"
-                  >
-                    Sign up
-                  </button>
-                </>
-              ) : (
-                <>
-                  Already have an account?{" "}
-                  <button
-                    type="button"
-                    onClick={() => { setIsLogin(true); setError(""); }}
-                    className="font-medium text-primary hover:underline"
-                  >
-                    Sign in
-                  </button>
-                </>
-              )}
+              <p className="text-muted-foreground font-medium">
+                {isLogin ? "New to HostelMate?" : "Already have an account?"}{" "}
+                <button
+                  type="button"
+                  onClick={() => { setIsLogin(!isLogin); setError(""); }}
+                  className="font-black text-primary hover:text-primary/80 transition-colors"
+                >
+                  {isLogin ? "Create an account" : "Sign in here"}
+                </button>
+              </p>
             </motion.div>
           </CardContent>
         </Card>
-        
-        {/* Features preview */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.8 }}
-          className="mt-8 flex justify-center gap-6 text-sm text-muted-foreground"
-        >
-          <div className="flex items-center gap-2">
-            <span className="text-lg">🏠</span>
-            <span>Multi-Hostel</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <span className="text-lg">⚖️</span>
-            <span>Fair Tasks</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <span className="text-lg">🏆</span>
-            <span>Gamified</span>
-          </div>
-        </motion.div>
       </motion.div>
     </div>
   );

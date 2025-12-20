@@ -329,131 +329,122 @@ export default function GuidePage() {
   };
 
   return (
-    <div className="container max-w-5xl mx-auto py-12 px-4">
-      <AnimatedDiv variant="slideDown" className="text-center mb-12">
-        <h1 className="text-4xl font-bold tracking-tight mb-4 bg-gradient-to-r from-primary to-purple-600 bg-clip-text text-transparent">
-          User Guide
+    <div className="max-w-6xl mx-auto py-12 px-4 pb-32">
+      <SlideInCard direction="down" className="text-center mb-16">
+        <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-primary/10 text-primary text-xs font-black uppercase tracking-[0.2em] mb-6 border border-primary/20">
+          <Sparkles className="h-3.5 w-3.5" />
+          Master the Platform
+        </div>
+        <h1 className="text-6xl font-black tracking-tighter mb-6">
+          User <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-purple-600">Guide</span>
         </h1>
-        <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-          Master your hostel management experience with this interactive guide.
+        <p className="text-xl text-muted-foreground max-w-2xl mx-auto font-medium">
+          Learn how to manage your hostel life with excellence, fairness, and community spirit.
         </p>
-      </AnimatedDiv>
+      </SlideInCard>
 
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-12">
         {/* Sidebar Navigation */}
         <div className="lg:col-span-3 hidden lg:block">
-          <AnimatedDiv variant="slideRight" className="sticky top-24 space-y-2">
+          <div className="sticky top-24 space-y-3">
             {guideSteps.map((step, index) => (
-              <button
+              <motion.button
                 key={step.id}
                 onClick={() => setCurrentStep(index)}
-                className={`w-full text-left px-4 py-3 rounded-lg transition-all flex items-center gap-3 ${
+                whileHover={{ x: 5 }}
+                whileTap={{ scale: 0.98 }}
+                className={`w-full text-left px-6 py-4 rounded-[1.5rem] transition-all flex items-center gap-4 border-2 ${
                   currentStep === index 
-                    ? "bg-primary text-primary-foreground shadow-md" 
-                    : "hover:bg-muted text-muted-foreground"
+                    ? "bg-primary text-primary-foreground border-primary shadow-xl shadow-primary/20" 
+                    : "bg-card/50 backdrop-blur-sm border-transparent hover:border-primary/20 text-muted-foreground"
                 }`}
               >
-                <div className={`w-6 h-6 ${currentStep === index ? "text-primary-foreground" : "text-muted-foreground"}`}>
-                  {/* Simplified icon for sidebar */}
+                <div className={`shrink-0 ${currentStep === index ? "text-primary-foreground" : "text-primary"}`}>
                   {index === 0 && <Home className="w-5 h-5" />}
                   {index === 1 && <Users className="w-5 h-5" />}
                   {index === 2 && <CheckSquare className="w-5 h-5" />}
                   {index === 3 && <Scale className="w-5 h-5" />}
                   {index === 4 && <Trophy className="w-5 h-5" />}
                 </div>
-                <span className="font-medium text-sm">{step.title}</span>
-              </button>
+                <span className="font-black text-sm tracking-tight">{step.title}</span>
+              </motion.button>
             ))}
-          </AnimatedDiv>
+          </div>
         </div>
 
         {/* Main Content Area */}
         <div className="lg:col-span-9">
-          <div className="relative min-h-[500px]">
+          <div className="relative min-h-[600px]">
             <AnimatePresence mode="wait">
               <motion.div
                 key={currentStep}
-                initial={{ opacity: 0, x: 20 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: -20 }}
-                transition={{ duration: 0.3 }}
-                className="bg-card border rounded-2xl shadow-sm p-6 md:p-10"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
+                transition={{ duration: 0.4, ease: [0.23, 1, 0.32, 1] }}
+                className="bg-card/50 backdrop-blur-xl border-0 rounded-[3rem] shadow-2xl p-8 md:p-12 overflow-hidden relative"
               >
-                <div className="flex items-center gap-4 mb-8">
-                  <div className="p-3 bg-primary/10 rounded-xl">
+                {/* Decorative background element */}
+                <div className="absolute -top-24 -right-24 w-64 h-64 bg-primary/5 rounded-full blur-3xl" />
+                
+                <div className="flex flex-col md:flex-row items-start md:items-center gap-6 mb-12 relative">
+                  <div className="p-5 bg-primary/10 rounded-[2rem] shadow-inner">
                     {guideSteps[currentStep].icon}
                   </div>
                   <div>
-                    <h2 className="text-2xl font-bold">{guideSteps[currentStep].title}</h2>
-                    <p className="text-muted-foreground">{guideSteps[currentStep].description}</p>
+                    <h2 className="text-4xl font-black tracking-tight mb-2">{guideSteps[currentStep].title}</h2>
+                    <p className="text-lg text-muted-foreground font-bold">{guideSteps[currentStep].description}</p>
                   </div>
                 </div>
 
-                <div className="mb-10">
+                <div className="mb-12 relative min-h-[300px]">
                   {guideSteps[currentStep].content}
                 </div>
 
-                <div className="flex justify-between items-center pt-6 border-t">
+                <div className="flex flex-col sm:flex-row justify-between items-center gap-6 pt-8 border-t border-primary/10 relative">
                   <Button
                     variant="ghost"
                     onClick={prevStep}
                     disabled={currentStep === 0}
-                    className="gap-2"
+                    className="h-14 px-8 rounded-2xl font-black gap-3 hover:bg-primary/5 disabled:opacity-30"
                   >
-                    <ChevronLeft className="w-4 h-4" /> Previous
+                    <ChevronLeft className="w-5 h-5" /> Previous
                   </Button>
                   
-                  <div className="flex gap-1">
+                  <div className="flex gap-2">
                     {guideSteps.map((_, idx) => (
-                      <div 
+                      <motion.div 
                         key={idx}
-                        className={`h-1.5 rounded-full transition-all duration-300 ${
-                          idx === currentStep ? "w-8 bg-primary" : "w-2 bg-muted"
-                        }`}
+                        animate={{ 
+                          width: idx === currentStep ? 32 : 8,
+                          backgroundColor: idx === currentStep ? "var(--primary)" : "rgba(var(--primary), 0.2)"
+                        }}
+                        className="h-2 rounded-full"
                       />
                     ))}
                   </div>
 
                   {currentStep < guideSteps.length - 1 ? (
-                    <Button onClick={nextStep} className="gap-2">
-                      Next <ChevronRight className="w-4 h-4" />
+                    <Button 
+                      onClick={nextStep} 
+                      className="h-14 px-10 rounded-2xl font-black gap-3 bg-primary shadow-lg shadow-primary/20 hover:scale-105 transition-transform"
+                    >
+                      Next Step <ChevronRight className="w-5 h-5" />
                     </Button>
                   ) : (
-                    <Link href="/spaces">
-                      <Button className="gap-2 bg-green-600 hover:bg-green-700">
-                        Get Started <ArrowRight className="w-4 h-4" />
-                      </Button>
-                    </Link>
+                    <Button 
+                      asChild
+                      className="h-14 px-10 rounded-2xl font-black gap-3 bg-gradient-to-r from-green-500 to-emerald-600 shadow-lg shadow-green-500/20 hover:scale-105 transition-transform"
+                    >
+                      <Link href="/spaces">
+                        Get Started <ArrowRight className="w-5 h-5" />
+                      </Link>
+                    </Button>
                   )}
                 </div>
               </motion.div>
             </AnimatePresence>
           </div>
-        </div>
-      </div>
-      
-      {/* Mobile Navigation (Bottom) */}
-      <div className="lg:hidden fixed bottom-0 left-0 right-0 bg-background border-t p-4 z-10">
-        <div className="flex justify-between items-center max-w-md mx-auto">
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={prevStep}
-            disabled={currentStep === 0}
-          >
-            <ChevronLeft className="w-5 h-5" />
-          </Button>
-          <span className="text-sm font-medium">
-            {currentStep + 1} / {guideSteps.length}
-          </span>
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={nextStep}
-            disabled={currentStep === guideSteps.length - 1}
-          >
-            <ChevronRight className="w-5 h-5" />
-          </Button>
         </div>
       </div>
     </div>

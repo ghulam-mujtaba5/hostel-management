@@ -20,6 +20,7 @@ export default function SpacesPage() {
   const copyInviteCode = (code: string) => {
     navigator.clipboard.writeText(code);
     setCopied(code);
+    toast.success("Code copied!");
     setTimeout(() => setCopied(null), 2000);
   };
 
@@ -32,12 +33,12 @@ export default function SpacesPage() {
   if (!user) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[60vh] text-center px-4">
-        <div className="h-20 w-20 rounded-full bg-primary/10 flex items-center justify-center mb-6">
-          <Shield className="h-10 w-10 text-primary" />
+        <div className="h-24 w-24 rounded-[2.5rem] bg-primary/10 flex items-center justify-center mb-8">
+          <Shield className="h-12 w-12 text-primary" />
         </div>
-        <h2 className="text-2xl font-bold mb-2">Authentication Required</h2>
-        <p className="text-muted-foreground mb-8 max-w-xs">Please sign in to manage your hostel spaces and view your flatmates.</p>
-        <Button asChild size="lg" className="rounded-full px-8">
+        <h2 className="text-3xl font-black mb-3">Authentication Required</h2>
+        <p className="text-muted-foreground mb-10 max-w-xs font-medium">Please sign in to manage your hostel spaces and view your flatmates.</p>
+        <Button asChild size="lg" className="rounded-2xl px-12 h-14 font-black shadow-xl shadow-primary/20">
           <Link href="/login">Sign In</Link>
         </Button>
       </div>
@@ -45,46 +46,48 @@ export default function SpacesPage() {
   }
 
   return (
-    <div className="space-y-8 pb-20">
+    <div className="space-y-10 pb-32">
       {/* Header */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-4">
-          <Button variant="ghost" size="icon" asChild className="rounded-full">
-            <Link href="/profile">
-              <ArrowLeft className="h-5 w-5" />
-            </Link>
-          </Button>
-          <div>
-            <h1 className="text-3xl font-bold tracking-tight">Your Spaces</h1>
-            <p className="text-muted-foreground">Manage your hostel communities</p>
+      <SlideInCard direction="down">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-6">
+            <Button variant="ghost" size="icon" asChild className="h-12 w-12 rounded-2xl bg-muted/50 hover:bg-muted">
+              <Link href="/profile">
+                <ArrowLeft className="h-6 w-6" />
+              </Link>
+            </Button>
+            <div>
+              <h1 className="text-4xl font-black tracking-tight">Your Spaces</h1>
+              <p className="text-muted-foreground font-bold">Manage your hostel communities</p>
+            </div>
+          </div>
+          <div className="h-16 w-16 rounded-[2rem] bg-primary/10 flex items-center justify-center shadow-inner">
+            <Home className="h-8 w-8 text-primary" />
           </div>
         </div>
-        <div className="h-12 w-12 rounded-2xl bg-primary/10 flex items-center justify-center">
-          <Home className="h-6 w-6 text-primary" />
-        </div>
-      </div>
+      </SlideInCard>
 
       {/* Space List */}
-      <div className="space-y-4">
+      <div className="space-y-6">
         {userSpaces.length === 0 ? (
           <SlideInCard direction="up">
-            <Card className="border-dashed border-2 bg-muted/30">
-              <CardContent className="py-16 text-center">
-                <div className="h-20 w-20 rounded-full bg-muted flex items-center justify-center mx-auto mb-6">
-                  <Users className="h-10 w-10 text-muted-foreground" />
+            <Card className="border-4 border-dashed border-muted bg-muted/20 rounded-[3rem]">
+              <CardContent className="py-24 text-center">
+                <div className="h-24 w-24 rounded-[2.5rem] bg-muted flex items-center justify-center mx-auto mb-8">
+                  <Users className="h-12 w-12 text-muted-foreground" />
                 </div>
-                <h3 className="text-xl font-semibold mb-2">No Spaces Found</h3>
-                <p className="text-muted-foreground mb-8 max-w-xs mx-auto">
-                  You haven't joined any hostel spaces yet. Create one for your flat or join an existing one.
+                <h3 className="text-3xl font-black mb-3">No Spaces Found</h3>
+                <p className="text-muted-foreground mb-10 max-w-sm mx-auto font-medium">
+                  You haven't joined any hostel spaces yet. Create one for your flat or join an existing one to start tracking tasks.
                 </p>
-                <div className="flex flex-col sm:flex-row gap-3 justify-center">
-                  <Button asChild size="lg" className="rounded-full">
+                <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                  <Button asChild size="lg" className="rounded-2xl h-14 px-8 font-black bg-primary shadow-xl shadow-primary/20">
                     <Link href="/spaces/create">
-                      <Plus className="mr-2 h-5 w-5" />
+                      <Plus className="mr-2 h-6 w-6" />
                       Create Space
                     </Link>
                   </Button>
-                  <Button variant="outline" size="lg" asChild className="rounded-full">
+                  <Button variant="outline" size="lg" asChild className="rounded-2xl h-14 px-8 font-black border-2">
                     <Link href="/spaces/join">Join Space</Link>
                   </Button>
                 </div>
@@ -92,7 +95,7 @@ export default function SpacesPage() {
             </Card>
           </SlideInCard>
         ) : (
-          <div className="grid gap-4">
+          <div className="grid gap-6">
             <AnimatePresence mode="popLayout">
               {userSpaces.map((space, index) => (
                 <motion.div
@@ -102,91 +105,86 @@ export default function SpacesPage() {
                   transition={{ delay: index * 0.1 }}
                 >
                   <Card 
-                    className={`overflow-hidden transition-all duration-300 hover:shadow-md ${
+                    className={`overflow-hidden transition-all duration-500 border-0 shadow-xl rounded-[2.5rem] group ${
                       currentSpace?.id === space.id 
-                        ? 'ring-2 ring-primary border-primary/50 bg-primary/5' 
-                        : 'hover:border-primary/30'
+                        ? 'bg-primary/5 ring-2 ring-primary' 
+                        : 'bg-card/50 backdrop-blur-sm hover:bg-card/80'
                     }`}
                   >
                     <CardContent className="p-0">
-                      <div className="p-5 flex items-center justify-between">
-                        <div className="flex items-center gap-4">
-                          <div className={`h-14 w-14 rounded-2xl flex items-center justify-center transition-colors ${
-                            currentSpace?.id === space.id ? 'bg-primary text-primary-foreground' : 'bg-muted text-muted-foreground'
+                      <div className="p-6 md:p-8 flex flex-col md:flex-row items-center justify-between gap-6">
+                        <div className="flex items-center gap-6 w-full md:w-auto">
+                          <div className={`h-20 w-20 rounded-[2rem] flex items-center justify-center transition-all duration-500 group-hover:scale-110 ${
+                            currentSpace?.id === space.id ? 'bg-primary text-primary-foreground shadow-lg shadow-primary/30' : 'bg-muted text-muted-foreground'
                           }`}>
-                            <Users className="h-7 w-7" />
+                            <Users className="h-10 w-10" />
                           </div>
-                          <div>
-                            <div className="flex items-center gap-2">
-                              <h3 className="font-bold text-lg">{space.name}</h3>
+                          <div className="space-y-1">
+                            <div className="flex items-center gap-3">
+                              <h3 className="font-black text-2xl tracking-tight">{space.name}</h3>
                               {currentSpace?.id === space.id && (
-                                <span className="flex h-2 w-2 rounded-full bg-primary animate-pulse" />
+                                <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-primary/20 text-primary text-[10px] font-black uppercase tracking-widest">
+                                  <span className="h-1.5 w-1.5 rounded-full bg-primary animate-pulse" />
+                                  Active
+                                </div>
                               )}
                             </div>
-                            <div className="flex items-center gap-3 mt-1">
-                              <div className="flex items-center gap-1 px-2 py-0.5 bg-muted rounded-md text-[10px] font-mono uppercase tracking-wider text-muted-foreground">
+                            <div className="flex flex-wrap items-center gap-4">
+                              <button
+                                onClick={() => copyInviteCode(space.invite_code)}
+                                className="flex items-center gap-2 px-3 py-1.5 bg-muted/50 rounded-xl text-xs font-black uppercase tracking-widest text-muted-foreground hover:bg-muted hover:text-foreground transition-all"
+                              >
                                 <span>Code: {space.invite_code}</span>
-                                <button
-                                  onClick={() => copyInviteCode(space.invite_code)}
-                                  className="ml-1 hover:text-foreground transition-colors"
-                                >
-                                  {copied === space.invite_code ? (
-                                    <Check className="h-3 w-3 text-green-500" />
-                                  ) : (
-                                    <Copy className="h-3 w-3" />
-                                  )}
-                                </button>
-                              </div>
-                              <div className="flex items-center gap-1 text-xs text-muted-foreground">
-                                <MapPin className="h-3 w-3" />
+                                {copied === space.invite_code ? (
+                                  <Check className="h-3.5 w-3.5 text-green-500" />
+                                ) : (
+                                  <Copy className="h-3.5 w-3.5" />
+                                )}
+                              </button>
+                              <div className="flex items-center gap-1.5 text-xs font-bold text-muted-foreground">
+                                <MapPin className="h-4 w-4" />
                                 <span>Hostel Block A</span>
                               </div>
                             </div>
                           </div>
                         </div>
                         
-                        <div className="flex items-center gap-2">
+                        <div className="flex items-center gap-3 w-full md:w-auto justify-end">
                           <Button 
-                            variant="ghost" 
+                            variant="secondary" 
                             size="icon" 
                             onClick={() => copyInviteLink(space.invite_code)}
-                            className="rounded-full h-9 w-9 text-muted-foreground hover:text-primary hover:bg-primary/10"
+                            className="rounded-2xl h-12 w-12 shadow-sm hover:scale-110 transition-transform"
                             title="Share Invite Link"
                           >
-                            <Share2 className="h-4 w-4" />
+                            <Share2 className="h-5 w-5" />
                           </Button>
-                          {currentSpace?.id !== space.id && (
+                          
+                          {currentSpace?.id !== space.id ? (
                             <Button 
-                              size="sm" 
-                              variant="outline"
+                              size="lg" 
                               onClick={() => setCurrentSpace(space)}
-                              className="rounded-full px-4"
+                              className="rounded-2xl px-8 font-black bg-background text-foreground border-2 hover:bg-muted transition-all"
                             >
                               Switch
                             </Button>
+                          ) : (
+                            <Button 
+                              size="lg" 
+                              asChild
+                              className="rounded-2xl px-8 font-black bg-primary shadow-lg shadow-primary/20 hover:scale-105 transition-transform"
+                            >
+                              <Link href="/">Dashboard</Link>
+                            </Button>
                           )}
-                          <Button variant="ghost" size="icon" asChild className="rounded-full">
+                          
+                          <Button variant="ghost" size="icon" asChild className="rounded-2xl h-12 w-12 hover:bg-muted">
                             <Link href={`/spaces/${space.id}`}>
-                              <Settings className="h-5 w-5 text-muted-foreground" />
+                              <Settings className="h-6 w-6 text-muted-foreground" />
                             </Link>
                           </Button>
                         </div>
                       </div>
-                      
-                      {currentSpace?.id === space.id && (
-                        <div className="px-5 py-3 bg-primary/10 border-t border-primary/10 flex items-center justify-between">
-                          <span className="text-xs font-medium text-primary flex items-center gap-1">
-                            <Star className="h-3 w-3 fill-primary" />
-                            Currently Active Space
-                          </span>
-                          <Link 
-                            href="/" 
-                            className="text-xs font-semibold text-primary hover:underline"
-                          >
-                            Go to Dashboard →
-                          </Link>
-                        </div>
-                      )}
                     </CardContent>
                   </Card>
                 </motion.div>
@@ -197,35 +195,33 @@ export default function SpacesPage() {
       </div>
 
       {/* Quick Actions */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
         <SlideInCard direction="left" delay={0.3}>
-          <Button 
-            variant="outline" 
-            className="w-full h-24 flex-col gap-2 rounded-3xl border-2 hover:border-primary hover:bg-primary/5 transition-all group" 
-            asChild
-          >
-            <Link href="/spaces/create">
-              <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center group-hover:bg-primary group-hover:text-primary-foreground transition-colors">
-                <Plus className="h-6 w-6" />
+          <Link href="/spaces/create" className="group block">
+            <div className="h-32 rounded-[2.5rem] border-2 border-dashed border-muted hover:border-primary hover:bg-primary/5 transition-all flex items-center gap-6 px-8">
+              <div className="h-16 w-16 rounded-2xl bg-primary/10 flex items-center justify-center group-hover:bg-primary group-hover:text-primary-foreground transition-all duration-500 group-hover:rotate-90">
+                <Plus className="h-8 w-8" />
               </div>
-              <span className="font-bold">Create New Space</span>
-            </Link>
-          </Button>
+              <div>
+                <span className="block font-black text-xl">Create Space</span>
+                <span className="text-sm text-muted-foreground font-medium">Start a new community</span>
+              </div>
+            </div>
+          </Link>
         </SlideInCard>
         
         <SlideInCard direction="right" delay={0.4}>
-          <Button 
-            variant="outline" 
-            className="w-full h-24 flex-col gap-2 rounded-3xl border-2 hover:border-primary hover:bg-primary/5 transition-all group" 
-            asChild
-          >
-            <Link href="/spaces/join">
-              <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center group-hover:bg-primary group-hover:text-primary-foreground transition-colors">
-                <Users className="h-6 w-6" />
+          <Link href="/spaces/join" className="group block">
+            <div className="h-32 rounded-[2.5rem] border-2 border-dashed border-muted hover:border-primary hover:bg-primary/5 transition-all flex items-center gap-6 px-8">
+              <div className="h-16 w-16 rounded-2xl bg-primary/10 flex items-center justify-center group-hover:bg-primary group-hover:text-primary-foreground transition-all duration-500 group-hover:scale-110">
+                <Users className="h-8 w-8" />
               </div>
-              <span className="font-bold">Join Existing Space</span>
-            </Link>
-          </Button>
+              <div>
+                <span className="block font-black text-xl">Join Space</span>
+                <span className="text-sm text-muted-foreground font-medium">Enter an invite code</span>
+              </div>
+            </div>
+          </Link>
         </SlideInCard>
       </div>
     </div>

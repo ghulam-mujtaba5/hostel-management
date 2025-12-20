@@ -5,12 +5,14 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { ArrowLeft, Home, Sparkles, Copy, ArrowRight } from "lucide-react";
+import { ArrowLeft, Home, Sparkles, Copy, ArrowRight, ShieldCheck, Users } from "lucide-react";
 import Link from "next/link";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/lib/supabase";
 import { Confetti } from "@/components/Confetti";
 import { toast } from "sonner";
+import { motion } from "framer-motion";
+import { SlideInCard } from "@/components/Animations";
 
 function CreateSpaceContent() {
   const { user, refreshSpaces, setCurrentSpace } = useAuth();
@@ -118,68 +120,91 @@ function CreateSpaceContent() {
   if (createdSpace) {
     const inviteLink = `${typeof window !== 'undefined' ? window.location.origin : ''}/join/${createdSpace.invite_code}`;
     return (
-      <div className="space-y-8 py-8">
+      <div className="max-w-2xl mx-auto space-y-10 py-12">
         {showConfetti && <Confetti />}
-        <div className="text-center space-y-4">
-          <div className="mx-auto h-20 w-20 rounded-3xl bg-green-500/10 flex items-center justify-center mb-4">
-            <Sparkles className="h-10 w-10 text-green-500" />
+        
+        <SlideInCard direction="down">
+          <div className="text-center space-y-6">
+            <div className="mx-auto h-24 w-24 rounded-[2.5rem] bg-gradient-to-br from-green-400 to-emerald-600 flex items-center justify-center shadow-2xl shadow-green-500/20">
+              <ShieldCheck className="h-12 w-12 text-white" />
+            </div>
+            <div className="space-y-2">
+              <h1 className="text-4xl font-black tracking-tight">Hostel Created!</h1>
+              <p className="text-muted-foreground font-bold">
+                Your independent hostel <span className="text-primary">"{createdSpace.name}"</span> is ready.
+              </p>
+            </div>
           </div>
-          <h1 className="text-3xl font-bold">Hostel Created!</h1>
-          <p className="text-muted-foreground max-w-xs mx-auto">
-            Your independent hostel <strong>{createdSpace.name}</strong> is ready. Share the link below to add members.
-          </p>
-        </div>
+        </SlideInCard>
 
-        <Card className="border-2 border-primary/20 shadow-xl">
-          <CardHeader>
-            <CardTitle className="text-center text-sm font-bold uppercase tracking-widest text-muted-foreground">
-              Invite Your Residents
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-6">
-            <div className="space-y-2">
-              <p className="text-xs font-bold text-muted-foreground uppercase">Invite Link</p>
-              <div className="flex gap-2">
-                <Input readOnly value={inviteLink} className="bg-muted font-mono text-xs" />
-                <Button onClick={() => {
-                  navigator.clipboard.writeText(inviteLink);
-                  toast.success("Link copied!");
-                }}>
-                  Copy
-                </Button>
-              </div>
+        <SlideInCard direction="up" delay={0.1}>
+          <Card className="border-0 shadow-2xl rounded-[3rem] bg-card/50 backdrop-blur-xl overflow-hidden">
+            <div className="bg-primary/5 p-8 border-b border-primary/10">
+              <h2 className="text-center text-xs font-black uppercase tracking-[0.2em] text-primary">
+                Invite Your Residents
+              </h2>
             </div>
-
-            <div className="space-y-2">
-              <p className="text-xs font-bold text-muted-foreground uppercase">Invite Code</p>
-              <div className="flex items-center justify-between p-4 bg-primary/5 rounded-xl border border-primary/10">
-                <code className="text-3xl font-black tracking-[0.2em] text-primary">{createdSpace.invite_code}</code>
-                <Button variant="ghost" size="icon" onClick={() => {
-                  navigator.clipboard.writeText(createdSpace.invite_code);
-                  toast.success("Code copied!");
-                }}>
-                  <Copy className="h-5 w-5" />
-                </Button>
+            <CardContent className="p-10 space-y-8">
+              <div className="space-y-3">
+                <p className="text-xs font-black text-muted-foreground uppercase tracking-widest">Invite Link</p>
+                <div className="flex gap-3">
+                  <Input 
+                    readOnly 
+                    value={inviteLink} 
+                    className="bg-muted/50 border-0 rounded-2xl h-14 font-mono text-sm focus-visible:ring-0" 
+                  />
+                  <Button 
+                    onClick={() => {
+                      navigator.clipboard.writeText(inviteLink);
+                      toast.success("Link copied!");
+                    }}
+                    className="h-14 px-6 rounded-2xl font-black bg-primary hover:scale-105 transition-transform"
+                  >
+                    Copy
+                  </Button>
+                </div>
               </div>
-            </div>
 
-            <Button asChild className="w-full h-12 text-lg font-bold rounded-xl">
-              <Link href="/">
-                Go to Dashboard
-                <ArrowRight className="ml-2 h-5 w-5" />
-              </Link>
-            </Button>
-          </CardContent>
-        </Card>
+              <div className="space-y-3">
+                <p className="text-xs font-black text-muted-foreground uppercase tracking-widest">Invite Code</p>
+                <div className="flex items-center justify-between p-6 bg-primary/5 rounded-[2rem] border-2 border-dashed border-primary/20">
+                  <code className="text-4xl font-black tracking-[0.3em] text-primary">{createdSpace.invite_code}</code>
+                  <Button 
+                    variant="ghost" 
+                    size="icon" 
+                    onClick={() => {
+                      navigator.clipboard.writeText(createdSpace.invite_code);
+                      toast.success("Code copied!");
+                    }}
+                    className="h-12 w-12 rounded-xl hover:bg-primary/10"
+                  >
+                    <Copy className="h-6 w-6 text-primary" />
+                  </Button>
+                </div>
+              </div>
+
+              <Button asChild className="w-full h-16 text-xl font-black rounded-[1.5rem] bg-gradient-to-r from-primary to-purple-600 shadow-xl shadow-primary/20 hover:scale-[1.02] active:scale-[0.98] transition-all">
+                <Link href="/">
+                  Go to Dashboard
+                  <ArrowRight className="ml-3 h-6 w-6" />
+                </Link>
+              </Button>
+            </CardContent>
+          </Card>
+        </SlideInCard>
       </div>
     );
   }
 
   if (!user) {
     return (
-      <div className="text-center py-12">
-        <p className="text-muted-foreground">Please sign in to create a space</p>
-        <Button asChild className="mt-4">
+      <div className="min-h-[60vh] flex flex-col items-center justify-center text-center p-6">
+        <div className="h-20 w-20 rounded-[2rem] bg-muted flex items-center justify-center mb-6">
+          <Users className="h-10 w-10 text-muted-foreground" />
+        </div>
+        <h2 className="text-2xl font-black mb-2">Authentication Required</h2>
+        <p className="text-muted-foreground font-medium mb-8">Please sign in to create a new hostel space.</p>
+        <Button asChild size="lg" className="rounded-2xl px-10 font-black">
           <Link href="/login">Sign In</Link>
         </Button>
       </div>
@@ -187,61 +212,86 @@ function CreateSpaceContent() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="max-w-xl mx-auto space-y-8 py-12">
       {showConfetti && <Confetti />}
       
-      <div className="flex items-center gap-4">
-        <Button variant="ghost" size="icon" asChild>
-          <Link href="/spaces">
-            <ArrowLeft className="h-5 w-5" />
-          </Link>
-        </Button>
-        <h1 className="text-2xl font-bold">Create Space</h1>
-      </div>
-
-      <Card>
-        <CardHeader>
-          <div className="mx-auto h-16 w-16 rounded-full bg-primary/10 flex items-center justify-center mb-4">
-            <Home className="h-8 w-8 text-primary" />
+      <SlideInCard direction="down">
+        <div className="flex items-center gap-6 mb-8">
+          <Button variant="ghost" size="icon" asChild className="h-12 w-12 rounded-2xl bg-muted/50 hover:bg-muted">
+            <Link href="/spaces">
+              <ArrowLeft className="h-6 w-6" />
+            </Link>
+          </Button>
+          <div>
+            <h1 className="text-3xl font-black tracking-tight">Create Space</h1>
+            <p className="text-muted-foreground font-bold">Start your own hostel community</p>
           </div>
-          <CardTitle className="text-center">Create Your Space</CardTitle>
-          <CardDescription className="text-center">
-            A space is where you and your flatmates manage duties together.
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div className="space-y-2">
-              <label className="text-sm font-medium">Space Name</label>
-              <Input
-                placeholder="e.g., Apartment 4B, Our Flat, etc."
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                required
-              />
+        </div>
+      </SlideInCard>
+
+      <SlideInCard direction="up" delay={0.1}>
+        <Card className="border-0 shadow-2xl rounded-[3rem] bg-card/50 backdrop-blur-xl overflow-hidden">
+          <CardHeader className="pt-10 pb-6 text-center">
+            <div className="mx-auto h-20 w-20 rounded-[2rem] bg-primary/10 flex items-center justify-center mb-6">
+              <Home className="h-10 w-10 text-primary" />
             </div>
+            <CardTitle className="text-3xl font-black">New Hostel</CardTitle>
+            <CardDescription className="text-base font-medium px-6">
+              A space is where you and your flatmates manage duties, track points, and maintain fairness.
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="p-10 pt-0">
+            <form onSubmit={handleSubmit} className="space-y-6">
+              <div className="space-y-3">
+                <label className="text-xs font-black uppercase tracking-widest text-muted-foreground ml-1">Space Name</label>
+                <Input
+                  placeholder="e.g., Apartment 4B, Al-Falah Hostel, etc."
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  required
+                  className="h-16 rounded-2xl bg-muted/50 border-0 text-lg font-bold px-6 focus-visible:ring-2 focus-visible:ring-primary"
+                />
+              </div>
 
-            {error && (
-              <p className="text-sm text-destructive">{error}</p>
-            )}
-
-            <Button type="submit" className="w-full" disabled={loading}>
-              {loading ? (
-                "Creating..."
-              ) : (
-                <>
-                  <Sparkles className="mr-2 h-4 w-4" />
-                  Create Space
-                </>
+              {error && (
+                <motion.p 
+                  initial={{ opacity: 0, x: -10 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  className="text-sm font-bold text-destructive bg-destructive/10 p-4 rounded-xl border border-destructive/20"
+                >
+                  {error}
+                </motion.p>
               )}
-            </Button>
-          </form>
-        </CardContent>
-      </Card>
 
-      <p className="text-center text-sm text-muted-foreground">
-        After creating, you'll get an invite code to share with flatmates.
-      </p>
+              <Button 
+                type="submit" 
+                className="w-full h-16 text-xl font-black rounded-[1.5rem] bg-gradient-to-r from-primary to-purple-600 shadow-xl shadow-primary/20 hover:scale-[1.02] active:scale-[0.98] transition-all" 
+                disabled={loading}
+              >
+                {loading ? (
+                  <div className="flex items-center gap-3">
+                    <div className="h-5 w-5 border-3 border-white/30 border-t-white rounded-full animate-spin" />
+                    Creating...
+                  </div>
+                ) : (
+                  <>
+                    <Sparkles className="mr-3 h-6 w-6" />
+                    Create Space
+                  </>
+                )}
+              </Button>
+            </form>
+          </CardContent>
+        </Card>
+      </SlideInCard>
+
+      <SlideInCard direction="up" delay={0.2}>
+        <div className="p-6 rounded-[2rem] bg-primary/5 border border-primary/10 text-center">
+          <p className="text-sm font-bold text-primary/80">
+            💡 After creating, you'll get a unique invite code to share with your flatmates.
+          </p>
+        </div>
+      </SlideInCard>
     </div>
   );
 }

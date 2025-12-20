@@ -5,7 +5,7 @@ test.describe('Accessibility', () => {
     await page.goto('/login');
     
     // Check for heading hierarchy
-    const heading = page.getByRole('heading', { name: 'HostelMate' });
+    const heading = page.getByRole('heading', { name: 'Welcome Back' });
     await expect(heading).toBeVisible();
   });
 
@@ -27,17 +27,17 @@ test.describe('Accessibility', () => {
     
     // All buttons should have accessible names
     await expect(page.getByRole('button', { name: 'Sign In' })).toBeVisible();
-    await expect(page.getByRole('button', { name: 'Try Demo Mode' })).toBeVisible();
+    await expect(page.getByRole('button', { name: 'Try Live Demo' })).toBeVisible();
   });
 
   test('form inputs should have labels', async ({ page }) => {
     await page.goto('/login');
     
     // Check inputs have associated labels or placeholders
-    const emailInput = page.getByPlaceholder('you@example.com');
+    const emailInput = page.getByPlaceholder('Email Address');
     await expect(emailInput).toBeVisible();
     
-    const passwordInput = page.getByPlaceholder('••••••••');
+    const passwordInput = page.getByPlaceholder('Password');
     await expect(passwordInput).toBeVisible();
   });
 
@@ -45,13 +45,13 @@ test.describe('Accessibility', () => {
     await page.goto('/login');
     
     // Focus email input directly
-    const emailInput = page.getByPlaceholder('you@example.com');
+    const emailInput = page.getByPlaceholder('Email Address');
     await emailInput.focus();
     await expect(emailInput).toBeFocused();
     
     // Tab to password
     await page.keyboard.press('Tab');
-    await expect(page.getByPlaceholder('••••••••')).toBeFocused();
+    await expect(page.getByPlaceholder('Password')).toBeFocused();
   });
 
   test('demo mode buttons should be keyboard accessible', async ({ page }) => {

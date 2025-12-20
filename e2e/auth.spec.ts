@@ -5,21 +5,22 @@ test.describe('Authentication Flow', () => {
   test('should load login page', async ({ page }) => {
     await page.goto('/login');
     
-    await expect(page).toHaveTitle(/HostelMate/);
-    await expect(page.getByText('Welcome back!')).toBeVisible();
+    // The logo contains HostelMate text
+    await expect(page.getByText('HostelMate')).toBeVisible();
+    await expect(page.getByText('Welcome Back')).toBeVisible();
     await expect(page.getByRole('button', { name: 'Sign In' })).toBeVisible();
   });
 
   test('should show demo mode button', async ({ page }) => {
     await page.goto('/login');
     
-    await expect(page.getByRole('button', { name: 'Try Demo Mode' })).toBeVisible();
+    await expect(page.getByRole('button', { name: 'Try Live Demo' })).toBeVisible();
   });
 
   test('should navigate to demo mode', async ({ page }) => {
     await page.goto('/login');
     
-    await page.getByRole('button', { name: 'Try Demo Mode' }).click();
+    await page.getByRole('button', { name: 'Try Live Demo' }).click();
     
     await expectToBeOnPage(page, '/demo');
     await expect(page.getByText('Hey, Demo User!')).toBeVisible();
@@ -32,11 +33,11 @@ test.describe('Authentication Flow', () => {
     await expect(page.getByRole('button', { name: 'Sign In' })).toBeVisible();
     
     // Check that signup toggle is available
-    await expect(page.getByRole('button', { name: 'Sign up' })).toBeVisible();
+    await expect(page.getByText('Create an account')).toBeVisible();
     
-    // Note: The actual form toggle may be implemented differently
-    // Just verify the presence of both options
-    await expect(page.getByText('Don\'t have an account?')).toBeVisible();
+    // Switch to signup
+    await page.getByText('Create an account').click();
+    await expect(page.getByRole('button', { name: 'Create Account' })).toBeVisible();
   });
 
   test('should show validation errors for empty fields', async ({ page }) => {
@@ -52,8 +53,8 @@ test.describe('Authentication Flow', () => {
   test('should show error for invalid credentials', async ({ page }) => {
     await page.goto('/login');
     
-    await page.getByPlaceholder('you@example.com').fill('wrong@example.com');
-    await page.getByPlaceholder('••••••••').fill('wrongpassword');
+    await page.getByPlaceholder('Email Address').fill('wrong@example.com');
+    await page.getByPlaceholder('Password').fill('wrongpassword');
     
     await page.getByRole('button', { name: 'Sign In' }).click();
     

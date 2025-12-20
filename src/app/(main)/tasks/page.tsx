@@ -78,36 +78,55 @@ export default function TasksPage() {
   }
 
   return (
-    <div className="space-y-8 pb-20">
-      {/* Header */}
-      <div className="flex flex-col gap-6">
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-3xl font-bold tracking-tight">Tasks</h1>
-            <p className="text-muted-foreground">Keep your hostel clean and organized</p>
+    <div className="space-y-10 pb-24">
+      {/* Header Section */}
+      <div className="relative">
+        <div className="absolute -top-20 -right-20 w-64 h-64 bg-primary/10 rounded-full blur-3xl -z-10" />
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
+          <div className="space-y-2">
+            <motion.div
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 text-primary text-xs font-black uppercase tracking-wider"
+            >
+              <ListTodo className="h-3 w-3" />
+              Task Management
+            </motion.div>
+            <h1 className="text-4xl md:text-5xl font-black tracking-tight">
+              Hostel <br />
+              <span className="bg-gradient-to-r from-primary via-purple-600 to-blue-600 bg-clip-text text-transparent">
+                Operations
+              </span>
+            </h1>
+            <p className="text-muted-foreground font-medium">
+              Keep your shared space clean and organized (Amanah).
+            </p>
           </div>
-          <Button asChild className="rounded-full shadow-lg shadow-primary/20">
+
+          <Button asChild size="lg" className="h-14 px-8 rounded-2xl text-lg font-bold shadow-xl shadow-primary/20 bg-gradient-to-r from-primary to-purple-600 hover:opacity-90 transition-all group">
             <Link href="/tasks/create">
-              <Plus className="mr-2 h-5 w-5" />
-              New Task
+              <Plus className="mr-2 h-5 w-5 group-hover:rotate-90 transition-transform duration-300" />
+              Create Task
             </Link>
           </Button>
         </div>
+      </div>
 
-        {/* Search and Tabs */}
-        <div className="space-y-4">
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+      {/* Search and Tabs */}
+      <div className="grid lg:grid-cols-3 gap-6">
+        <div className="lg:col-span-2 space-y-6">
+          <div className="relative group">
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground group-focus-within:text-primary transition-colors" />
             <input
               type="text"
-              placeholder="Search tasks..."
+              placeholder="Search tasks by title or description..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-10 pr-4 py-3 bg-muted/50 border-none rounded-2xl focus:ring-2 focus:ring-primary transition-all"
+              className="w-full pl-12 pr-4 py-4 bg-card/50 backdrop-blur-sm border-0 rounded-[1.5rem] shadow-sm focus:ring-2 focus:ring-primary transition-all text-lg font-medium"
             />
           </div>
 
-          <div className="flex p-1 bg-muted/50 rounded-2xl">
+          <div className="flex p-1.5 bg-card/50 backdrop-blur-sm border border-border/50 rounded-[1.5rem] shadow-sm">
             {[
               { key: 'my' as TabType, label: 'My Tasks', icon: Clock },
               { key: 'available' as TabType, label: 'Available', icon: Sparkles },
@@ -116,80 +135,85 @@ export default function TasksPage() {
               <button
                 key={tab.key}
                 onClick={() => setActiveTab(tab.key)}
-                className={`flex-1 flex items-center justify-center gap-2 py-2.5 text-sm font-medium rounded-xl transition-all ${
+                className={`flex-1 flex items-center justify-center gap-2 py-3 text-sm font-bold rounded-2xl transition-all ${
                   activeTab === tab.key 
-                    ? 'bg-background text-foreground shadow-sm' 
-                    : 'text-muted-foreground hover:text-foreground'
+                    ? 'bg-primary text-primary-foreground shadow-lg shadow-primary/20' 
+                    : 'text-muted-foreground hover:text-foreground hover:bg-muted/50'
                 }`}
               >
-                <tab.icon className={`h-4 w-4 ${activeTab === tab.key ? 'text-primary' : ''}`} />
+                <tab.icon className="h-4 w-4" />
                 {tab.label}
               </button>
             ))}
           </div>
         </div>
-      </div>
 
-      {/* Category Filter */}
-      <div className="flex gap-2 overflow-x-auto pb-2 no-scrollbar">
-        <Button
-          variant={filterCategory === 'all' ? 'default' : 'outline'}
-          size="sm"
-          onClick={() => setFilterCategory('all')}
-          className="rounded-full px-4"
-        >
-          All
-        </Button>
-        {Object.entries(TASK_CATEGORIES).map(([key, { label, emoji }]) => (
-          <Button
-            key={key}
-            variant={filterCategory === key ? 'default' : 'outline'}
-            size="sm"
-            onClick={() => setFilterCategory(key as TaskCategory)}
-            className="rounded-full px-4 whitespace-nowrap"
-          >
-            <span className="mr-1.5">{emoji}</span>
-            {label}
-          </Button>
-        ))}
+        <div className="space-y-4">
+          <h3 className="text-xs font-black text-muted-foreground uppercase tracking-[0.2em] px-2">Categories</h3>
+          <div className="flex flex-wrap gap-2">
+            <Button
+              variant={filterCategory === 'all' ? 'default' : 'outline'}
+              size="sm"
+              onClick={() => setFilterCategory('all')}
+              className={`rounded-xl px-4 font-bold ${filterCategory === 'all' ? 'shadow-lg shadow-primary/20' : 'border-primary/10 bg-card/50'}`}
+            >
+              All
+            </Button>
+            {Object.entries(TASK_CATEGORIES).map(([key, { label, emoji }]) => (
+              <Button
+                key={key}
+                variant={filterCategory === key ? 'default' : 'outline'}
+                size="sm"
+                onClick={() => setFilterCategory(key as TaskCategory)}
+                className={`rounded-xl px-4 font-bold whitespace-nowrap ${filterCategory === key ? 'shadow-lg shadow-primary/20' : 'border-primary/10 bg-card/50'}`}
+              >
+                <span className="mr-2">{emoji}</span>
+                {label}
+              </Button>
+            ))}
+          </div>
+        </div>
       </div>
 
       {/* Task List */}
-      <div className="space-y-4">
+      <div className="space-y-6">
         {loading ? (
-          <div className="flex flex-col items-center justify-center py-20 gap-4">
-            <div className="animate-spin rounded-full h-10 w-10 border-4 border-primary/20 border-t-primary"></div>
-            <p className="text-sm text-muted-foreground animate-pulse">Loading tasks...</p>
+          <div className="flex flex-col items-center justify-center py-32 gap-6">
+            <div className="relative">
+              <div className="h-16 w-16 border-4 border-primary/20 border-t-primary rounded-full animate-spin" />
+              <ListTodo className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 h-6 w-6 text-primary/40" />
+            </div>
+            <p className="text-lg font-bold text-muted-foreground animate-pulse">Syncing tasks...</p>
           </div>
         ) : filteredTasks.length === 0 ? (
           <SlideInCard direction="up">
-            <Card className="border-dashed border-2 bg-muted/30">
-              <CardContent className="py-16 text-center">
-                <div className="h-20 w-20 rounded-full bg-muted flex items-center justify-center mx-auto mb-6">
-                  <CheckCircle className="h-10 w-10 text-muted-foreground" />
+            <Card className="border-0 shadow-xl bg-card/50 backdrop-blur-sm rounded-[3rem] overflow-hidden">
+              <CardContent className="py-24 text-center">
+                <div className="h-24 w-24 rounded-[2rem] bg-muted flex items-center justify-center mx-auto mb-8">
+                  <CheckCircle className="h-12 w-12 text-muted-foreground" />
                 </div>
-                <h3 className="text-xl font-semibold mb-2">
+                <h3 className="text-3xl font-black tracking-tight mb-4">
                   {searchQuery ? "No matches found" : "All caught up!"}
                 </h3>
-                <p className="text-muted-foreground mb-8 max-w-xs mx-auto">
+                <p className="text-xl text-muted-foreground mb-10 max-w-md mx-auto font-medium">
                   {searchQuery 
                     ? "Try adjusting your search or filters to find what you're looking for."
                     : activeTab === 'my' 
-                    ? "You have no pending tasks. Pick one from the available list!" 
+                    ? "You have no pending tasks. Why not pick one from the available list?" 
                     : activeTab === 'available'
-                    ? "No available tasks right now. Check back later or create one."
+                    ? "No available tasks right now. You've done a great job keeping things clean!"
                     : "No completed tasks in your history yet."}
                 </p>
                 {!searchQuery && activeTab === 'available' && (
-                  <Button asChild size="lg" className="rounded-full">
-                    <Link href="/tasks/create">Create Task</Link>
+                  <Button asChild size="lg" className="h-14 px-10 rounded-2xl text-lg font-bold shadow-xl shadow-primary/20 bg-gradient-to-r from-primary to-purple-600">
+                    <Link href="/tasks/create">Create New Task</Link>
                   </Button>
                 )}
               </CardContent>
             </Card>
           </SlideInCard>
         ) : (
-          <div className="grid gap-4">
+          <div className="grid gap-6">
             <AnimatePresence mode="popLayout">
               {filteredTasks.map((task, index) => (
                 <motion.div

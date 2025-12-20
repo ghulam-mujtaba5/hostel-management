@@ -5,11 +5,13 @@ import { useRouter } from "next/navigation";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { ArrowLeft, Users, UserPlus } from "lucide-react";
+import { ArrowLeft, Users, UserPlus, Sparkles } from "lucide-react";
 import Link from "next/link";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/lib/supabase";
 import { Confetti } from "@/components/Confetti";
+import { motion } from "framer-motion";
+import { SlideInCard } from "@/components/Animations";
 
 export default function JoinSpacePage() {
   const { user, refreshSpaces, setCurrentSpace } = useAuth();
@@ -86,9 +88,13 @@ export default function JoinSpacePage() {
 
   if (!user) {
     return (
-      <div className="text-center py-12">
-        <p className="text-muted-foreground">Please sign in to join a space</p>
-        <Button asChild className="mt-4">
+      <div className="min-h-[60vh] flex flex-col items-center justify-center text-center p-6">
+        <div className="h-20 w-20 rounded-[2rem] bg-muted flex items-center justify-center mb-6">
+          <Users className="h-10 w-10 text-muted-foreground" />
+        </div>
+        <h2 className="text-2xl font-black mb-2">Authentication Required</h2>
+        <p className="text-muted-foreground font-medium mb-8">Please sign in to join a hostel space.</p>
+        <Button asChild size="lg" className="rounded-2xl px-10 font-black">
           <Link href="/login">Sign In</Link>
         </Button>
       </div>
@@ -96,63 +102,95 @@ export default function JoinSpacePage() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="max-w-xl mx-auto space-y-8 py-12">
       {showConfetti && <Confetti />}
       
-      <div className="flex items-center gap-4">
-        <Button variant="ghost" size="icon" asChild>
-          <Link href="/spaces">
-            <ArrowLeft className="h-5 w-5" />
-          </Link>
-        </Button>
-        <h1 className="text-2xl font-bold">Join Space</h1>
-      </div>
-
-      <Card>
-        <CardHeader>
-          <div className="mx-auto h-16 w-16 rounded-full bg-primary/10 flex items-center justify-center mb-4">
-            <Users className="h-8 w-8 text-primary" />
+      <SlideInCard direction="down">
+        <div className="flex items-center gap-6 mb-8">
+          <Button variant="ghost" size="icon" asChild className="h-12 w-12 rounded-2xl bg-muted/50 hover:bg-muted">
+            <Link href="/spaces">
+              <ArrowLeft className="h-6 w-6" />
+            </Link>
+          </Button>
+          <div>
+            <h1 className="text-3xl font-black tracking-tight">Join Space</h1>
+            <p className="text-muted-foreground font-bold">Enter your community code</p>
           </div>
-          <CardTitle className="text-center">Join a Space</CardTitle>
-          <CardDescription className="text-center">
-            Enter the invite code shared by your flatmate.
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div className="space-y-2">
-              <label className="text-sm font-medium">Invite Code</label>
-              <Input
-                placeholder="e.g., abc123"
-                value={inviteCode}
-                onChange={(e) => setInviteCode(e.target.value)}
-                className="text-center text-lg tracking-widest uppercase"
-                maxLength={10}
-                required
-              />
+        </div>
+      </SlideInCard>
+
+      <SlideInCard direction="up" delay={0.1}>
+        <Card className="border-0 shadow-2xl rounded-[3rem] bg-card/50 backdrop-blur-xl overflow-hidden">
+          <CardHeader className="pt-10 pb-6 text-center">
+            <div className="mx-auto h-20 w-20 rounded-[2rem] bg-primary/10 flex items-center justify-center mb-6">
+              <Users className="h-10 w-10 text-primary" />
             </div>
+            <CardTitle className="text-3xl font-black">Enter Code</CardTitle>
+            <CardDescription className="text-base font-medium px-6">
+              Enter the unique invite code shared by your hostel flatmate or administrator.
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="p-10 pt-0">
+            <form onSubmit={handleSubmit} className="space-y-6">
+              <div className="space-y-3">
+                <label className="text-xs font-black uppercase tracking-widest text-muted-foreground ml-1">Invite Code</label>
+                <Input
+                  placeholder="e.g., ABC123"
+                  value={inviteCode}
+                  onChange={(e) => setInviteCode(e.target.value)}
+                  className="h-20 rounded-2xl bg-muted/50 border-0 text-3xl font-black text-center tracking-[0.3em] uppercase px-6 focus-visible:ring-2 focus-visible:ring-primary"
+                  maxLength={10}
+                  required
+                />
+              </div>
 
-            {error && (
-              <p className="text-sm text-destructive">{error}</p>
-            )}
-
-            <Button type="submit" className="w-full" disabled={loading}>
-              {loading ? (
-                "Joining..."
-              ) : (
-                <>
-                  <UserPlus className="mr-2 h-4 w-4" />
-                  Join Space
-                </>
+              {error && (
+                <motion.p 
+                  initial={{ opacity: 0, x: -10 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  className="text-sm font-bold text-destructive bg-destructive/10 p-4 rounded-xl border border-destructive/20"
+                >
+                  {error}
+                </motion.p>
               )}
-            </Button>
-          </form>
-        </CardContent>
-      </Card>
 
-      <p className="text-center text-sm text-muted-foreground">
-        Ask your flatmate for the invite code from their space settings.
-      </p>
+              <Button 
+                type="submit" 
+                className="w-full h-16 text-xl font-black rounded-[1.5rem] bg-gradient-to-r from-primary to-purple-600 shadow-xl shadow-primary/20 hover:scale-[1.02] active:scale-[0.98] transition-all" 
+                disabled={loading}
+              >
+                {loading ? (
+                  <div className="flex items-center gap-3">
+                    <div className="h-5 w-5 border-3 border-white/30 border-t-white rounded-full animate-spin" />
+                    Joining...
+                  </div>
+                ) : (
+                  <>
+                    <UserPlus className="mr-3 h-6 w-6" />
+                    Join Space
+                  </>
+                )}
+              </Button>
+            </form>
+          </CardContent>
+        </Card>
+      </SlideInCard>
+
+      <SlideInCard direction="up" delay={0.2}>
+        <div className="p-8 rounded-[2.5rem] bg-gradient-to-br from-primary/5 to-purple-600/5 border border-primary/10">
+          <div className="flex gap-4">
+            <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
+              <Sparkles className="h-5 w-5 text-primary" />
+            </div>
+            <div className="space-y-1">
+              <h4 className="font-black text-sm">Need a code?</h4>
+              <p className="text-xs text-muted-foreground font-medium leading-relaxed">
+                Ask your flatmate to go to their Profile or Space settings to find the invite code for your hostel.
+              </p>
+            </div>
+          </div>
+        </div>
+      </SlideInCard>
     </div>
   );
 }
