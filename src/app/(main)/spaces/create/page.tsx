@@ -1,23 +1,44 @@
-"use client";
-
-import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useState, useEffect, Suspense } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { ArrowLeft, Home, Sparkles } from "lucide-react";
+import { ArrowLeft, Home, Sparkles, Copy, ArrowRight } from "lucide-react";
 import Link from "next/link";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/lib/supabase";
 import { Confetti } from "@/components/Confetti";
+import { toast } from "sonner";
 
-export default function CreateSpacePage() {
+function CreateSpaceContent() {
   const { user, refreshSpaces, setCurrentSpace } = useAuth();
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const successId = searchParams.get("id");
+  
   const [name, setName] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [showConfetti, setShowConfetti] = useState(false);
+  const [createdSpace, setCreatedSpace] = useState<any>(null);
+
+  useEffect(() => {
+    if (successId && user) {
+      const fetchCreatedSpace = async () => {
+        const { data, error } = await supabase
+          .from('spaces')
+          .select('*')
+          .eq('id', successId)
+          .single();
+        
+        if (data && !error) {
+          setCreatedSpace(data);
+          setShowConfetti(true);
+        }
+      };
+      fetchCreatedSpace();
+    }
+  }, [successId, user]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -62,15 +83,72 @@ export default function CreateSpacePage() {
       setShowConfetti(true);
       await refreshSpaces();
       setCurrentSpace(space);
-      
-      setTimeout(() => {
-        router.push('/');
-      }, 1500);
+      setCreatedSpace(space);
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : 'Failed to create space');
       setLoading(false);
     }
   };
+
+  if (createdSpace) {
+    const inviteLink = `${typeof window !== 'undefined' ? window.location.origin : ''}/join/${createdSpace.invite_code}`;
+    return (
+      <div className="space-y-8 py-8">
+        {showConfetti && <Confetti />}
+        <div className="text-center space-y-4">
+          <div className="mx-auto h-20 w-20 rounded-3xl bg-green-500/10 flex items-center justify-center mb-4">
+            <Sparkles className="h-10 w-10 text-green-500" />
+          </div>
+          <h1 className="text-3xl font-bold">Hostel Created!</h1>
+          <p className="text-muted-foreground max-w-xs mx-auto">
+            Your independent hostel <strong>{createdSpace.name}</strong> is ready. Share the link below to add members.
+          </p>
+        </div>
+
+        <Card className="border-2 border-primary/20 shadow-xl">
+          <CardHeader>
+            <CardTitle className="text-center text-sm font-bold uppercase tracking-widest text-muted-foreground">
+              Invite Your Residents
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-6">
+            <div className="space-y-2">
+              <p className="text-xs font-bold text-muted-foreground uppercase">Invite Link</p>
+              <div className="flex gap-2">
+                <Input readOnly value={inviteLink} className="bg-muted font-mono text-xs" />
+                <Button onClick={() => {
+                  navigator.clipboard.writeText(inviteLink);
+                  toast.success("Link copied!");
+                }}>
+                  Copy
+                </Button>
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <p className="text-xs font-bold text-muted-foreground uppercase">Invite Code</p>
+              <div className="flex items-center justify-between p-4 bg-primary/5 rounded-xl border border-primary/10">
+                <code className="text-3xl font-black tracking-[0.2em] text-primary">{createdSpace.invite_code}</code>
+                <Button variant="ghost" size="icon" onClick={() => {
+                  navigator.clipboard.writeText(createdSpace.invite_code);
+                  toast.success("Code copied!");
+                }}>
+                  <Copy className="h-5 w-5" />
+                </Button>
+              </div>
+            </div>
+
+            <Button asChild className="w-full h-12 text-lg font-bold rounded-xl">
+              <Link href="/">
+                Go to Dashboard
+                <ArrowRight className="ml-2 h-5 w-5" />
+              </Link>
+            </Button>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
 
   if (!user) {
     return (
@@ -142,3 +220,12 @@ export default function CreateSpacePage() {
     </div>
   );
 }
+
+export default function CreateSpacePage() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <CreateSpaceContent />
+    </Suspense>
+  );
+}
+

@@ -1,23 +1,36 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useState, useEffect, Suspense } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useAuth } from "@/contexts/AuthContext";
 import { Home, Mail, Lock, User, Sparkles, ArrowRight } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import { supabase } from "@/lib/supabase";
+import { toast } from "sonner";
 
-export default function LoginPage() {
-  const [isLogin, setIsLogin] = useState(true);
+function LoginContent() {
+  const searchParams = useSearchParams();
+  const hostelName = searchParams.get("hostelName");
+  const mode = searchParams.get("mode");
+  const returnTo = searchParams.get("returnTo");
+  
+  const [isLogin, setIsLogin] = useState(mode !== "signup");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [username, setUsername] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
-  const { signIn, signUp } = useAuth();
+  const { signIn, signUp, refreshSpaces, setCurrentSpace } = useAuth();
   const router = useRouter();
+
+  useEffect(() => {
+    if (hostelName) {
+      setIsLogin(false);
+    }
+  }, [hostelName]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -28,14 +41,47 @@ export default function LoginPage() {
       if (isLogin) {
         const { error } = await signIn(email, password);
         if (error) throw error;
+        router.push(returnTo || "/");
       } else {
         if (!username.trim()) {
           throw new Error("Username is required");
         }
-        const { error } = await signUp(email, password, username);
+        const { data, error } = await signUp(email, password, username);
         if (error) throw error;
+
+        // If we have a hostelName, create it immediately
+        if (hostelName && data.user) {
+          const { data: space, error: spaceError } = await supabase
+            .from('spaces')
+            .insert({
+              name: hostelName.trim(),
+              created_by: data.user.id,
+            })
+            .select()
+            .single();
+
+          if (spaceError) throw spaceError;
+
+          // Add creator as admin member
+          const { error: memberError } = await supabase
+            .from('space_members')
+            .insert({
+              space_id: space.id,
+              user_id: data.user.id,
+              role: 'admin',
+              points: 0,
+            });
+
+          if (memberError) throw memberError;
+
+          await refreshSpaces();
+          setCurrentSpace(space);
+          toast.success(`Hostel "${hostelName}" created successfully!`);
+          router.push(`/spaces/create?success=true&id=${space.id}`);
+          return;
+        }
+        router.push(returnTo || "/");
       }
-      router.push("/");
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : "An error occurred");
     } finally {
@@ -83,7 +129,11 @@ export default function LoginPage() {
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: -10 }}
                   >
-                    {isLogin ? "Welcome back! Sign in to continue" : "Join your hostel community"}
+                    {hostelName ? (
+                      <span className="text-primary font-bold">Creating "{hostelName}"</span>
+                    ) : (
+                      isLogin ? "Welcome back! Sign in to continue" : "Join your hostel community"
+                    )}
                   </motion.span>
                 </AnimatePresence>
               </CardDescription>
@@ -216,7 +266,7 @@ export default function LoginPage() {
                           ) : (
                             <>
                               <Sparkles className="h-4 w-4" />
-                              Create Account
+                              {hostelName ? "Create Hostel & Account" : "Create Account"}
                             </>
                           )}
                         </motion.span>
@@ -296,3 +346,12 @@ export default function LoginPage() {
     </div>
   );
 }
+
+export default function LoginPage() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <LoginContent />
+    </Suspense>
+  );
+}
+

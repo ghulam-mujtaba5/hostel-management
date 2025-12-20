@@ -1,16 +1,15 @@
 "use client";
 
-import { AuthProvider } from "@/contexts/AuthContext";
 import Dashboard from "./(main)/page";
 import { Navbar } from "@/components/Navbar";
 
 export default function RootPage() {
   return (
-    <AuthProvider>
+    <>
       <Navbar />
       <main className="container mx-auto p-4 max-w-md md:max-w-4xl pb-20 md:pb-4 md:pt-20">
         <Dashboard />
       </main>
-    </AuthProvider>
+    </>
   );
 }

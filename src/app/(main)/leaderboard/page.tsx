@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Trophy, Medal, TrendingUp, Crown, Star, Flame, Info } from "lucide-react";
+import { Trophy, Medal, TrendingUp, Crown, Star, Flame, Info, ArrowUp, ArrowDown, Minus } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/lib/supabase";
 import { SpaceMember, Profile } from "@/types";
@@ -44,8 +44,15 @@ export default function LeaderboardPage() {
 
   if (!currentSpace) {
     return (
-      <div className="text-center py-12">
-        <p className="text-muted-foreground">Please select a space first</p>
+      <div className="flex flex-col items-center justify-center min-h-[60vh] text-center px-4">
+        <div className="h-20 w-20 rounded-full bg-primary/10 flex items-center justify-center mb-6">
+          <Trophy className="h-10 w-10 text-primary" />
+        </div>
+        <h2 className="text-2xl font-bold mb-2">No Space Selected</h2>
+        <p className="text-muted-foreground mb-8 max-w-xs">Join a space to see how you rank against your flatmates!</p>
+        <Button asChild size="lg" className="rounded-full px-8">
+          <Link href="/spaces">Select Space</Link>
+        </Button>
       </div>
     );
   }
@@ -54,14 +61,14 @@ export default function LeaderboardPage() {
     if (rank === 1) return <Crown className="h-6 w-6 text-yellow-500" />;
     if (rank === 2) return <Medal className="h-6 w-6 text-gray-400" />;
     if (rank === 3) return <Medal className="h-6 w-6 text-orange-400" />;
-    return <span className="h-6 w-6 flex items-center justify-center text-muted-foreground font-bold">{rank}</span>;
+    return <span className="h-6 w-6 flex items-center justify-center text-muted-foreground font-bold text-sm">{rank}</span>;
   };
 
   const getRankBg = (rank: number, isMe: boolean) => {
     if (rank === 1) return 'bg-gradient-to-r from-yellow-50 to-amber-100 dark:from-yellow-900/20 dark:to-amber-900/30 border-yellow-200 dark:border-yellow-800';
     if (rank === 2) return 'bg-gradient-to-r from-gray-50 to-gray-100 dark:from-gray-800/50 dark:to-gray-700/50 border-gray-200 dark:border-gray-700';
     if (rank === 3) return 'bg-gradient-to-r from-orange-50 to-amber-100 dark:from-orange-900/20 dark:to-amber-900/30 border-orange-200 dark:border-orange-800';
-    return 'bg-card border-border';
+    return isMe ? 'bg-primary/5 border-primary/20' : 'bg-card border-border';
   };
 
   const topThree = members.slice(0, 3);
@@ -69,156 +76,168 @@ export default function LeaderboardPage() {
   const userRank = members.findIndex(m => m.user_id === user?.id) + 1;
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8 pb-20">
       {/* Header */}
-      <SlideInCard direction="down" delay={0}>
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-2xl font-bold bg-gradient-to-r from-primary to-purple-600 bg-clip-text text-transparent">
-              Leaderboard
-            </h1>
-            <p className="text-sm text-muted-foreground">{currentSpace.name}</p>
-          </div>
-          <motion.div
-            animate={{ rotate: [0, -10, 10, 0] }}
-            transition={{ duration: 1, repeat: Infinity, repeatDelay: 3 }}
-          >
-            <Trophy className="h-8 w-8 text-yellow-500" />
-          </motion.div>
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-3xl font-bold tracking-tight bg-gradient-to-r from-primary to-purple-600 bg-clip-text text-transparent">
+            Leaderboard
+          </h1>
+          <p className="text-muted-foreground flex items-center gap-1.5 mt-1">
+            <Star className="h-3.5 w-3.5 fill-primary text-primary" />
+            {currentSpace.name}
+          </p>
         </div>
-      </SlideInCard>
+        <motion.div
+          animate={{ 
+            rotate: [0, -10, 10, -10, 10, 0],
+            scale: [1, 1.1, 1]
+          }}
+          transition={{ duration: 2, repeat: Infinity, repeatDelay: 5 }}
+          className="h-14 w-14 rounded-2xl bg-yellow-500/10 flex items-center justify-center"
+        >
+          <Trophy className="h-8 w-8 text-yellow-500" />
+        </motion.div>
+      </div>
 
       {/* Period Filter */}
-      <SlideInCard direction="up" delay={0.05}>
-        <div className="flex gap-2 overflow-x-auto pb-1">
-          {[
-            { key: 'all' as const, label: 'All Time', icon: Star },
-            { key: 'month' as const, label: 'This Month', icon: TrendingUp },
-            { key: 'week' as const, label: 'This Week', icon: Flame },
-          ].map(p => (
-            <motion.div key={p.key} whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
-              <Button
-                variant={period === p.key ? 'default' : 'outline'}
-                size="sm"
-                onClick={() => setPeriod(p.key)}
-                className={period === p.key ? 'bg-gradient-to-r from-primary to-purple-600' : ''}
-              >
-                <p.icon className="h-3.5 w-3.5 mr-1.5" />
-                {p.label}
-              </Button>
-            </motion.div>
-          ))}
-        </div>
-      </SlideInCard>
+      <div className="flex p-1 bg-muted/50 rounded-2xl">
+        {[
+          { key: 'all' as const, label: 'All Time', icon: Star },
+          { key: 'month' as const, label: 'Monthly', icon: TrendingUp },
+          { key: 'week' as const, label: 'Weekly', icon: Flame },
+        ].map(p => (
+          <button
+            key={p.key}
+            onClick={() => setPeriod(p.key)}
+            className={`flex-1 flex items-center justify-center gap-2 py-2.5 text-sm font-medium rounded-xl transition-all ${
+              period === p.key 
+                ? 'bg-background text-foreground shadow-sm' 
+                : 'text-muted-foreground hover:text-foreground'
+            }`}
+          >
+            <p.icon className={`h-4 w-4 ${period === p.key ? 'text-primary' : ''}`} />
+            {p.label}
+          </button>
+        ))}
+      </div>
 
       {loading ? (
-        <div className="flex justify-center py-12">
-          <motion.div
-            animate={{ rotate: 360 }}
-            transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-            className="rounded-full h-8 w-8 border-4 border-muted border-t-primary"
-          />
+        <div className="flex flex-col items-center justify-center py-20 gap-4">
+          <div className="animate-spin rounded-full h-10 w-10 border-4 border-primary/20 border-t-primary"></div>
+          <p className="text-sm text-muted-foreground animate-pulse">Calculating rankings...</p>
         </div>
       ) : (
         <>
           {/* Podium for Top 3 */}
-          {topThree.length >= 3 && (
-            <SlideInCard direction="up" delay={0.1}>
-              <div className="flex justify-center items-end gap-2 py-4">
-                {/* 2nd Place */}
+          {topThree.length > 0 && (
+            <div className="flex justify-center items-end gap-2 py-8 px-2">
+              {/* 2nd Place */}
+              {topThree[1] && (
                 <motion.div
                   initial={{ opacity: 0, y: 50 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.3 }}
-                  className="flex flex-col items-center"
+                  className="flex flex-col items-center flex-1 max-w-[100px]"
                 >
-                  <div className="relative">
-                    <div className="h-16 w-16 rounded-full bg-gradient-to-br from-gray-300 to-gray-400 flex items-center justify-center text-2xl font-bold text-white shadow-lg">
+                  <div className="relative mb-3">
+                    <div className="h-16 w-16 rounded-2xl bg-gradient-to-br from-gray-300 to-gray-400 flex items-center justify-center text-2xl font-bold text-white shadow-lg rotate-[-5deg]">
                       {(topThree[1]?.profile?.username?.[0] || topThree[1]?.profile?.full_name?.[0] || '?').toUpperCase()}
                     </div>
-                    <span className="absolute -bottom-1 -right-1 text-xl">🥈</span>
+                    <div className="absolute -bottom-2 -right-2 h-8 w-8 rounded-full bg-background border-2 border-gray-300 flex items-center justify-center text-lg shadow-sm">
+                      🥈
+                    </div>
                   </div>
-                  <p className="font-medium text-sm mt-2 text-center truncate max-w-[80px]">
+                  <p className="font-bold text-xs text-center truncate w-full">
                     {topThree[1]?.profile?.username || 'User'}
                   </p>
-                  <p className="text-xs text-muted-foreground">{topThree[1]?.points} pts</p>
-                  <div className="h-16 w-20 bg-gradient-to-t from-gray-300 to-gray-200 dark:from-gray-700 dark:to-gray-600 rounded-t-lg mt-2" />
+                  <p className="text-[10px] font-medium text-muted-foreground uppercase tracking-wider">{topThree[1]?.points} pts</p>
+                  <div className="h-16 w-full bg-gradient-to-t from-gray-200 to-gray-100 dark:from-gray-800 dark:to-gray-700 rounded-t-2xl mt-3 shadow-inner" />
                 </motion.div>
+              )}
 
-                {/* 1st Place */}
+              {/* 1st Place */}
+              {topThree[0] && (
                 <motion.div
                   initial={{ opacity: 0, y: 50 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.2 }}
-                  className="flex flex-col items-center"
+                  className="flex flex-col items-center flex-1 max-w-[120px] z-10"
                 >
                   <motion.div
-                    animate={{ scale: [1, 1.05, 1] }}
-                    transition={{ duration: 2, repeat: Infinity }}
-                    className="relative"
+                    animate={{ y: [0, -5, 0] }}
+                    transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
+                    className="relative mb-4"
                   >
-                    <div className="h-20 w-20 rounded-full bg-gradient-to-br from-yellow-400 to-amber-500 flex items-center justify-center text-3xl font-bold text-white shadow-xl ring-4 ring-yellow-200 dark:ring-yellow-800">
+                    <div className="h-20 w-20 rounded-3xl bg-gradient-to-br from-yellow-400 to-amber-500 flex items-center justify-center text-3xl font-bold text-white shadow-xl ring-4 ring-yellow-200 dark:ring-yellow-800/30">
                       {(topThree[0]?.profile?.username?.[0] || topThree[0]?.profile?.full_name?.[0] || '?').toUpperCase()}
                     </div>
-                    <motion.span
-                      animate={{ rotate: [-5, 5, -5] }}
-                      transition={{ duration: 1, repeat: Infinity }}
-                      className="absolute -top-4 left-1/2 -translate-x-1/2 text-2xl"
+                    <motion.div
+                      animate={{ rotate: [-10, 10, -10] }}
+                      transition={{ duration: 2, repeat: Infinity }}
+                      className="absolute -top-6 left-1/2 -translate-x-1/2 text-3xl drop-shadow-md"
                     >
                       👑
-                    </motion.span>
+                    </motion.div>
+                    <div className="absolute -bottom-2 -right-2 h-10 w-10 rounded-full bg-background border-2 border-yellow-400 flex items-center justify-center text-xl shadow-md">
+                      🥇
+                    </div>
                   </motion.div>
-                  <p className="font-bold text-sm mt-2 text-center truncate max-w-[90px]">
+                  <p className="font-black text-sm text-center truncate w-full">
                     {topThree[0]?.profile?.username || 'User'}
-                    {topThree[0]?.user_id === user?.id && <span className="text-primary ml-1">(You)</span>}
                   </p>
-                  <p className="text-sm font-semibold text-primary">{topThree[0]?.points} pts</p>
-                  <div className="h-24 w-24 bg-gradient-to-t from-yellow-400 to-yellow-300 dark:from-yellow-700 dark:to-yellow-600 rounded-t-lg mt-2" />
+                  <p className="text-xs font-bold text-primary uppercase tracking-widest">{topThree[0]?.points} pts</p>
+                  <div className="h-24 w-full bg-gradient-to-t from-yellow-400/80 to-yellow-300/80 dark:from-yellow-700/50 dark:to-yellow-600/50 rounded-t-2xl mt-3 shadow-lg border-x border-t border-yellow-400/20" />
                 </motion.div>
+              )}
 
-                {/* 3rd Place */}
+              {/* 3rd Place */}
+              {topThree[2] && (
                 <motion.div
                   initial={{ opacity: 0, y: 50 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.4 }}
-                  className="flex flex-col items-center"
+                  className="flex flex-col items-center flex-1 max-w-[100px]"
                 >
-                  <div className="relative">
-                    <div className="h-14 w-14 rounded-full bg-gradient-to-br from-orange-400 to-amber-600 flex items-center justify-center text-xl font-bold text-white shadow-lg">
+                  <div className="relative mb-3">
+                    <div className="h-14 w-14 rounded-2xl bg-gradient-to-br from-orange-400 to-amber-600 flex items-center justify-center text-xl font-bold text-white shadow-lg rotate-[5deg]">
                       {(topThree[2]?.profile?.username?.[0] || topThree[2]?.profile?.full_name?.[0] || '?').toUpperCase()}
                     </div>
-                    <span className="absolute -bottom-1 -right-1 text-lg">🥉</span>
+                    <div className="absolute -bottom-2 -right-2 h-7 w-7 rounded-full bg-background border-2 border-orange-400 flex items-center justify-center text-sm shadow-sm">
+                      🥉
+                    </div>
                   </div>
-                  <p className="font-medium text-sm mt-2 text-center truncate max-w-[70px]">
+                  <p className="font-bold text-xs text-center truncate w-full">
                     {topThree[2]?.profile?.username || 'User'}
                   </p>
-                  <p className="text-xs text-muted-foreground">{topThree[2]?.points} pts</p>
-                  <div className="h-12 w-16 bg-gradient-to-t from-orange-400 to-orange-300 dark:from-orange-800 dark:to-orange-700 rounded-t-lg mt-2" />
+                  <p className="text-[10px] font-medium text-muted-foreground uppercase tracking-wider">{topThree[2]?.points} pts</p>
+                  <div className="h-12 w-full bg-gradient-to-t from-orange-200 to-orange-100 dark:from-orange-900/30 dark:to-orange-800/30 rounded-t-2xl mt-3 shadow-inner" />
                 </motion.div>
-              </div>
-            </SlideInCard>
+              )}
+            </div>
           )}
 
           {/* Your Position (if not in top 3) */}
           {userRank > 3 && (
             <SlideInCard direction="up" delay={0.2}>
-              <Card className="border-primary/50 bg-primary/5">
-                <CardContent className="p-4">
+              <Card className="border-primary/30 bg-primary/5 rounded-3xl overflow-hidden">
+                <CardContent className="p-5">
                   <div className="flex items-center gap-4">
-                    <div className="flex-shrink-0">
-                      <span className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/20 font-bold text-primary">
-                        #{userRank}
-                      </span>
+                    <div className="h-12 w-12 rounded-2xl bg-primary flex items-center justify-center font-black text-primary-foreground shadow-lg shadow-primary/20">
+                      #{userRank}
                     </div>
                     <div className="flex-1 min-w-0">
-                      <p className="font-medium">Your Position</p>
-                      <p className="text-sm text-muted-foreground">
-                        {Math.abs(userRank - 3)} spots away from podium
+                      <p className="font-bold text-lg">Your Position</p>
+                      <p className="text-xs text-muted-foreground flex items-center gap-1">
+                        <TrendingUp className="h-3 w-3 text-green-500" />
+                        {Math.abs(userRank - 3)} spots away from the podium
                       </p>
                     </div>
                     <div className="text-right">
-                      <PointsCounter points={members.find(m => m.user_id === user?.id)?.points || 0} />
-                      <p className="text-xs text-muted-foreground">points</p>
+                      <p className="text-2xl font-black text-primary">
+                        {members.find(m => m.user_id === user?.id)?.points || 0}
+                      </p>
+                      <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">points</p>
                     </div>
                   </div>
                 </CardContent>
@@ -228,90 +247,106 @@ export default function LeaderboardPage() {
 
           {/* Full List */}
           <div className="space-y-3">
-            {members.map((member, index) => {
-              const rank = index + 1;
-              const isMe = member.user_id === user?.id;
-              const levelInfo = calculateLevel(member.points);
-              
-              return (
-                <motion.div
-                  key={member.user_id}
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: 0.3 + index * 0.05 }}
-                >
-                  <Card className={`${getRankBg(rank, isMe)} ${isMe ? 'ring-2 ring-primary' : ''}`}>
-                    <CardContent className="p-4">
-                      <div className="flex items-center gap-4">
-                        <div className="flex-shrink-0">
-                          <motion.div
-                            whileHover={{ scale: 1.1, rotate: rank <= 3 ? 10 : 0 }}
-                            transition={{ type: "spring", stiffness: 400 }}
-                          >
+            <h3 className="text-sm font-bold text-muted-foreground uppercase tracking-widest px-1">Rankings</h3>
+            <AnimatePresence mode="popLayout">
+              {members.map((member, index) => {
+                const rank = index + 1;
+                const isMe = member.user_id === user?.id;
+                const levelInfo = calculateLevel(member.points);
+                
+                return (
+                  <motion.div
+                    key={member.user_id}
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: 0.3 + index * 0.05 }}
+                  >
+                    <Card className={`rounded-2xl transition-all duration-300 hover:scale-[1.02] ${getRankBg(rank, isMe)} ${isMe ? 'ring-2 ring-primary/50' : ''}`}>
+                      <CardContent className="p-4">
+                        <div className="flex items-center gap-4">
+                          <div className="w-8 flex-shrink-0 flex justify-center">
                             {getRankIcon(rank)}
-                          </motion.div>
-                        </div>
-                        
-                        <div className="flex-shrink-0">
-                          <div className={`h-12 w-12 rounded-full flex items-center justify-center text-lg font-bold text-white shadow ${
-                            rank === 1 ? 'bg-gradient-to-br from-yellow-400 to-amber-500' :
-                            rank === 2 ? 'bg-gradient-to-br from-gray-300 to-gray-400' :
-                            rank === 3 ? 'bg-gradient-to-br from-orange-400 to-amber-600' :
-                            'bg-gradient-to-br from-primary/60 to-purple-600/60'
-                          }`}>
-                            {(member.profile?.username?.[0] || member.profile?.full_name?.[0] || '?').toUpperCase()}
                           </div>
-                        </div>
-                        
-                        <div className="flex-1 min-w-0">
-                          <div className="flex items-center gap-2">
-                            <p className="font-medium truncate">
-                              {member.profile?.username || member.profile?.full_name || 'User'}
-                            </p>
+                          
+                          <div className="flex-shrink-0 relative">
+                            <div className={`h-12 w-12 rounded-xl flex items-center justify-center text-lg font-bold text-white shadow-sm ${
+                              rank === 1 ? 'bg-gradient-to-br from-yellow-400 to-amber-500' :
+                              rank === 2 ? 'bg-gradient-to-br from-gray-300 to-gray-400' :
+                              rank === 3 ? 'bg-gradient-to-br from-orange-400 to-amber-600' :
+                              'bg-gradient-to-br from-primary/60 to-purple-600/60'
+                            }`}>
+                              {(member.profile?.username?.[0] || member.profile?.full_name?.[0] || '?').toUpperCase()}
+                            </div>
                             {isMe && (
-                              <span className="px-1.5 py-0.5 bg-primary/20 text-primary text-xs rounded-full">
-                                You
-                              </span>
+                              <div className="absolute -top-1 -right-1 h-4 w-4 bg-primary rounded-full border-2 border-background" />
                             )}
                           </div>
-                          <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                            <span>Level {levelInfo.level}</span>
-                            <span>•</span>
-                            <span className="capitalize">{member.role}</span>
+                          
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center gap-2">
+                              <p className="font-bold truncate">
+                                {member.profile?.username || member.profile?.full_name || 'User'}
+                              </p>
+                              {isMe && (
+                                <span className="px-1.5 py-0.5 bg-primary/20 text-primary text-[10px] font-black rounded-md uppercase">
+                                  You
+                                </span>
+                              )}
+                            </div>
+                            <div className="flex items-center gap-2 text-[10px] font-bold text-muted-foreground uppercase tracking-wider">
+                              <span className="flex items-center gap-1">
+                                <Star className="h-2.5 w-2.5 fill-muted-foreground" />
+                                Level {levelInfo.level}
+                              </span>
+                              <span>•</span>
+                              <span className="flex items-center gap-1">
+                                <Minus className="h-2.5 w-2.5" />
+                                {member.role}
+                              </span>
+                            </div>
+                          </div>
+                          
+                          <div className="text-right">
+                            <p className="text-xl font-black bg-gradient-to-r from-primary to-purple-600 bg-clip-text text-transparent">
+                              {member.points}
+                            </p>
+                            <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">pts</p>
                           </div>
                         </div>
-                        
-                        <div className="text-right">
-                          <p className="text-xl font-bold bg-gradient-to-r from-primary to-purple-600 bg-clip-text text-transparent">
-                            {member.points}
-                          </p>
-                          <p className="text-xs text-muted-foreground">points</p>
-                        </div>
-                      </div>
-                    </CardContent>
-                  </Card>
-                </motion.div>
-              );
-            })}
+                      </CardContent>
+                    </Card>
+                  </motion.div>
+                );
+              })}
+            </AnimatePresence>
           </div>
         </>
       )}
 
       {/* How Points Work */}
       <SlideInCard direction="up" delay={0.5}>
-        <Card className="bg-muted/50">
-          <CardContent className="p-4">
-            <div className="flex items-start gap-3">
-              <Info className="h-5 w-5 text-muted-foreground flex-shrink-0 mt-0.5" />
+        <Card className="bg-muted/30 border-none rounded-3xl overflow-hidden">
+          <CardContent className="p-6">
+            <div className="flex items-start gap-4">
+              <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center flex-shrink-0">
+                <Info className="h-5 w-5 text-primary" />
+              </div>
               <div>
-                <h3 className="font-medium mb-2">How Points Work</h3>
-                <ul className="text-sm text-muted-foreground space-y-1">
-                  <li>• Complete tasks to earn points based on difficulty (1-10)</li>
-                  <li>• Harder tasks = more points earned</li>
-                  <li>• System recommends tasks to keep workload fair</li>
-                  <li>• Upload proof photos for task verification</li>
-                </ul>
-                <Button variant="link" asChild className="px-0 mt-2 h-auto">
+                <h3 className="font-bold text-lg mb-3">How Points Work</h3>
+                <div className="grid gap-3">
+                  {[
+                    "Complete tasks to earn points based on difficulty (1-10)",
+                    "Harder tasks = more points earned",
+                    "System recommends tasks to keep workload fair",
+                    "Upload proof photos for task verification"
+                  ].map((text, i) => (
+                    <div key={i} className="flex items-start gap-2 text-sm text-muted-foreground">
+                      <div className="h-1.5 w-1.5 rounded-full bg-primary/40 mt-1.5 flex-shrink-0" />
+                      <p>{text}</p>
+                    </div>
+                  ))}
+                </div>
+                <Button variant="link" asChild className="px-0 mt-4 h-auto font-bold text-primary">
                   <Link href="/fairness-info">Learn about our fairness algorithm →</Link>
                 </Button>
               </div>

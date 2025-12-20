@@ -14,7 +14,7 @@ interface AuthContextType {
   userSpaces: Space[];
   loading: boolean;
   signIn: (email: string, password: string) => Promise<{ error: Error | null }>;
-  signUp: (email: string, password: string, username: string) => Promise<{ error: Error | null }>;
+  signUp: (email: string, password: string, username: string) => Promise<{ data: any; error: Error | null }>;
   signOut: () => Promise<void>;
   setCurrentSpace: (space: Space) => void;
   refreshProfile: () => Promise<void>;
@@ -35,13 +35,29 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const refreshProfile = async () => {
     if (!user) return;
     
-    const { data } = await supabase
+    const { data, error } = await supabase
       .from('profiles')
       .select('*')
       .eq('id', user.id)
       .single();
     
-    if (data) setProfile(data);
+    if (data) {
+      setProfile(data);
+    } else if (error) {
+      // If profile doesn't exist, create it from user metadata
+      const username = user.user_metadata?.username || user.email?.split('@')[0] || 'User';
+      const { data: newProfile } = await supabase
+        .from('profiles')
+        .upsert({
+          id: user.id,
+          username,
+          full_name: username,
+        })
+        .select()
+        .single();
+      
+      if (newProfile) setProfile(newProfile);
+    }
   };
 
   const refreshSpaces = async () => {
@@ -93,14 +109,24 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setSession(session);
       setUser(session?.user ?? null);
       setLoading(false);
+
+      // Clean up URL hash if session is present
+      if (session && typeof window !== 'undefined' && window.location.hash) {
+        window.history.replaceState(null, '', window.location.pathname + window.location.search);
+      }
     };
 
     getSession();
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (_event, session) => {
+      async (event, session) => {
         setSession(session);
         setUser(session?.user ?? null);
+
+        // Clean up URL hash after successful sign in from email link
+        if (event === 'SIGNED_IN' && typeof window !== 'undefined' && window.location.hash) {
+          window.history.replaceState(null, '', window.location.pathname + window.location.search);
+        }
       }
     );
 
@@ -150,7 +176,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       });
     }
     
-    return { error };
+    return { data, error };
   };
 
   const signOut = async () => {

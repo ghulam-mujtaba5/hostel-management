@@ -3,11 +3,12 @@
 import { useState, useEffect, use } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, Users, Copy, Check, UserMinus, Crown, Settings } from "lucide-react";
+import { ArrowLeft, Users, Copy, Check, UserMinus, Crown, Settings, Share2 } from "lucide-react";
 import Link from "next/link";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/lib/supabase";
 import { Space, SpaceMember, Profile } from "@/types";
+import { toast } from "sonner";
 
 export default function SpaceDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
@@ -51,6 +52,14 @@ export default function SpaceDetailPage({ params }: { params: Promise<{ id: stri
     }
   };
 
+  const copyInviteLink = () => {
+    if (space) {
+      const link = `${window.location.origin}/join/${space.invite_code}`;
+      navigator.clipboard.writeText(link);
+      toast.success("Invite link copied to clipboard!");
+    }
+  };
+
   const currentMember = members.find(m => m.user_id === user?.id);
   const isAdmin = currentMember?.role === 'admin';
 
@@ -86,36 +95,33 @@ export default function SpaceDetailPage({ params }: { params: Promise<{ id: stri
           <p className="text-sm text-muted-foreground">{members.length} members</p>
         </div>
         {isAdmin && (
-          <Button variant="ghost" size="icon">
-            <Settings className="h-5 w-5" />
+          <Button variant="ghost" size="icon" asChild>
+            <Link href={`/spaces/${id}/admin`}>
+              <Settings className="h-5 w-5" />
+            </Link>
           </Button>
         )}
       </div>
 
-      {/* Invite Code */}
       <Card>
         <CardHeader>
-          <CardTitle className="text-sm font-medium">Invite Code</CardTitle>
+          <CardTitle className="text-sm font-medium">Invite Code & Link</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="flex items-center justify-between">
-            <code className="text-2xl font-bold tracking-widest">{space.invite_code}</code>
-            <Button variant="outline" onClick={copyInviteCode}>
-              {copied ? (
-                <>
-                  <Check className="mr-2 h-4 w-4 text-green-500" />
-                  Copied
-                </>
-              ) : (
-                <>
-                  <Copy className="mr-2 h-4 w-4" />
-                  Copy
-                </>
-              )}
-            </Button>
+          <div className="flex items-center justify-between gap-4">
+            <code className="text-2xl font-bold tracking-widest bg-muted px-4 py-2 rounded-lg flex-1 text-center">{space.invite_code}</code>
+            <div className="flex gap-2">
+              <Button variant="outline" size="icon" onClick={copyInviteCode} title="Copy Code">
+                {copied ? <Check className="h-4 w-4 text-green-500" /> : <Copy className="h-4 w-4" />}
+              </Button>
+              <Button variant="primary" onClick={copyInviteLink} className="gap-2">
+                <Share2 className="h-4 w-4" />
+                Share Link
+              </Button>
+            </div>
           </div>
-          <p className="text-xs text-muted-foreground mt-2">
-            Share this code with flatmates to let them join
+          <p className="text-xs text-muted-foreground mt-3">
+            Share the code or the direct link with flatmates to let them join this hostel.
           </p>
         </CardContent>
       </Card>

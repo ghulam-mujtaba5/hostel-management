@@ -10,11 +10,13 @@ import { supabase } from "@/lib/supabase";
 import { Task, SpaceMember, Profile, TASK_CATEGORIES, getDifficultyLabel } from "@/types";
 import { TaskCard } from "@/components/TaskCard";
 import { RecommendedTasks } from "@/components/RecommendedTasks";
+import { FlatmatesList } from "@/components/FlatmatesList";
 import { useCelebration } from "@/components/Celebrations";
 import { StreakBadge, PointsCounter, LevelProgress, calculateLevel } from "@/components/Achievements";
 import { SlideInCard, ProgressRing, AnimatedList } from "@/components/Animations";
 import { motion, AnimatePresence } from "framer-motion";
 import { toast } from "@/components/Toast";
+import { Home } from "lucide-react";
 
 export default function Dashboard() {
   const { user, profile, currentSpace, loading: authLoading } = useAuth();
@@ -103,38 +105,105 @@ export default function Dashboard() {
 
   if (!user) {
     return (
-      <div className="space-y-8 text-center py-12">
+      <div className="space-y-12 text-center py-12 px-4">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="space-y-4"
+          className="space-y-6"
         >
           <motion.div
             animate={{ scale: [1, 1.1, 1] }}
             transition={{ duration: 2, repeat: Infinity }}
-            className="text-6xl"
+            className="text-7xl"
           >
             🏠
           </motion.div>
-          <h1 className="text-3xl font-bold bg-gradient-to-r from-primary to-purple-600 bg-clip-text text-transparent">
-            Welcome to HostelMate!
-          </h1>
-          <p className="text-muted-foreground max-w-sm mx-auto">
-            The smart way to manage hostel duties fairly. Track tasks, earn points, and keep your space clean together!
-          </p>
+          <div className="space-y-2">
+            <h1 className="text-4xl md:text-5xl font-black bg-gradient-to-r from-primary via-purple-600 to-blue-600 bg-clip-text text-transparent">
+              HostelMate
+            </h1>
+            <p className="text-xl text-muted-foreground max-w-md mx-auto font-medium">
+              The smart way to manage independent hostels and flat houses fairly.
+            </p>
+          </div>
         </motion.div>
+
         <motion.div 
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ delay: 0.3 }}
+          className="max-w-md mx-auto"
+        >
+          <Card className="border-2 border-primary/10 shadow-2xl bg-card/50 backdrop-blur-xl rounded-[2rem] overflow-hidden">
+            <CardHeader className="pb-2">
+              <CardTitle className="text-lg font-bold">Start Your Hostel Community</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4 pt-4">
+              <div className="space-y-4">
+                <div className="relative">
+                  <Home className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+                  <Input 
+                    placeholder="Enter Hostel Name (e.g. Block A)" 
+                    className="h-14 pl-12 rounded-2xl text-lg border-primary/20 focus:border-primary transition-all"
+                    id="hostel-name-input"
+                  />
+                </div>
+                <Button 
+                  size="lg" 
+                  className="w-full h-14 rounded-2xl text-lg font-bold shadow-lg shadow-primary/20 bg-gradient-to-r from-primary to-purple-600"
+                  onClick={() => {
+                    const name = (document.getElementById('hostel-name-input') as HTMLInputElement).value;
+                    if (name.trim()) {
+                      window.location.href = `/login?hostelName=${encodeURIComponent(name)}&mode=signup`;
+                    } else {
+                      toast.error("Please enter a hostel name");
+                    }
+                  }}
+                >
+                  Create & Get Started
+                  <ArrowRight className="ml-2 h-5 w-5" />
+                </Button>
+              </div>
+              
+              <div className="relative py-4">
+                <div className="absolute inset-0 flex items-center">
+                  <span className="w-full border-t border-muted" />
+                </div>
+                <div className="relative flex justify-center text-xs uppercase">
+                  <span className="bg-background px-2 text-muted-foreground font-bold">Or</span>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <Button variant="outline" className="h-12 rounded-xl border-primary/20" asChild>
+                  <Link href="/login?mode=login">Sign In</Link>
+                </Button>
+                <Button variant="outline" className="h-12 rounded-xl border-primary/20" asChild>
+                  <Link href="/spaces/join">Join with Code</Link>
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        </motion.div>
+
+        <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={{ delay: 0.3 }}
-          className="flex gap-4 justify-center"
+          transition={{ delay: 0.6 }}
+          className="flex flex-wrap justify-center gap-8 text-sm font-bold text-muted-foreground/60"
         >
-          <Button asChild size="lg" className="shadow-lg shadow-primary/30">
-            <Link href="/login">
-              <Sparkles className="mr-2 h-4 w-4" />
-              Get Started
-            </Link>
-          </Button>
+          <div className="flex items-center gap-2">
+            <CheckCircle className="h-4 w-4 text-green-500" />
+            <span>Independent Hostels</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <CheckCircle className="h-4 w-4 text-green-500" />
+            <span>Fair Task Distribution</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <CheckCircle className="h-4 w-4 text-green-500" />
+            <span>Gamified Leaderboards</span>
+          </div>
         </motion.div>
       </div>
     );
@@ -182,6 +251,7 @@ export default function Dashboard() {
 
   const userRank = leaderboard.findIndex(m => m.user_id === user.id) + 1;
   const userPoints = leaderboard.find(m => m.user_id === user.id)?.points || 0;
+  const userMemberInfo = leaderboard.find(m => m.user_id === user.id);
   const levelInfo = calculateLevel(userPoints);
 
   return (
@@ -204,12 +274,44 @@ export default function Dashboard() {
                 </motion.span>
               </h1>
               <p className="text-muted-foreground">
-                {currentSpace.name} • {tasks.length} pending {tasks.length === 1 ? 'task' : 'tasks'}
+                {currentSpace.name} • {userMemberInfo?.room_number ? `Room ${userMemberInfo.room_number}` : 'No Room Assigned'}
               </p>
             </div>
             {streak > 0 && <StreakBadge streak={streak} />}
           </div>
         </section>
+      </SlideInCard>
+
+      {/* Accommodation Info Card */}
+      <SlideInCard direction="up" delay={0.05}>
+        <Card className="bg-primary text-primary-foreground overflow-hidden relative">
+          <div className="absolute top-0 right-0 p-4 opacity-10">
+            <Home size={80} />
+          </div>
+          <CardContent className="p-6">
+            <div className="flex justify-between items-end">
+              <div>
+                <p className="text-primary-foreground/80 text-sm font-medium uppercase tracking-wider">Current Accommodation</p>
+                <h2 className="text-3xl font-bold mt-1">
+                  {userMemberInfo?.room_number ? `Room ${userMemberInfo.room_number}` : 'Pending Assignment'}
+                </h2>
+                <div className="flex gap-4 mt-4">
+                  <div className="flex flex-col">
+                    <span className="text-xs text-primary-foreground/60">Bed</span>
+                    <span className="font-semibold">{userMemberInfo?.bed_number || '-'}</span>
+                  </div>
+                  <div className="flex flex-col">
+                    <span className="text-xs text-primary-foreground/60">Status</span>
+                    <span className="font-semibold capitalize">{(userMemberInfo as any)?.status || 'Active'}</span>
+                  </div>
+                </div>
+              </div>
+              <Button variant="secondary" size="sm" asChild className="bg-white/20 hover:bg-white/30 border-none text-white">
+                <Link href="/profile">View Details</Link>
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
       </SlideInCard>
 
       {/* Level Progress */}
@@ -318,6 +420,11 @@ export default function Dashboard() {
           userId={user.id}
           onTaskTaken={handleTaskTaken}
         />
+      </SlideInCard>
+
+      {/* Flatmates Section */}
+      <SlideInCard direction="up" delay={0.32}>
+        <FlatmatesList spaceId={currentSpace.id} />
       </SlideInCard>
 
       {/* Your Tasks */}

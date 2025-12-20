@@ -36,21 +36,13 @@ export function TaskCard({ task, showAssignee = false, onUpdate, recommended = f
     if (!user) return;
     
     setTaking(true);
-    
-    await supabase
-      .from('tasks')
-      .update({ 
-        assigned_to: user.id, 
-        status: 'in_progress' 
-      })
-      .eq('id', task.id);
 
-    await supabase.from('activity_log').insert({
-      space_id: task.space_id,
-      user_id: user.id,
-      action: 'took_task',
-      details: { task_id: task.id, title: task.title },
-    });
+    const { error } = await supabase.rpc('take_task', { task_id: task.id });
+    if (error) {
+      toast.error(error.message);
+      setTaking(false);
+      return;
+    }
 
     triggerQuickCelebration('burst');
     toast.taskTaken(task.title);
@@ -79,20 +71,12 @@ export function TaskCard({ task, showAssignee = false, onUpdate, recommended = f
         .from('proofs')
         .getPublicUrl(filePath);
 
-      await supabase
-        .from('tasks')
-        .update({ 
-          proof_image_url: publicUrl,
-          status: 'pending_verification'
-        })
-        .eq('id', task.id);
-
-      await supabase.from('activity_log').insert({
-        space_id: task.space_id,
-        user_id: user.id,
-        action: 'uploaded_proof',
-        details: { task_id: task.id, title: task.title },
+      const { error } = await supabase.rpc('submit_task_proof', {
+        task_id: task.id,
+        proof_image_url: publicUrl,
       });
+
+      if (error) throw error;
 
       toast.success('Proof uploaded!', { emoji: '📸', subtitle: 'Waiting for verification' });
       onUpdate?.();

@@ -4,8 +4,12 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
 import { Button } from '@/components/ui/button';
-import { Card } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Feedback, FeedbackType, FeedbackStatus } from '@/types';
+import { motion, AnimatePresence } from 'framer-motion';
+import { MessageSquare, Plus, ThumbsUp, Filter, Search, Clock, CheckCircle2, AlertTriangle } from 'lucide-react';
+import { SlideInCard } from '@/components/Animations';
+import { toast } from '@/components/Toast';
 
 export default function FeedbackPage() {
   const router = useRouter();
@@ -47,7 +51,6 @@ export default function FeedbackPage() {
 
       if (error) throw error;
 
-      // Get vote counts and user votes
       const feedbackWithVotes = await Promise.all(
         (data || []).map(async (item) => {
           const { count } = await supabase
@@ -75,7 +78,6 @@ export default function FeedbackPage() {
         })
       );
 
-      // Sort
       const sorted = feedbackWithVotes.sort((a, b) => {
         if (sortBy === 'votes') {
           return (b.vote_count || 0) - (a.vote_count || 0);
@@ -93,20 +95,18 @@ export default function FeedbackPage() {
 
   const handleVote = async (feedbackId: string, currentVote: boolean) => {
     if (!userId) {
-      alert('Please log in to vote');
+      toast.error('Please log in to vote');
       return;
     }
 
     try {
       if (currentVote) {
-        // Remove vote
         await supabase
           .from('feedback_votes')
           .delete()
           .eq('feedback_id', feedbackId)
           .eq('user_id', userId);
       } else {
-        // Add vote
         await supabase
           .from('feedback_votes')
           .insert({
@@ -131,168 +131,168 @@ export default function FeedbackPage() {
       rejected: 'bg-red-100 text-red-800'
     };
 
-    const labels = {
-      pending: 'Pending',
-      under_review: 'Under Review',
-      planned: 'Planned',
-      in_progress: 'In Progress',
-      completed: 'Completed',
-      rejected: 'Rejected'
-    };
-
     return (
-      <span className={`px-2 py-1 rounded-full text-xs font-medium ${styles[status]}`}>
-        {labels[status]}
+      <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold uppercase ${styles[status]}`}>
+        {status.replace('_', ' ')}
       </span>
     );
   };
 
-  if (loading) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="text-lg">Loading feedback...</div>
-      </div>
-    );
-  }
-
   return (
-    <div className="max-w-5xl mx-auto p-6">
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="text-3xl font-bold">Feedback & Feature Requests</h1>
-        <Button onClick={() => router.push('/feedback/submit')}>
-          Submit Feedback
+    <div className="space-y-6">
+      <div className="flex justify-between items-center">
+        <div>
+          <h1 className="text-2xl font-bold">Feedback</h1>
+          <p className="text-muted-foreground text-sm">Help us improve your hostel experience.</p>
+        </div>
+        <Button onClick={() => router.push('/feedback/submit')} className="gap-2">
+          <Plus className="h-4 w-4" />
+          Submit
         </Button>
       </div>
 
-      {/* Filters */}
-      <Card className="p-4 mb-6">
-        <div className="flex flex-wrap gap-4">
-          <div>
-            <label className="block text-sm font-medium mb-2">Type</label>
-            <div className="flex gap-2">
-              <Button
-                variant={filter === 'all' ? 'default' : 'outline'}
-                onClick={() => setFilter('all')}
-                size="sm"
-              >
-                All
-              </Button>
-              <Button
-                variant={filter === 'feature' ? 'default' : 'outline'}
-                onClick={() => setFilter('feature')}
-                size="sm"
-              >
-                💡 Features
-              </Button>
-              <Button
-                variant={filter === 'issue' ? 'default' : 'outline'}
-                onClick={() => setFilter('issue')}
-                size="sm"
-              >
-                🐛 Issues
-              </Button>
-            </div>
-          </div>
+      <SlideInCard direction="up" delay={0}>
+        <Card>
+          <CardContent className="p-4">
+            <div className="flex flex-col gap-4">
+              <div className="flex gap-2 overflow-x-auto pb-2">
+                <Button
+                  variant={filter === 'all' ? 'default' : 'outline'}
+                  onClick={() => setFilter('all')}
+                  size="sm"
+                  className="rounded-full"
+                >
+                  All
+                </Button>
+                <Button
+                  variant={filter === 'feature' ? 'default' : 'outline'}
+                  onClick={() => setFilter('feature')}
+                  size="sm"
+                  className="rounded-full"
+                >
+                  💡 Features
+                </Button>
+                <Button
+                  variant={filter === 'issue' ? 'default' : 'outline'}
+                  onClick={() => setFilter('issue')}
+                  size="sm"
+                  className="rounded-full"
+                >
+                  🐛 Issues
+                </Button>
+              </div>
+              
+              <div className="flex items-center gap-4">
+                <select
+                  value={statusFilter}
+                  onChange={(e) => setStatusFilter(e.target.value as any)}
+                  className="bg-muted/50 border-none rounded-lg px-3 py-1.5 text-xs font-medium focus:ring-1 ring-primary"
+                >
+                  <option value="all">All Status</option>
+                  <option value="pending">Pending</option>
+                  <option value="under_review">Under Review</option>
+                  <option value="planned">Planned</option>
+                  <option value="in_progress">In Progress</option>
+                  <option value="completed">Completed</option>
+                  <option value="rejected">Rejected</option>
+                </select>
 
-          <div>
-            <label className="block text-sm font-medium mb-2">Status</label>
-            <select
-              value={statusFilter}
-              onChange={(e) => setStatusFilter(e.target.value as any)}
-              className="px-3 py-2 border border-gray-300 rounded-lg text-sm"
-            >
-              <option value="all">All Status</option>
-              <option value="pending">Pending</option>
-              <option value="under_review">Under Review</option>
-              <option value="planned">Planned</option>
-              <option value="in_progress">In Progress</option>
-              <option value="completed">Completed</option>
-              <option value="rejected">Rejected</option>
-            </select>
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium mb-2">Sort By</label>
-            <div className="flex gap-2">
-              <Button
-                variant={sortBy === 'votes' ? 'default' : 'outline'}
-                onClick={() => setSortBy('votes')}
-                size="sm"
-              >
-                Most Voted
-              </Button>
-              <Button
-                variant={sortBy === 'recent' ? 'default' : 'outline'}
-                onClick={() => setSortBy('recent')}
-                size="sm"
-              >
-                Most Recent
-              </Button>
-            </div>
-          </div>
-        </div>
-      </Card>
-
-      {/* Feedback List */}
-      <div className="space-y-4">
-        {feedback.length === 0 ? (
-          <Card className="p-8 text-center text-gray-500">
-            No feedback found. Be the first to submit!
-          </Card>
-        ) : (
-          feedback.map((item) => (
-            <Card key={item.id} className="p-6">
-              <div className="flex gap-4">
-                {/* Vote Button */}
-                <div className="flex flex-col items-center">
-                  <button
-                    onClick={() => handleVote(item.id, item.user_vote || false)}
-                    className={`p-2 rounded-lg transition-colors ${
-                      item.user_vote
-                        ? 'bg-blue-500 text-white'
-                        : 'bg-gray-100 hover:bg-gray-200'
-                    }`}
+                <div className="flex gap-1 bg-muted/50 p-1 rounded-lg ml-auto">
+                  <Button
+                    variant={sortBy === 'votes' ? 'secondary' : 'ghost'}
+                    onClick={() => setSortBy('votes')}
+                    size="sm"
+                    className="h-7 text-[10px] px-2"
                   >
-                    <svg
-                      className="w-6 h-6"
-                      fill="currentColor"
-                      viewBox="0 0 20 20"
-                    >
-                      <path d="M2 10.5a1.5 1.5 0 113 0v6a1.5 1.5 0 01-3 0v-6zM6 10.333v5.43a2 2 0 001.106 1.79l.05.025A4 4 0 008.943 18h5.416a2 2 0 001.962-1.608l1.2-6A2 2 0 0015.56 8H12V4a2 2 0 00-2-2 1 1 0 00-1 1v.667a4 4 0 01-.8 2.4L6.8 7.933a4 4 0 00-.8 2.4z" />
-                    </svg>
-                  </button>
-                  <span className="text-sm font-semibold mt-1">
-                    {item.vote_count || 0}
-                  </span>
-                </div>
-
-                {/* Content */}
-                <div className="flex-1">
-                  <div className="flex items-start justify-between mb-2">
-                    <div>
-                      <div className="flex items-center gap-2 mb-1">
-                        <span className="text-xl">
-                          {item.type === 'feature' ? '💡' : '🐛'}
-                        </span>
-                        <h3 className="text-xl font-semibold">{item.title}</h3>
-                      </div>
-                      <p className="text-gray-600">{item.description}</p>
-                    </div>
-                  </div>
-
-                  <div className="flex items-center gap-3 text-sm text-gray-500 mt-4">
-                    {getStatusBadge(item.status)}
-                    <span>
-                      by {item.profile?.username || 'Anonymous'}
-                    </span>
-                    <span>
-                      {new Date(item.created_at).toLocaleDateString()}
-                    </span>
-                  </div>
+                    Top
+                  </Button>
+                  <Button
+                    variant={sortBy === 'recent' ? 'secondary' : 'ghost'}
+                    onClick={() => setSortBy('recent')}
+                    size="sm"
+                    className="h-7 text-[10px] px-2"
+                  >
+                    New
+                  </Button>
                 </div>
               </div>
-            </Card>
-          ))
+            </div>
+          </CardContent>
+        </Card>
+      </SlideInCard>
+
+      <div className="space-y-4">
+        {loading ? (
+          <div className="flex justify-center py-12">
+            <motion.div
+              animate={{ rotate: 360 }}
+              transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+              className="h-8 w-8 border-4 border-primary border-t-transparent rounded-full"
+            />
+          </div>
+        ) : feedback.length === 0 ? (
+          <Card className="p-12 text-center">
+            <MessageSquare className="mx-auto h-12 w-12 text-muted-foreground mb-4 opacity-20" />
+            <h3 className="text-lg font-medium">No feedback found</h3>
+            <p className="text-muted-foreground">Be the first to share your thoughts!</p>
+          </Card>
+        ) : (
+          <AnimatePresence mode="popLayout">
+            {feedback.map((item, index) => (
+              <motion.div
+                key={item.id}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: index * 0.05 }}
+              >
+                <Card className="overflow-hidden hover:shadow-md transition-shadow">
+                  <CardContent className="p-5">
+                    <div className="flex gap-4">
+                      <div className="flex flex-col items-center gap-1">
+                        <button
+                          onClick={() => handleVote(item.id, item.user_vote || false)}
+                          className={`p-2 rounded-xl transition-all ${
+                            item.user_vote
+                              ? 'bg-primary text-primary-foreground scale-110 shadow-lg shadow-primary/20'
+                              : 'bg-muted hover:bg-muted/80'
+                          }`}
+                        >
+                          <ThumbsUp className={`h-5 w-5 ${item.user_vote ? 'fill-current' : ''}`} />
+                        </button>
+                        <span className="text-xs font-bold">
+                          {item.vote_count || 0}
+                        </span>
+                      </div>
+
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2 mb-1">
+                          <span className="text-lg">
+                            {item.type === 'feature' ? '💡' : '🐛'}
+                          </span>
+                          <h3 className="font-bold truncate">{item.title}</h3>
+                        </div>
+                        <p className="text-sm text-muted-foreground line-clamp-2 mb-4">
+                          {item.description}
+                        </p>
+
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-3">
+                            {getStatusBadge(item.status)}
+                            <span className="text-[10px] text-muted-foreground">
+                              by {item.profile?.username || 'Anonymous'}
+                            </span>
+                          </div>
+                          <span className="text-[10px] text-muted-foreground">
+                            {new Date(item.created_at).toLocaleDateString()}
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              </motion.div>
+            ))}
+          </AnimatePresence>
         )}
       </div>
     </div>

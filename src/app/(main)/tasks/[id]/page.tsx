@@ -44,21 +44,12 @@ export default function TaskDetailPage({ params }: { params: Promise<{ id: strin
 
   const handleTakeTask = async () => {
     if (!task || !user) return;
-    
-    await supabase
-      .from('tasks')
-      .update({ 
-        assigned_to: user.id, 
-        status: 'in_progress' 
-      })
-      .eq('id', task.id);
 
-    await supabase.from('activity_log').insert({
-      space_id: task.space_id,
-      user_id: user.id,
-      action: 'took_task',
-      details: { task_id: task.id, title: task.title },
-    });
+    const { error } = await supabase.rpc('take_task', { task_id: task.id });
+    if (error) {
+      toast.error(error.message);
+      return;
+    }
 
     toast.taskTaken(task.title);
     celebrate('task_taken');
@@ -86,20 +77,12 @@ export default function TaskDetailPage({ params }: { params: Promise<{ id: strin
         .from('proofs')
         .getPublicUrl(filePath);
 
-      await supabase
-        .from('tasks')
-        .update({ 
-          proof_image_url: publicUrl,
-          status: 'pending_verification'
-        })
-        .eq('id', task.id);
-
-      await supabase.from('activity_log').insert({
-        space_id: task.space_id,
-        user_id: user.id,
-        action: 'uploaded_proof',
-        details: { task_id: task.id, title: task.title },
+      const { error } = await supabase.rpc('submit_task_proof', {
+        task_id: task.id,
+        proof_image_url: publicUrl,
       });
+
+      if (error) throw error;
 
       toast.success('Proof uploaded! Waiting for verification.', { emoji: '📸' });
       fetchTask();
@@ -114,52 +97,20 @@ export default function TaskDetailPage({ params }: { params: Promise<{ id: strin
   const handleVerify = async (approved: boolean) => {
     if (!task || !user || !currentSpace) return;
 
+    const { error } = await supabase.rpc('verify_task', {
+      task_id: task.id,
+      approved,
+    });
+
+    if (error) {
+      toast.error(error.message);
+      return;
+    }
+
     if (approved) {
-      await supabase
-        .from('tasks')
-        .update({ status: 'done' })
-        .eq('id', task.id);
-
-      const { data: member } = await supabase
-        .from('space_members')
-        .select('points')
-        .eq('space_id', currentSpace.id)
-        .eq('user_id', task.assigned_to)
-        .single();
-
-      if (member) {
-        await supabase
-          .from('space_members')
-          .update({ points: member.points + task.difficulty })
-          .eq('space_id', currentSpace.id)
-          .eq('user_id', task.assigned_to);
-      }
-
-      await supabase.from('activity_log').insert({
-        space_id: task.space_id,
-        user_id: user.id,
-        action: 'verified_task',
-        details: { task_id: task.id, title: task.title, approved: true },
-      });
-
       celebrate('task_completed', { points: task.difficulty });
       toast.taskCompleted(task.title, task.difficulty);
     } else {
-      await supabase
-        .from('tasks')
-        .update({ 
-          status: 'in_progress',
-          proof_image_url: null
-        })
-        .eq('id', task.id);
-
-      await supabase.from('activity_log').insert({
-        space_id: task.space_id,
-        user_id: user.id,
-        action: 'rejected_proof',
-        details: { task_id: task.id, title: task.title },
-      });
-
       toast.error('Proof rejected. Task sent back for redo.');
     }
 

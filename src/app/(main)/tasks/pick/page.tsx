@@ -11,6 +11,7 @@ import { Task, FairnessStats, TaskRecommendation, TASK_CATEGORIES, getDifficulty
 import { calculateTaskRecommendations } from "@/lib/fairness";
 import { useRouter } from "next/navigation";
 import { Confetti } from "@/components/Confetti";
+import { toast } from "@/components/Toast";
 
 export default function PickTaskPage() {
   const { user, currentSpace } = useAuth();
@@ -125,20 +126,13 @@ export default function PickTaskPage() {
     
     setTaking(task.id);
 
-    await supabase
-      .from('tasks')
-      .update({ 
-        assigned_to: user.id, 
-        status: 'in_progress' 
-      })
-      .eq('id', task.id);
-
-    await supabase.from('activity_log').insert({
-      space_id: task.space_id,
-      user_id: user.id,
-      action: 'took_task',
-      details: { task_id: task.id, title: task.title },
-    });
+    const { error } = await supabase.rpc('take_task', { task_id: task.id });
+    if (error) {
+      setTaking(null);
+      // Surface fairness/guardrail messages coming from Postgres
+      toast.error(error.message);
+      return;
+    }
 
     setShowConfetti(true);
     setTimeout(() => {

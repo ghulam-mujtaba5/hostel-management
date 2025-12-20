@@ -21,6 +21,10 @@ export interface SpaceMember {
   role: 'admin' | 'member';
   points: number;
   joined_at: string;
+  // Accommodation fields (added in supabase migration 20251221000000_accommodation_system.sql)
+  room_number?: string | null;
+  bed_number?: string | null;
+  status?: 'active' | 'inactive' | 'pending' | (string & {});
   profile?: Profile;
 }
 
