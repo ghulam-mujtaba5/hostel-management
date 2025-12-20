@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -24,6 +24,8 @@ export default function ProfilePage() {
   const [fullName, setFullName] = useState(profile?.full_name || '');
   const [saving, setSaving] = useState(false);
   const [mounted, setMounted] = useState(false);
+  const [uploadingPhoto, setUploadingPhoto] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Placeholder badges - in production, these would come from the database
   const earnedBadges: BadgeType[] = ['first_task', 'team_player'];
@@ -57,6 +59,42 @@ export default function ProfilePage() {
     setEditing(false);
     setSaving(false);
     toast.success('Profile updated!', { emoji: '✅' });
+  };
+
+  const handlePhotoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file || !user) return;
+
+    setUploadingPhoto(true);
+    try {
+      const fileExt = file.name.split('.').pop();
+      const filePath = `avatars/${user.id}-${Date.now()}.${fileExt}`;
+
+      const { error: uploadError } = await supabase.storage
+        .from('avatars')
+        .upload(filePath, file);
+
+      if (uploadError) throw uploadError;
+
+      const { data: { publicUrl } } = supabase.storage
+        .from('avatars')
+        .getPublicUrl(filePath);
+
+      const { error } = await supabase
+        .from('profiles')
+        .update({ avatar_url: publicUrl })
+        .eq('id', user.id);
+
+      if (error) throw error;
+
+      await refreshProfile();
+      toast.success('Profile photo updated!');
+    } catch (err) {
+      console.error('Upload failed:', err);
+      toast.error('Failed to upload photo');
+    } finally {
+      setUploadingPhoto(false);
+    }
   };
 
   const handleSignOut = async () => {
@@ -96,12 +134,36 @@ export default function ProfilePage() {
                 transition={{ type: "spring", stiffness: 400 }}
               >
                 <div className="h-28 w-28 rounded-[2rem] bg-background flex items-center justify-center p-1 shadow-2xl">
-                  <div className="h-full w-full rounded-[1.8rem] bg-gradient-to-br from-primary to-purple-600 flex items-center justify-center text-4xl font-black text-white">
-                    {(profile?.username?.[0] || profile?.full_name?.[0] || 'U').toUpperCase()}
+                  <div className="h-full w-full rounded-[1.8rem] bg-gradient-to-br from-primary to-purple-600 flex items-center justify-center text-4xl font-black text-white overflow-hidden">
+                    {profile?.avatar_url ? (
+                      <img src={profile.avatar_url} alt="Avatar" className="h-full w-full object-cover" />
+                    ) : (
+                      (profile?.username?.[0] || profile?.full_name?.[0] || 'U').toUpperCase()
+                    )}
                   </div>
                 </div>
-                <button className="absolute bottom-1 right-1 h-9 w-9 rounded-2xl bg-primary text-primary-foreground shadow-lg hover:bg-primary/90 transition-all flex items-center justify-center border-4 border-background">
-                  <Camera className="h-4 w-4" />
+                <input
+                  type="file"
+                  ref={fileInputRef}
+                  className="hidden"
+                  accept="image/*"
+                  capture="user"
+                  onChange={handlePhotoUpload}
+                />
+                <button 
+                  onClick={() => fileInputRef.current?.click()}
+                  disabled={uploadingPhoto}
+                  className="absolute bottom-1 right-1 h-9 w-9 rounded-2xl bg-primary text-primary-foreground shadow-lg hover:bg-primary/90 transition-all flex items-center justify-center border-4 border-background disabled:opacity-50"
+                >
+                  {uploadingPhoto ? (
+                    <motion.div
+                      animate={{ rotate: 360 }}
+                      transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+                      className="h-4 w-4 border-2 border-white border-t-transparent rounded-full"
+                    />
+                  ) : (
+                    <Camera className="h-4 w-4" />
+                  )}
                 </button>
               </motion.div>
             </div>

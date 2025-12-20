@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import Link from "next/link";
 import { ArrowRight, CheckCircle, Trophy, Sparkles, Plus, Users, Flame, TrendingUp, Target } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
@@ -17,6 +18,7 @@ import { SlideInCard, ProgressRing, AnimatedList } from "@/components/Animations
 import { motion, AnimatePresence } from "framer-motion";
 import { toast } from "@/components/Toast";
 import { Home } from "lucide-react";
+import { Logo } from "@/components/Logo";
 
 export default function Dashboard() {
   const { user, profile, currentSpace, loading: authLoading } = useAuth();
@@ -109,19 +111,10 @@ export default function Dashboard() {
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="space-y-6"
+          className="flex flex-col items-center space-y-6"
         >
-          <motion.div
-            animate={{ scale: [1, 1.1, 1] }}
-            transition={{ duration: 2, repeat: Infinity }}
-            className="text-7xl"
-          >
-            🏠
-          </motion.div>
+          <Logo size="lg" className="mb-4" />
           <div className="space-y-2">
-            <h1 className="text-4xl md:text-5xl font-black bg-gradient-to-r from-primary via-purple-600 to-blue-600 bg-clip-text text-transparent">
-              HostelMate
-            </h1>
             <p className="text-xl text-muted-foreground max-w-md mx-auto font-medium">
               The smart way to manage independent hostels and flat houses fairly.
             </p>

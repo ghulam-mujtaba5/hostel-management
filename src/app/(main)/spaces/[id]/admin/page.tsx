@@ -20,16 +20,6 @@ import {
   Share2,
   Copy
 } from 'lucide-react';
-
-// ... existing code ...
-
-  const copyInviteLink = () => {
-    if (space) {
-      const link = `${window.location.origin}/join/${space.invite_code}`;
-      navigator.clipboard.writeText(link);
-      toast.success("Invite link copied!");
-    }
-  };
 import Link from 'next/link';
 import { supabase } from '@/lib/supabase';
 import { useAuth } from '@/contexts/AuthContext';

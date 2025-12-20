@@ -8,6 +8,7 @@ import { cn } from "@/lib/utils";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { useState, useEffect } from "react";
+import { Logo } from "@/components/Logo";
 
 export function Navbar() {
   const pathname = usePathname();
@@ -35,12 +36,7 @@ export function Navbar() {
         <div className="bg-background/80 backdrop-blur-xl border border-border/50 shadow-2xl rounded-3xl md:rounded-none md:border-b md:border-x-0 md:border-t-0 p-2 md:px-8">
           <div className="flex items-center justify-around md:justify-between max-w-6xl mx-auto">
             <Link href="/" className="hidden md:flex items-center gap-2 group">
-              <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center group-hover:bg-primary/20 transition-colors">
-                <Home className="h-5 w-5 text-primary" />
-              </div>
-              <span className="text-xl font-black tracking-tighter bg-gradient-to-r from-primary to-purple-600 bg-clip-text text-transparent">
-                HostelMate
-              </span>
+              <Logo size="sm" />
               <span className="px-1.5 py-0.5 rounded-md bg-primary/10 text-[10px] font-bold text-primary border border-primary/20">
                 BETA
               </span>

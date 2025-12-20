@@ -17,6 +17,11 @@ export const metadata: Metadata = {
     capable: true,
     statusBarStyle: "default",
     title: "HostelMate",
+    startupImage: "/icon.svg",
+  },
+  icons: {
+    icon: "/icon.svg",
+    apple: "/icon.svg",
   },
   keywords: ["hostel", "duties", "task management", "flatmates", "roommates", "chores"],
   authors: [{ name: "HostelMate Team" }],

@@ -104,7 +104,7 @@ const MockAuthProvider = ({ children }: { children: React.ReactNode }) => {
     userSpaces: [mockSpace],
     loading: false,
     signIn: async () => ({ error: null }),
-    signUp: async () => ({ error: null }),
+    signUp: async () => ({ data: { user: mockUser }, error: null }),
     signOut: async () => {},
     setCurrentSpace: () => {},
     refreshProfile: async () => {},

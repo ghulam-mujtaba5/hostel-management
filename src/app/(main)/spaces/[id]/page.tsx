@@ -114,7 +114,7 @@ export default function SpaceDetailPage({ params }: { params: Promise<{ id: stri
               <Button variant="outline" size="icon" onClick={copyInviteCode} title="Copy Code">
                 {copied ? <Check className="h-4 w-4 text-green-500" /> : <Copy className="h-4 w-4" />}
               </Button>
-              <Button variant="primary" onClick={copyInviteLink} className="gap-2">
+              <Button variant="default" onClick={copyInviteLink} className="gap-2">
                 <Share2 className="h-4 w-4" />
                 Share Link
               </Button>

@@ -10,6 +10,7 @@ import { Home, Mail, Lock, User, Sparkles, ArrowRight } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { supabase } from "@/lib/supabase";
 import { toast } from "sonner";
+import { Logo } from "@/components/Logo";
 
 function LoginContent() {
   const searchParams = useSearchParams();
@@ -105,14 +106,9 @@ function LoginContent() {
       >
         <Card className="border-0 shadow-xl bg-card/80 backdrop-blur-lg">
           <CardHeader className="text-center pb-2">
-            <motion.div 
-              initial={{ scale: 0 }}
-              animate={{ scale: 1 }}
-              transition={{ type: "spring", delay: 0.2 }}
-              className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-primary to-purple-600 shadow-lg"
-            >
-              <Home className="h-8 w-8 text-white" />
-            </motion.div>
+            <div className="flex justify-center mb-4">
+              <Logo size="lg" showText={false} />
+            </div>
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
