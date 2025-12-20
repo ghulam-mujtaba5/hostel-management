@@ -38,7 +38,7 @@ const guideSteps = [
     content: (
       <div className="space-y-4">
         <p>
-          Living together is easier when everyone knows what to do. This system helps you manage tasks, track fairness, and keep your space organized.
+          Living together is a trust (Amanah). It becomes easier when everyone fulfills their duties. This system helps you manage tasks, uphold fairness, and keep your space pure and organized.
         </p>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6">
           <Card className="bg-card/50 border-primary/20">
@@ -47,7 +47,7 @@ const guideSteps = [
               <CardTitle className="text-lg">Collaborate</CardTitle>
             </CardHeader>
             <CardContent>
-              <p className="text-sm text-muted-foreground">Join a space with your flatmates and manage everything together.</p>
+              <p className="text-sm text-muted-foreground">Join a space with your flatmates and manage everything with mutual respect.</p>
             </CardContent>
           </Card>
           <Card className="bg-card/50 border-primary/20">
@@ -56,16 +56,16 @@ const guideSteps = [
               <CardTitle className="text-lg">Track Tasks</CardTitle>
             </CardHeader>
             <CardContent>
-              <p className="text-sm text-muted-foreground">Create, assign, and complete tasks to keep the hostel clean.</p>
+              <p className="text-sm text-muted-foreground">Cleanliness is half of faith. Create, assign, and complete tasks to keep the hostel pristine.</p>
             </CardContent>
           </Card>
           <Card className="bg-card/50 border-primary/20">
             <CardHeader className="pb-2">
               <Scale className="w-8 h-8 text-purple-500 mb-2" />
-              <CardTitle className="text-lg">Stay Fair</CardTitle>
+              <CardTitle className="text-lg">Uphold Justice</CardTitle>
             </CardHeader>
             <CardContent>
-              <p className="text-sm text-muted-foreground">Our AI-powered fairness system ensures everyone does their part.</p>
+              <p className="text-sm text-muted-foreground">Our AI-powered fairness system ensures everyone contributes equitably.</p>
             </CardContent>
           </Card>
         </div>
@@ -75,7 +75,7 @@ const guideSteps = [
   {
     id: "spaces",
     title: "Spaces & Flatmates",
-    description: "Create your digital home and invite your flatmates.",
+    description: "Create your digital home and invite your flatmates to build a supportive community.",
     icon: <Users className="w-12 h-12 text-blue-500" />,
     content: (
       <div className="space-y-6">
@@ -128,7 +128,7 @@ const guideSteps = [
   {
     id: "tasks",
     title: "Task Management",
-    description: "Keep track of chores without the arguments.",
+    description: "Maintain cleanliness and order without the arguments.",
     icon: <CheckSquare className="w-12 h-12 text-green-500" />,
     content: (
       <div className="space-y-6">
@@ -186,7 +186,7 @@ const guideSteps = [
   {
     id: "fairness",
     title: "Fairness Score",
-    description: "Our unique algorithm ensures everyone contributes equally.",
+    description: "Our unique algorithm ensures justice and that everyone contributes their fair share.",
     icon: <Scale className="w-12 h-12 text-purple-500" />,
     content: (
       <div className="space-y-6">
@@ -223,7 +223,7 @@ const guideSteps = [
           
           <h3 className="text-2xl font-bold mb-2">How it works</h3>
           <p className="text-muted-foreground mb-6">
-            The Fairness Score (0-10) calculates your contribution relative to others. 
+            The Fairness Score (0-10) reflects your contribution to the collective well-being. 
             A score of 5.0 is perfectly average. Higher means you're doing more than your share!
           </p>
           
@@ -248,7 +248,7 @@ const guideSteps = [
   {
     id: "leaderboard",
     title: "Leaderboard & Rewards",
-    description: "Gamify your chores and compete for the top spot.",
+    description: "Compete in good deeds and strive for the top spot.",
     icon: <Trophy className="w-12 h-12 text-yellow-500" />,
     content: (
       <div className="space-y-6">
@@ -286,7 +286,7 @@ const guideSteps = [
           <div className="flex-1 space-y-4">
             <h3 className="text-xl font-semibold">Earn Points & Badges</h3>
             <p className="text-muted-foreground">
-              Every task you complete earns you points. Climb the leaderboard to prove you're the ultimate flatmate!
+              Every task is a contribution to the community. Earn points and climb the leaderboard by serving others!
             </p>
             <div className="grid grid-cols-2 gap-3">
               <div className="flex items-center gap-2 p-2 rounded bg-slate-100 dark:bg-slate-800">
