@@ -118,6 +118,47 @@ export interface LeaderboardEntry {
   rank: number;
 }
 
+// Feedback System Types
+export type FeedbackType = 'issue' | 'feature';
+export type FeedbackStatus = 'pending' | 'under_review' | 'planned' | 'in_progress' | 'completed' | 'rejected';
+export type FeedbackPriority = 'low' | 'normal' | 'high' | 'critical';
+
+export interface Feedback {
+  id: string;
+  user_id: string;
+  type: FeedbackType;
+  title: string;
+  description: string;
+  status: FeedbackStatus;
+  priority: FeedbackPriority;
+  created_at: string;
+  updated_at: string;
+  vote_count?: number;
+  user_vote?: boolean;
+  profile?: Profile;
+}
+
+export interface FeedbackVote {
+  id: string;
+  feedback_id: string;
+  user_id: string;
+  created_at: string;
+}
+
+export interface FeedbackComment {
+  id: string;
+  feedback_id: string;
+  user_id: string;
+  comment: string;
+  is_admin_response: boolean;
+  created_at: string;
+  profile?: Profile;
+}
+
+export interface FeedbackWithDetails extends Feedback {
+  comments: FeedbackComment[];
+}
+
 // Category metadata
 export const TASK_CATEGORIES: Record<TaskCategory, { label: string; emoji: string; color: string }> = {
   washroom: { label: 'Washroom', emoji: '🚽', color: 'bg-blue-100 text-blue-800' },

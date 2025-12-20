@@ -89,6 +89,17 @@ export default function PickTaskPage() {
       last_task_date: null,
     })) || [];
 
+    // Get user preferences from local storage
+    let preferences;
+    try {
+      const storedPrefs = localStorage.getItem(`prefs_${currentSpace.id}_${user.id}`);
+      if (storedPrefs) {
+        preferences = JSON.parse(storedPrefs);
+      }
+    } catch (e) {
+      console.error('Failed to parse preferences', e);
+    }
+
     if (tasks && tasks.length > 0) {
       const recs = calculateTaskRecommendations(
         tasks,
@@ -96,6 +107,10 @@ export default function PickTaskPage() {
           userId: user.id,
           recentTasks: recentTasks || [],
           stats: userStats,
+          preferences: preferences ? {
+            preferred_categories: preferences.preferred || [],
+            avoided_categories: preferences.avoided || []
+          } : undefined
         },
         allStats
       );

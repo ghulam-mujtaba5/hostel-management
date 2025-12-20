@@ -2,26 +2,38 @@ import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import { cn } from "@/lib/utils";
+import { ThemeProvider } from "@/components/ThemeProvider";
+import { ToastProvider } from "@/components/Toast";
 
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "HostelMate - Duty Management",
-  description: "Manage your hostel duties efficiently with fairness and gamification",
+  title: "HostelMate - Smart Duty Management",
+  description: "Intelligent hostel duty management with AI-powered fair task distribution, gamification, and team collaboration",
   manifest: "/manifest.json",
   appleWebApp: {
     capable: true,
     statusBarStyle: "default",
     title: "HostelMate",
   },
+  keywords: ["hostel", "duties", "task management", "flatmates", "roommates", "chores"],
+  authors: [{ name: "HostelMate Team" }],
+  openGraph: {
+    title: "HostelMate - Smart Duty Management",
+    description: "Fair and fun way to manage hostel duties",
+    type: "website",
+  },
 };
 
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
-  maximumScale: 1,
-  userScalable: false,
-  themeColor: "#3b82f6",
+  maximumScale: 5,
+  userScalable: true,
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#ffffff" },
+    { media: "(prefers-color-scheme: dark)", color: "#0a0a0a" },
+  ],
 };
 
 export default function RootLayout({
@@ -32,7 +44,10 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={cn(inter.className, "min-h-screen bg-background antialiased")}>
-        {children}
+        <ThemeProvider>
+          <ToastProvider />
+          {children}
+        </ThemeProvider>
       </body>
     </html>
   );
