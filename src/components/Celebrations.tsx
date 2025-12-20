@@ -92,7 +92,7 @@ const triggerConfetti = {
       zIndex: 9999,
     };
 
-    function fire(particleRatio: number, opts: confetti.Options) {
+    function fire(particleRatio: number, opts: Parameters<typeof confetti>[0]) {
       confetti({
         ...defaults,
         ...opts,

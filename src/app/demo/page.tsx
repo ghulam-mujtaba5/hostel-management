@@ -77,7 +77,6 @@ const MockAuthProvider = ({ children }: { children: React.ReactNode }) => {
     full_name: MOCK_USER.full_name,
     avatar_url: null,
     created_at: new Date().toISOString(),
-    updated_at: new Date().toISOString(),
   };
 
   const mockSpace: Space = {
