@@ -50,6 +50,28 @@ function CreateSpaceContent() {
     setError("");
 
     try {
+      // Ensure profile exists (safety check)
+      const { data: profile, error: profileError } = await supabase
+        .from('profiles')
+        .select('id')
+        .eq('id', user.id)
+        .single();
+      
+      if (profileError || !profile) {
+        const username = user.user_metadata?.username || user.email?.split('@')[0] || 'User';
+        const { error: createProfileError } = await supabase
+          .from('profiles')
+          .upsert({
+            id: user.id,
+            username,
+            full_name: username,
+          });
+        
+        if (createProfileError) {
+          throw new Error(`Profile required: ${createProfileError.message}`);
+        }
+      }
+
       // Create the space
       const { data: space, error: spaceError } = await supabase
         .from('spaces')
@@ -86,8 +108,9 @@ function CreateSpaceContent() {
       await refreshSpaces();
       setCurrentSpace(space);
       setCreatedSpace(space);
-    } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : 'Failed to create space');
+    } catch (err: any) {
+      console.error('Error creating space:', err);
+      setError(err.message || err.error_description || 'Failed to create space');
       setLoading(false);
     }
   };

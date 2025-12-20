@@ -77,8 +77,9 @@ export default function JoinSpacePage() {
       setTimeout(() => {
         router.push('/');
       }, 1500);
-    } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : 'Failed to join space');
+    } catch (err: any) {
+      console.error('Error joining space:', err);
+      setError(err.message || err.error_description || 'Failed to join space');
       setLoading(false);
     }
   };

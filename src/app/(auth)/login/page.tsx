@@ -83,8 +83,9 @@ function LoginContent() {
         }
         router.push(returnTo || "/");
       }
-    } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : "An error occurred");
+    } catch (err: any) {
+      console.error('Login/Signup error:', err);
+      setError(err.message || err.error_description || "An error occurred");
     } finally {
       setLoading(false);
     }

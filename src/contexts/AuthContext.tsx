@@ -44,9 +44,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     if (data) {
       setProfile(data);
     } else if (error) {
+      console.log('Profile not found, attempting to create...');
       // If profile doesn't exist, create it from user metadata
       const username = user.user_metadata?.username || user.email?.split('@')[0] || 'User';
-      const { data: newProfile } = await supabase
+      const { data: newProfile, error: upsertError } = await supabase
         .from('profiles')
         .upsert({
           id: user.id,
@@ -56,7 +57,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         .select()
         .single();
       
-      if (newProfile) setProfile(newProfile);
+      if (newProfile) {
+        setProfile(newProfile);
+      } else if (upsertError) {
+        console.error('Failed to create profile in refreshProfile:', upsertError);
+      }
     }
   };
 
@@ -167,16 +172,23 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       }
     });
     
-    if (!error && data.user) {
+    if (error) return { data, error };
+
+    if (data.user) {
       // Create profile
-      await supabase.from('profiles').insert({
+      const { error: profileError } = await supabase.from('profiles').insert({
         id: data.user.id,
         username,
         full_name: username,
       });
+
+      if (profileError) {
+        // If profile creation fails, we should probably delete the auth user or at least return the error
+        return { data, error: profileError };
+      }
     }
     
-    return { data, error };
+    return { data, error: null };
   };
 
   const signOut = async () => {
