@@ -155,7 +155,7 @@ function DemoContent() {
   ];
 
   return (
-    <div className="space-y-6 p-4 pb-20 max-w-md mx-auto">
+    <div className="space-y-6 p-4 pb-20 pt-12 md:pt-20 max-w-md mx-auto">
       {CelebrationComponent}
 
       {/* Tour Overlay */}

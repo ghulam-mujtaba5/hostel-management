@@ -30,7 +30,7 @@ export function Navbar() {
   ];
 
   return (
-    <nav className="fixed bottom-4 left-4 right-4 md:bottom-auto md:top-0 md:left-0 md:right-0 z-50">
+    <nav className="fixed bottom-4 left-4 right-4 md:bottom-auto md:top-8 md:left-0 md:right-0 z-50">
       <div className="mx-auto max-w-md md:max-w-full">
         <div className="bg-background/80 backdrop-blur-xl border border-border/50 shadow-2xl rounded-3xl md:rounded-none md:border-b md:border-x-0 md:border-t-0 p-2 md:px-8">
           <div className="flex items-center justify-around md:justify-between max-w-6xl mx-auto">
@@ -40,6 +40,9 @@ export function Navbar() {
               </div>
               <span className="text-xl font-black tracking-tighter bg-gradient-to-r from-primary to-purple-600 bg-clip-text text-transparent">
                 HostelMate
+              </span>
+              <span className="px-1.5 py-0.5 rounded-md bg-primary/10 text-[10px] font-bold text-primary border border-primary/20">
+                BETA
               </span>
             </Link>
             

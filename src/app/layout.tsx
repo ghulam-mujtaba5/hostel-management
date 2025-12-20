@@ -5,6 +5,7 @@ import { cn } from "@/lib/utils";
 import { ThemeProvider } from "@/components/ThemeProvider";
 import { ToastProvider } from "@/components/Toast";
 import { AuthProvider } from "@/contexts/AuthContext";
+import { BetaBanner } from "@/components/BetaBanner";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -47,6 +48,7 @@ export default function RootLayout({
       <body className={cn(inter.className, "min-h-screen bg-background antialiased")}>
         <ThemeProvider>
           <AuthProvider>
+            <BetaBanner />
             <ToastProvider />
             {children}
           </AuthProvider>
