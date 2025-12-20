@@ -176,53 +176,66 @@ export default function LoginPage() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.6 }}
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
+                className="space-y-3"
               >
-                <Button 
-                  type="submit" 
-                  className="w-full h-12 bg-gradient-to-r from-primary to-purple-600 hover:from-primary/90 hover:to-purple-600/90 text-base font-medium" 
-                  disabled={loading}
-                >
-                  <AnimatePresence mode="wait">
-                    {loading ? (
-                      <motion.span
-                        key="loading"
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        exit={{ opacity: 0 }}
-                        className="flex items-center gap-2"
-                      >
-                        <motion.div
-                          animate={{ rotate: 360 }}
-                          transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-                          className="h-4 w-4 border-2 border-white border-t-transparent rounded-full"
-                        />
-                        Please wait...
-                      </motion.span>
-                    ) : (
-                      <motion.span
-                        key="submit"
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        exit={{ opacity: 0 }}
-                        className="flex items-center gap-2"
-                      >
-                        {isLogin ? (
-                          <>
-                            Sign In
-                            <ArrowRight className="h-4 w-4" />
-                          </>
-                        ) : (
-                          <>
-                            <Sparkles className="h-4 w-4" />
-                            Create Account
-                          </>
-                        )}
-                      </motion.span>
-                    )}
-                  </AnimatePresence>
-                </Button>
+                <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
+                  <Button 
+                    type="submit" 
+                    className="w-full h-12 bg-gradient-to-r from-primary to-purple-600 hover:from-primary/90 hover:to-purple-600/90 text-base font-medium" 
+                    disabled={loading}
+                  >
+                    <AnimatePresence mode="wait">
+                      {loading ? (
+                        <motion.span
+                          key="loading"
+                          initial={{ opacity: 0 }}
+                          animate={{ opacity: 1 }}
+                          exit={{ opacity: 0 }}
+                          className="flex items-center gap-2"
+                        >
+                          <motion.div
+                            animate={{ rotate: 360 }}
+                            transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+                            className="h-4 w-4 border-2 border-white border-t-transparent rounded-full"
+                          />
+                          Please wait...
+                        </motion.span>
+                      ) : (
+                        <motion.span
+                          key="submit"
+                          initial={{ opacity: 0 }}
+                          animate={{ opacity: 1 }}
+                          exit={{ opacity: 0 }}
+                          className="flex items-center gap-2"
+                        >
+                          {isLogin ? (
+                            <>
+                              Sign In
+                              <ArrowRight className="h-4 w-4" />
+                            </>
+                          ) : (
+                            <>
+                              <Sparkles className="h-4 w-4" />
+                              Create Account
+                            </>
+                          )}
+                        </motion.span>
+                      )}
+                    </AnimatePresence>
+                  </Button>
+                </motion.div>
+
+                <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
+                  <Button 
+                    type="button"
+                    variant="outline"
+                    className="w-full h-12 border-primary/20 hover:bg-primary/5"
+                    onClick={() => router.push('/demo')}
+                  >
+                    <Sparkles className="mr-2 h-4 w-4 text-primary" />
+                    Try Demo Mode
+                  </Button>
+                </motion.div>
               </motion.div>
             </form>
             

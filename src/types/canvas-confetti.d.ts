@@ -1,4 +1,16 @@
 declare module 'canvas-confetti' {
+  interface PathShape {
+    type: 'path';
+    path: string | Path2D;
+    matrix?: DOMMatrix;
+  }
+
+  type Shape = 'square' | 'circle' | 'star' | PathShape;
+
+  namespace confetti {
+    type Shape = 'square' | 'circle' | 'star' | PathShape;
+  }
+
   interface Options {
     particleCount?: number;
     angle?: number;
@@ -18,8 +30,6 @@ declare module 'canvas-confetti' {
     zIndex?: number;
     disableForReducedMotion?: boolean;
   }
-
-  type Shape = 'square' | 'circle' | 'star';
 
   interface ConfettiFunction {
     (options?: Options): Promise<null>;
