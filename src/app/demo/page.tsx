@@ -29,7 +29,7 @@ const MOCK_TASKS: Task[] = [
     id: "1",
     title: "Clean the Kitchen",
     description: "Wipe counters and sweep the floor",
-    category: "cleaning",
+    category: "kitchen",
     difficulty: 5,
     status: "todo",
     space_id: "demo-space",
