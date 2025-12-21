@@ -130,7 +130,7 @@ function CreateSpaceContent() {
       setCreatedSpace(space);
     } catch (err: any) {
       console.error('Error creating space:', err);
-      setError(err.message || err.error_description || 'Failed to create space');
+      toast.error(err.message || err.error_description || 'Failed to create space');
       setLoading(false);
     }
   };
@@ -271,13 +271,13 @@ function CreateSpaceContent() {
                 />
               </div>
 
-              {error && (
+              {errors.name && (
                 <motion.p 
                   initial={{ opacity: 0, x: -10 }}
                   animate={{ opacity: 1, x: 0 }}
                   className="text-sm font-bold text-destructive bg-destructive/10 p-4 rounded-xl border border-destructive/20"
                 >
-                  {error}
+                  {errors.name}
                 </motion.p>
               )}
 

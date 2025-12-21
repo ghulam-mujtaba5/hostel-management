@@ -4,7 +4,8 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, Calendar, FileText, Tag, Check, AlertCircle, Sparkles } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { ArrowLeft, Calendar, FileText, Tag, Check, AlertCircle, Sparkles, Gauge } from "lucide-react";
 import Link from "next/link";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/lib/supabase";
@@ -12,6 +13,7 @@ import { TASK_CATEGORIES, TaskCategory } from "@/types";
 import { motion, AnimatePresence } from "framer-motion";
 import { toast } from "@/components/Toast";
 import { LoadingButton } from "@/components/LoadingButton";
+import { SlideInCard } from "@/components/Animations";
 
 const DIFFICULTY_LABELS = [
   { range: [1, 3], label: "Easy", color: "text-green-600 dark:text-green-400", bg: "bg-green-100 dark:bg-green-900/30" },
@@ -284,14 +286,24 @@ export default function CreateTaskPage() {
               </motion.div>
 
               <AnimatePresence>
-                {error && (
+                {errors.title && (
                   <motion.p 
                     initial={{ opacity: 0, y: -10 }}
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: -10 }}
                     className="text-sm text-destructive bg-destructive/10 p-3 rounded-lg"
                   >
-                    {error}
+                    {errors.title}
+                  </motion.p>
+                )}
+                {errors.description && (
+                  <motion.p 
+                    initial={{ opacity: 0, y: -10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -10 }}
+                    className="text-sm text-destructive bg-destructive/10 p-3 rounded-lg"
+                  >
+                    {errors.description}
                   </motion.p>
                 )}
               </AnimatePresence>
