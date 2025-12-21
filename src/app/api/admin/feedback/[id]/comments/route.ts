@@ -10,18 +10,29 @@ export async function GET(_req: NextRequest, ctx: { params: Promise<{ id: string
     const supabase = getSupabaseAdminClient();
     const { data, error } = await supabase
       .from("feedback_comments")
-      .select(
-        `
-        *,
-        profile:user_id(username, avatar_url, full_name)
-      `
-      )
+      .select("*")
       .eq("feedback_id", id)
       .order("created_at", { ascending: true });
 
     if (error) return NextResponse.json({ error: error.message }, { status: 500 });
 
-    return NextResponse.json({ data: data || [] });
+    // Fetch profiles for each comment
+    const withProfiles = await Promise.all(
+      (data || []).map(async (comment: any) => {
+        const { data: profile } = await supabase
+          .from("profiles")
+          .select("username, avatar_url, full_name")
+          .eq("id", comment.user_id)
+          .single();
+
+        return {
+          ...comment,
+          profile: profile || { username: "Unknown", avatar_url: null, full_name: null }
+        };
+      })
+    );
+
+    return NextResponse.json({ data: withProfiles });
   } catch (e: any) {
     if (e?.message === "UNAUTHORIZED_ADMIN") {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
