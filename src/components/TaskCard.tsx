@@ -4,7 +4,7 @@ import Link from "next/link";
 import { supabase } from "@/lib/supabase";
 import { Task, TASK_CATEGORIES, getDifficultyLabel, getDifficultyColor } from "@/types";
 import { Card, CardContent } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
+import { LoadingButton } from "@/components/LoadingButton";
 import { Clock, User, Camera, Check, Sparkles, ChevronRight } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import { useState, useRef } from "react";
@@ -12,6 +12,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { motion, AnimatePresence } from "framer-motion";
 import { toast } from "@/components/Toast";
 import { triggerQuickCelebration } from "@/components/Celebrations";
+import { getErrorMessage } from "@/lib/errorMessages";
 import { cn } from "@/lib/utils";
 
 interface TaskCardProps {
@@ -38,22 +39,50 @@ export function TaskCard({ task, showAssignee = false, onUpdate, recommended = f
     
     setTaking(true);
 
-    const { error } = await supabase.rpc('take_task', { task_id: task.id });
-    if (error) {
-      toast.error(error.message);
-      setTaking(false);
-      return;
-    }
+    try {
+      const { error } = await supabase.rpc('take_task', { task_id: task.id });
+      if (error) {
+        let errorCode = 'UNKNOWN_ERROR';
+        if (error.message.includes('already')) {
+          errorCode = 'TASK_ALREADY_TAKEN';
+        } else if (error.message.includes('permission')) {
+          errorCode = 'PERMISSION_DENIED';
+        }
+        
+        const errorMsg = getErrorMessage(errorCode);
+        toast.error(`${errorMsg.title}: ${errorMsg.message}`);
+        return;
+      }
 
-    triggerQuickCelebration('burst');
-    toast.taskTaken(task.title);
-    setTaking(false);
-    onUpdate?.();
+      triggerQuickCelebration('burst');
+      toast.taskTaken(task.title);
+      onUpdate?.();
+    } catch (err) {
+      const errorMsg = getErrorMessage('NETWORK_ERROR');
+      toast.error(`${errorMsg.title}: ${errorMsg.message}`);
+    } finally {
+      setTaking(false);
+    }
   };
 
   const handleUploadProof = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file || !user || !currentSpace) return;
+
+    // Validate file size
+    if (file.size > 5 * 1024 * 1024) {
+      const errorMsg = getErrorMessage('UPLOAD_TOO_LARGE');
+      toast.error(`${errorMsg.title}: ${errorMsg.message}`);
+      return;
+    }
+
+    // Validate file type
+    const validTypes = ['image/jpeg', 'image/png', 'image/webp'];
+    if (!validTypes.includes(file.type)) {
+      const errorMsg = getErrorMessage('UPLOAD_INVALID_TYPE');
+      toast.error(`${errorMsg.title}: ${errorMsg.message}`);
+      return;
+    }
 
     setUploading(true);
 
@@ -83,7 +112,8 @@ export function TaskCard({ task, showAssignee = false, onUpdate, recommended = f
       onUpdate?.();
     } catch (err) {
       console.error('Upload failed:', err);
-      toast.error('Upload failed. Please try again.');
+      const errorMsg = getErrorMessage('NETWORK_ERROR');
+      toast.error(`${errorMsg.title}: ${errorMsg.message}`);
     } finally {
       setUploading(false);
     }
@@ -193,24 +223,16 @@ export function TaskCard({ task, showAssignee = false, onUpdate, recommended = f
               exit={{ opacity: 0, height: 0 }}
               className="px-5 pb-5"
             >
-              <Button 
+              <LoadingButton 
                 size="sm" 
                 className="w-full gap-2 bg-primary hover:bg-primary/90 shadow-sm"
                 onClick={handleTakeTask}
-                disabled={taking}
+                loading={taking}
+                loadingText="Taking..."
               >
-                {taking ? (
-                  <>
-                    <div className="h-4 w-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                    Taking...
-                  </>
-                ) : (
-                  <>
-                    <Check className="h-4 w-4" />
-                    Take This Task
-                  </>
-                )}
-              </Button>
+                <Check className="h-4 w-4" />
+                Take This Task
+              </LoadingButton>
             </motion.div>
           )}
 
@@ -230,7 +252,7 @@ export function TaskCard({ task, showAssignee = false, onUpdate, recommended = f
                 className="hidden"
                 disabled={uploading}
               />
-              <Button 
+              <LoadingButton
                 size="sm" 
                 variant="secondary"
                 className="w-full gap-2 border border-border/50"
@@ -239,20 +261,12 @@ export function TaskCard({ task, showAssignee = false, onUpdate, recommended = f
                   e.stopPropagation();
                   fileInputRef.current?.click();
                 }}
-                disabled={uploading}
+                loading={uploading}
+                loadingText="Uploading..."
               >
-                {uploading ? (
-                  <>
-                    <div className="h-4 w-4 border-2 border-primary/30 border-t-primary rounded-full animate-spin" />
-                    Uploading...
-                  </>
-                ) : (
-                  <>
-                    <Camera className="h-4 w-4" />
-                    Upload Proof Photo
-                  </>
-                )}
-              </Button>
+                <Camera className="h-4 w-4" />
+                Upload Proof Photo
+              </LoadingButton>
             </motion.div>
           )}
         </AnimatePresence>

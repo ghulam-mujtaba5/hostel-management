@@ -5,13 +5,15 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import Link from "next/link";
-import { ArrowRight, CheckCircle, Trophy, Sparkles, Plus, Users, Flame, TrendingUp, Target, Scale, Shield, UserPlus, BookOpen } from "lucide-react";
+import { ArrowRight, CheckCircle, Trophy, Sparkles, Plus, Users, Flame, TrendingUp, Target, Scale, Shield, UserPlus, BookOpen, ListTodo } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/lib/supabase";
 import { Task, SpaceMember, Profile, TASK_CATEGORIES, getDifficultyLabel } from "@/types";
 import { TaskCard } from "@/components/TaskCard";
 import { RecommendedTasks } from "@/components/RecommendedTasks";
 import { FlatmatesList } from "@/components/FlatmatesList";
+import { EmptyState } from "@/components/EmptyState";
+import { DashboardSkeleton } from "@/components/Skeleton";
 import { useCelebration } from "@/components/Celebrations";
 import { StreakBadge, PointsCounter, LevelProgress, calculateLevel } from "@/components/Achievements";
 import { SlideInCard, ProgressRing, AnimatedList } from "@/components/Animations";
@@ -20,7 +22,6 @@ import { toast } from "@/components/Toast";
 import { Home } from "lucide-react";
 import { Logo } from "@/components/Logo";
 import { cn } from "@/lib/utils";
-import { AdvancedLoading } from "@/components/AdvancedLoading";
 
 export default function Dashboard() {
   const { user, profile, currentSpace, loading: authLoading } = useAuth();
@@ -96,7 +97,7 @@ export default function Dashboard() {
   };
 
   if (authLoading || loading) {
-    return <AdvancedLoading fullPage={false} className="h-[60vh]" />;
+    return <DashboardSkeleton />;
   }
 
   if (!user) {

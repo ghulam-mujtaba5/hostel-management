@@ -28,18 +28,29 @@ export default function AdminFeedbackPage() {
   const [loading, setLoading] = useState(true);
   const [userId, setUserId] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
+  const [isAdminAuthed, setIsAdminAuthed] = useState<boolean>(false);
 
   useEffect(() => {
-    const getUser = async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) {
-        console.warn('No authenticated user found');
+    const init = async () => {
+      try {
+        // Admin session (cookie)
+        const s = await fetch('/api/admin/session', { cache: 'no-store' });
+        const sd = (await s.json().catch(() => null)) as any;
+        const ok = Boolean(sd?.authenticated);
+        setIsAdminAuthed(ok);
+        if (!ok) return;
+
+        // Get user_id for admin replies.
+        // If not logged-in to Supabase Auth, we can still view feedback, but replies will be disabled.
+        const { data: { user } } = await supabase.auth.getUser();
+        setUserId(user?.id ?? null);
+
+        await fetchFeedback();
+      } catch {
+        setIsAdminAuthed(false);
       }
-      setUserId(user?.id || null);
-      // Fetch feedback regardless of user auth status
-      await fetchFeedback();
     };
-    getUser();
+    init();
   }, []);
 
   useEffect(() => {
@@ -51,53 +62,15 @@ export default function AdminFeedbackPage() {
   const fetchFeedback = async () => {
     setLoading(true);
     try {
-      const { data, error } = await supabase
-        .from('feedback')
-        .select(`
-          *,
-          profile:user_id(username, avatar_url, full_name)
-        `)
-        .order('created_at', { ascending: false });
-
-      if (error) {
-        console.error('Feedback fetch error:', error);
-        throw error;
+      const res = await fetch('/api/admin/feedback', { cache: 'no-store' });
+      const json = (await res.json().catch(() => null)) as any;
+      if (!res.ok) {
+        throw new Error(json?.error || 'Failed to load feedback');
       }
-
-      if (!data || data.length === 0) {
-        console.log('No feedback found');
-        setFeedback([]);
-        return;
-      }
-
-      const feedbackWithVotes = await Promise.all(
-        data.map(async (item) => {
-          try {
-            const { count } = await supabase
-              .from('feedback_votes')
-              .select('*', { count: 'exact', head: true })
-              .eq('feedback_id', item.id);
-
-            return {
-              ...item,
-              vote_count: count || 0
-            };
-          } catch (voteError) {
-            console.error('Error counting votes for feedback:', item.id, voteError);
-            return {
-              ...item,
-              vote_count: 0
-            };
-          }
-        })
-      );
-
-      setFeedback(feedbackWithVotes);
+      setFeedback((json?.data as Feedback[]) || []);
     } catch (err) {
       console.error('Error fetching feedback:', err);
-      // Show more detailed error message
-      const errorMsg = err instanceof Error ? err.message : 'Failed to load feedback';
-      toast.error(errorMsg);
+      toast.error(err instanceof Error ? err.message : 'Failed to load feedback');
       setFeedback([]);
     } finally {
       setLoading(false);
@@ -106,17 +79,10 @@ export default function AdminFeedbackPage() {
 
   const fetchComments = async (feedbackId: string) => {
     try {
-      const { data, error } = await supabase
-        .from('feedback_comments')
-        .select(`
-          *,
-          profile:user_id(username, avatar_url, full_name)
-        `)
-        .eq('feedback_id', feedbackId)
-        .order('created_at', { ascending: true });
-
-      if (error) throw error;
-      setComments(data || []);
+      const res = await fetch(`/api/admin/feedback/${feedbackId}/comments`, { cache: 'no-store' });
+      const json = (await res.json().catch(() => null)) as any;
+      if (!res.ok) throw new Error(json?.error || 'Failed to load comments');
+      setComments((json?.data as FeedbackComment[]) || []);
     } catch (err) {
       console.error('Error fetching comments:', err);
     }
@@ -124,12 +90,13 @@ export default function AdminFeedbackPage() {
 
   const updateStatus = async (feedbackId: string, status: FeedbackStatus) => {
     try {
-      const { error } = await supabase
-        .from('feedback')
-        .update({ status })
-        .eq('id', feedbackId);
-
-      if (error) throw error;
+      const res = await fetch(`/api/admin/feedback/${feedbackId}`, {
+        method: 'PATCH',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ status }),
+      });
+      const json = (await res.json().catch(() => null)) as any;
+      if (!res.ok) throw new Error(json?.error || 'Failed to update status');
       
       toast.success(`Status updated to ${status.replace('_', ' ')}`);
       fetchFeedback();
@@ -144,12 +111,13 @@ export default function AdminFeedbackPage() {
 
   const updatePriority = async (feedbackId: string, priority: FeedbackPriority) => {
     try {
-      const { error } = await supabase
-        .from('feedback')
-        .update({ priority })
-        .eq('id', feedbackId);
-
-      if (error) throw error;
+      const res = await fetch(`/api/admin/feedback/${feedbackId}`, {
+        method: 'PATCH',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ priority }),
+      });
+      const json = (await res.json().catch(() => null)) as any;
+      if (!res.ok) throw new Error(json?.error || 'Failed to update priority');
       
       toast.success(`Priority updated to ${priority}`);
       fetchFeedback();
@@ -166,16 +134,13 @@ export default function AdminFeedbackPage() {
     if (!newComment.trim() || !selectedFeedback || !userId) return;
 
     try {
-      const { error } = await supabase
-        .from('feedback_comments')
-        .insert({
-          feedback_id: selectedFeedback.id,
-          user_id: userId,
-          comment: newComment,
-          is_admin_response: true
-        });
-
-      if (error) throw error;
+      const res = await fetch(`/api/admin/feedback/${selectedFeedback.id}/comments`, {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ comment: newComment, user_id: userId }),
+      });
+      const json = (await res.json().catch(() => null)) as any;
+      if (!res.ok) throw new Error(json?.error || 'Failed to add response');
 
       setNewComment('');
       fetchComments(selectedFeedback.id);
@@ -190,12 +155,9 @@ export default function AdminFeedbackPage() {
     if (!confirm('Are you sure you want to delete this feedback?')) return;
 
     try {
-      const { error } = await supabase
-        .from('feedback')
-        .delete()
-        .eq('id', feedbackId);
-
-      if (error) throw error;
+      const res = await fetch(`/api/admin/feedback/${feedbackId}`, { method: 'DELETE' });
+      const json = (await res.json().catch(() => null)) as any;
+      if (!res.ok) throw new Error(json?.error || 'Failed to delete feedback');
 
       toast.success('Feedback deleted');
       fetchFeedback();
@@ -221,6 +183,22 @@ export default function AdminFeedbackPage() {
     f.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
     f.description.toLowerCase().includes(searchQuery.toLowerCase())
   );
+
+  if (!isAdminAuthed) {
+    return (
+      <div className="max-w-3xl">
+        <Card className="rounded-2xl border-border/50">
+          <CardHeader>
+            <CardTitle>Admin session required</CardTitle>
+          </CardHeader>
+          <CardContent className="text-sm text-muted-foreground">
+            Please unlock the admin portal first. If you still see this message, set
+            <span className="font-mono"> ADMIN_PORTAL_PASSWORD</span> in <span className="font-mono">.env.local</span>.
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
 
   if (loading) {
     return (

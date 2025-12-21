@@ -9,9 +9,10 @@ import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/lib/supabase";
 import { Task, TASK_CATEGORIES, TaskCategory } from "@/types";
 import { TaskCard } from "@/components/TaskCard";
+import { EmptyState } from "@/components/EmptyState";
+import { TaskCardSkeleton } from "@/components/Skeleton";
 import { motion, AnimatePresence } from "framer-motion";
 import { SlideInCard } from "@/components/Animations";
-import { AdvancedLoading } from "@/components/AdvancedLoading";
 
 type TabType = 'my' | 'available' | 'completed';
 
@@ -65,16 +66,63 @@ export default function TasksPage() {
 
   if (!currentSpace) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-[60vh] text-center px-4">
-        <div className="h-20 w-20 rounded-full bg-primary/10 flex items-center justify-center mb-6">
-          <ListTodo className="h-10 w-10 text-primary" />
-        </div>
-        <h2 className="text-2xl font-bold mb-2">No Space Selected</h2>
-        <p className="text-muted-foreground mb-8 max-w-xs">Please select or join a hostel space to view and manage tasks.</p>
-        <Button asChild size="lg" className="rounded-full px-8">
-          <Link href="/spaces">Select Space</Link>
-        </Button>
+      <EmptyState
+        icon={ListTodo}
+        title="No Space Selected"
+        description="Please select or join a hostel space to view and manage tasks."
+        action={{
+          label: 'Select Space',
+          href: '/spaces'
+        }}
+        secondaryAction={{
+          label: 'Create New Space',
+          href: '/spaces/create'
+        }}
+      />
+    );
+  }
+
+  if (loading) {
+    return (
+      <div className="space-y-6">
+        <TaskCardSkeleton />
+        <TaskCardSkeleton />
+        <TaskCardSkeleton />
       </div>
+    );
+  }
+
+  if (filteredTasks.length === 0) {
+    const getEmptyStateConfig = () => {
+      if (activeTab === 'completed') {
+        return {
+          title: 'No Completed Tasks',
+          description: 'Great work! Once you complete tasks, they\'ll appear here.',
+          action: { label: 'View Available Tasks', onClick: () => setActiveTab('available') }
+        };
+      }
+      if (activeTab === 'available') {
+        return {
+          title: 'All Tasks Assigned!',
+          description: 'All available tasks have been taken. Create new ones or check back later!',
+          action: { label: 'Create Task', href: '/tasks/create' }
+        };
+      }
+      return {
+        title: 'No Active Tasks',
+        description: 'No tasks assigned to you yet. Start by taking an available task!',
+        action: { label: 'Browse Available', onClick: () => setActiveTab('available') }
+      };
+    };
+
+    const config = getEmptyStateConfig();
+    return (
+      <EmptyState
+        icon={CheckCircle2}
+        title={config.title}
+        description={config.description}
+        action={config.action}
+      />
     );
   }
 
@@ -177,7 +225,11 @@ export default function TasksPage() {
       {/* Task List */}
       <div className="space-y-6">
         {loading ? (
-          <AdvancedLoading fullPage={false} text="Syncing tasks..." className="py-32" />
+          <div className="space-y-4">
+            <TaskCardSkeleton />
+            <TaskCardSkeleton />
+            <TaskCardSkeleton />
+          </div>
         ) : filteredTasks.length === 0 ? (
           <SlideInCard direction="up">
             <Card className="border border-border/50 shadow-sm bg-white dark:bg-slate-900 rounded-[2rem] overflow-hidden">

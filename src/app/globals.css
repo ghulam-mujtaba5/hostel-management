@@ -88,12 +88,35 @@ body {
 
 /* Better touch targets for mobile */
 @media (max-width: 768px) {
-  button, a, input, select, textarea {
+  button,
+  a[role="button"],
+  input[type="button"],
+  input[type="submit"],
+  input[type="reset"],
+  [role="button"],
+  [role="menuitem"],
+  [role="tab"],
+  [role="link"] {
     min-height: 44px;
+    min-width: 44px;
+    padding: 10px 16px;
   }
-  
+
+  /* Extra padding for small icon-only buttons */
+  button:has(svg:only-child),
+  [role="button"]:has(svg:only-child) {
+    padding: 10px;
+  }
+
   input, select, textarea {
+    min-height: 44px;
     font-size: 16px; /* Prevent zoom on iOS */
+    padding: 10px 12px;
+  }
+
+  /* Ensure proper spacing for interactive elements */
+  a {
+    padding: 8px 4px;
   }
 }
 

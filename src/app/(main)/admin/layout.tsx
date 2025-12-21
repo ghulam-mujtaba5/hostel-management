@@ -1,6 +1,7 @@
 'use client';
 
 import { AdminGuard } from '@/components/AdminGuard';
+import { AdminShell } from '@/components/admin/AdminShell';
 
 export default function AdminLayout({
   children,
@@ -9,9 +10,7 @@ export default function AdminLayout({
 }) {
   return (
     <AdminGuard>
-      <div className="min-h-screen bg-muted/30">
-        {children}
-      </div>
+      <AdminShell>{children}</AdminShell>
     </AdminGuard>
   );
 }

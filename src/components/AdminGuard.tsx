@@ -14,34 +14,73 @@ export function AdminGuard({ children }: AdminGuardProps) {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
-
-  // Simple password check - in a real app this would be more secure
-  // But the user specifically asked for digits 1-9 only
-  const ADMIN_PASSWORD = '1234'; // Default password, can be changed
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const auth = localStorage.getItem('admin_auth');
-    if (auth === 'true') {
-      setIsAuthenticated(true);
-    }
+    const check = async () => {
+      try {
+        const res = await fetch('/api/admin/session', { cache: 'no-store' });
+        if (!res.ok) {
+          setIsAuthenticated(false);
+          return;
+        }
+        const data = (await res.json()) as { authenticated?: boolean };
+        setIsAuthenticated(Boolean(data.authenticated));
+      } catch {
+        setIsAuthenticated(false);
+      } finally {
+        setLoading(false);
+      }
+    };
+    check();
   }, []);
 
-  const handleLogin = (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (password === ADMIN_PASSWORD) {
+
+    setError('');
+    setLoading(true);
+    try {
+      const res = await fetch('/api/admin/session', {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ password }),
+      });
+
+      const data = (await res.json().catch(() => null)) as any;
+
+      if (!res.ok) {
+        setIsAuthenticated(false);
+        setError(data?.error || 'Invalid admin password');
+        setPassword('');
+        return;
+      }
+
       setIsAuthenticated(true);
-      localStorage.setItem('admin_auth', 'true');
-      setError('');
-    } else {
-      setError('Invalid admin password');
       setPassword('');
+    } catch {
+      setIsAuthenticated(false);
+      setError('Unable to sign in. Please try again.');
+    } finally {
+      setLoading(false);
     }
   };
 
-  const handleLogout = () => {
-    setIsAuthenticated(false);
-    localStorage.removeItem('admin_auth');
+  const handleLogout = async () => {
+    try {
+      await fetch('/api/admin/session', { method: 'DELETE' });
+    } finally {
+      setIsAuthenticated(false);
+    }
   };
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-[80vh] p-4">
+        <div className="text-sm text-muted-foreground">Loading admin session…</div>
+      </div>
+    );
+  }
 
   if (!isAuthenticated) {
     return (
@@ -72,8 +111,8 @@ export function AdminGuard({ children }: AdminGuardProps) {
                 />
                 {error && <p className="text-sm text-red-500 text-center">{error}</p>}
               </div>
-              <Button type="submit" className="w-full">
-                Unlock Dashboard
+              <Button type="submit" className="w-full" disabled={loading}>
+                {loading ? 'Unlocking…' : 'Unlock Dashboard'}
               </Button>
             </form>
           </CardContent>
@@ -84,11 +123,6 @@ export function AdminGuard({ children }: AdminGuardProps) {
 
   return (
     <>
-      <div className="fixed top-4 right-4 z-50">
-        <Button variant="outline" size="sm" onClick={handleLogout}>
-          Exit Admin
-        </Button>
-      </div>
       {children}
     </>
   );
