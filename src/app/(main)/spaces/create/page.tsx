@@ -22,7 +22,7 @@ function CreateSpaceContent() {
   
   const [name, setName] = useState("");
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
+  const [errors, setErrors] = useState<{ name?: string }>({});
   const [showConfetti, setShowConfetti] = useState(false);
   const [createdSpace, setCreatedSpace] = useState<any>(null);
 
@@ -44,9 +44,28 @@ function CreateSpaceContent() {
     }
   }, [successId, user]);
 
+  const validateForm = () => {
+    const newErrors: typeof errors = {};
+    
+    if (!name.trim()) {
+      newErrors.name = 'Space name is required';
+    } else if (name.length < 3) {
+      newErrors.name = 'Name must be at least 3 characters';
+    } else if (name.length > 50) {
+      newErrors.name = 'Name must be less than 50 characters';
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!user || !name.trim()) return;
+    if (!user) return;
+
+    if (!validateForm()) {
+      return;
+    }
 
     setLoading(true);
     setError("");

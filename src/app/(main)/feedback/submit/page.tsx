@@ -4,9 +4,12 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Card } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { FeedbackType } from '@/types';
+import { toast } from '@/components/Toast';
+import { motion } from 'framer-motion';
+import { SendIcon, AlertCircle } from 'lucide-react';
+import { LoadingButton } from '@/components/LoadingButton';
 
 export default function SubmitFeedbackPage() {
   const router = useRouter();
@@ -14,18 +17,46 @@ export default function SubmitFeedbackPage() {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
+  const [errors, setErrors] = useState<{ title?: string; description?: string }>({});
+
+  const validateForm = () => {
+    const newErrors: typeof errors = {};
+    
+    if (!title.trim()) {
+      newErrors.title = 'Title is required';
+    } else if (title.length < 5) {
+      newErrors.title = 'Title must be at least 5 characters';
+    } else if (title.length > 100) {
+      newErrors.title = 'Title must be less than 100 characters';
+    }
+
+    if (!description.trim()) {
+      newErrors.description = 'Description is required';
+    } else if (description.length < 20) {
+      newErrors.description = 'Description must be at least 20 characters';
+    } else if (description.length > 2000) {
+      newErrors.description = 'Description must be less than 2000 characters';
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
+    if (!validateForm()) {
+      toast.error('Please fix the errors above');
+      return;
+    }
+
     setLoading(true);
-    setError('');
 
     try {
       const { data: { user } } = await supabase.auth.getUser();
       
       if (!user) {
-        setError('You must be logged in to submit feedback');
+        toast.error('You must be logged in to submit feedback');
         return;
       }
 
@@ -42,55 +73,141 @@ export default function SubmitFeedbackPage() {
 
       if (insertError) throw insertError;
 
-      router.push('/feedback');
+      toast.success('Feedback submitted!', { emoji: '📨', subtitle: 'Thank you for helping us improve!' });
+      setTimeout(() => router.push('/feedback'), 500);
     } catch (err) {
       console.error('Error submitting feedback:', err);
-      setError(err instanceof Error ? err.message : 'Failed to submit feedback');
+      toast.error('Failed to submit feedback');
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="max-w-3xl mx-auto p-6">
-      <h1 className="text-3xl font-bold mb-6">Submit Feedback</h1>
+    <div className="max-w-2xl mx-auto py-12 px-4">
+      <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
+        <div className="mb-8">
+          <h1 className="text-4xl font-bold mb-2">Share Your Feedback</h1>
+          <p className="text-muted-foreground">Help us improve the hostel management experience</p>
+        </div>
 
-      <Card className="p-6">
-        <form onSubmit={handleSubmit} className="space-y-6">
-          {error && (
-            <div className="p-4 bg-red-50 border border-red-200 rounded-lg text-red-600">
-              {error}
-            </div>
-          )}
+        <Card className="border border-border/50 shadow-lg">
+          <CardHeader className="bg-gradient-to-r from-primary/5 via-transparent to-transparent">
+            <CardTitle>Submit Feedback</CardTitle>
+          </CardHeader>
+          <CardContent className="pt-6">
+            <form onSubmit={handleSubmit} className="space-y-6">
+              {/* Type Selection */}
+              <div>
+                <label className="block text-sm font-bold mb-3 uppercase tracking-wider">Feedback Type</label>
+                <div className="grid grid-cols-2 gap-3">
+                  {[
+                    { value: 'feature' as FeedbackType, icon: '💡', label: 'Feature Request', desc: 'Suggest something new' },
+                    { value: 'issue' as FeedbackType, icon: '🐛', label: 'Report Issue', desc: 'Report a problem' }
+                  ].map((option) => (
+                    <motion.button
+                      key={option.value}
+                      type="button"
+                      onClick={() => setType(option.value)}
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
+                      className={`p-4 rounded-xl border-2 transition-all text-left ${
+                        type === option.value
+                          ? 'border-primary bg-primary/5 shadow-md'
+                          : 'border-border hover:border-primary/50 bg-card'
+                      }`}
+                    >
+                      <div className="text-2xl mb-2">{option.icon}</div>
+                      <div className="font-semibold text-sm">{option.label}</div>
+                      <div className="text-xs text-muted-foreground">{option.desc}</div>
+                    </motion.button>
+                  ))}
+                </div>
+              </div>
 
-          <div>
-            <label className="block text-sm font-medium mb-2">Type</label>
-            <div className="flex gap-4">
-              <button
-                type="button"
-                onClick={() => setType('feature')}
-                className={`flex-1 p-4 rounded-lg border-2 transition-all ${
-                  type === 'feature'
-                    ? 'border-blue-500 bg-blue-50'
-                    : 'border-gray-200 hover:border-gray-300'
-                }`}
-              >
-                <div className="text-2xl mb-2">💡</div>
-                <div className="font-semibold">Feature Request</div>
-                <div className="text-sm text-gray-600">Suggest a new feature</div>
-              </button>
-              <button
-                type="button"
-                onClick={() => setType('issue')}
-                className={`flex-1 p-4 rounded-lg border-2 transition-all ${
-                  type === 'issue'
-                    ? 'border-red-500 bg-red-50'
-                    : 'border-gray-200 hover:border-gray-300'
-                }`}
-              >
-                <div className="text-2xl mb-2">🐛</div>
-                <div className="font-semibold">Report Issue</div>
-                <div className="text-sm text-gray-600">Report a bug or problem</div>
+              {/* Title Field */}
+              <div>
+                <label className="block text-sm font-bold mb-2 uppercase tracking-wider">Title</label>
+                <div className="relative">
+                  <input
+                    type="text"
+                    value={title}
+                    onChange={(e) => {
+                      setTitle(e.target.value);
+                      if (errors.title) setErrors({ ...errors, title: undefined });
+                    }}
+                    placeholder="Briefly describe your feedback..."
+                    className={`w-full px-4 py-3 rounded-lg border-2 transition-all focus:outline-none focus:ring-2 focus:ring-primary/50 ${
+                      errors.title ? 'border-red-500 bg-red-50/50' : 'border-border focus:border-primary'
+                    }`}
+                    maxLength={100}
+                  />
+                  <div className="absolute right-3 top-3 text-xs font-medium text-muted-foreground">
+                    {title.length}/100
+                  </div>
+                </div>
+                {errors.title && (
+                  <motion.p initial={{ opacity: 0, y: -5 }} animate={{ opacity: 1, y: 0 }} className="text-xs text-red-600 mt-2 flex items-center gap-1">
+                    <AlertCircle className="h-3 w-3" /> {errors.title}
+                  </motion.p>
+                )}
+              </div>
+
+              {/* Description Field */}
+              <div>
+                <label className="block text-sm font-bold mb-2 uppercase tracking-wider">Description</label>
+                <div className="relative">
+                  <textarea
+                    value={description}
+                    onChange={(e) => {
+                      setDescription(e.target.value);
+                      if (errors.description) setErrors({ ...errors, description: undefined });
+                    }}
+                    placeholder="Provide more details about your feedback..."
+                    rows={6}
+                    className={`w-full px-4 py-3 rounded-lg border-2 transition-all focus:outline-none focus:ring-2 focus:ring-primary/50 resize-none ${
+                      errors.description ? 'border-red-500 bg-red-50/50' : 'border-border focus:border-primary'
+                    }`}
+                    maxLength={2000}
+                  />
+                  <div className="absolute right-3 bottom-3 text-xs font-medium text-muted-foreground">
+                    {description.length}/2000
+                  </div>
+                </div>
+                {errors.description && (
+                  <motion.p initial={{ opacity: 0, y: -5 }} animate={{ opacity: 1, y: 0 }} className="text-xs text-red-600 mt-2 flex items-center gap-1">
+                    <AlertCircle className="h-3 w-3" /> {errors.description}
+                  </motion.p>
+                )}
+              </div>
+
+              {/* Submit Button */}
+              <motion.div className="flex gap-3 pt-4" whileHover={{ scale: 1.01 }}>
+                <LoadingButton
+                  type="submit"
+                  size="lg"
+                  className="flex-1 gap-2 bg-primary hover:bg-primary/90"
+                  loading={loading}
+                  loadingText="Submitting..."
+                >
+                  <SendIcon className="h-4 w-4" />
+                  Submit Feedback
+                </LoadingButton>
+                <Button
+                  type="button"
+                  size="lg"
+                  variant="outline"
+                  onClick={() => router.back()}
+                >
+                  Cancel
+                </Button>
+              </motion.div>
+            </form>
+          </CardContent>
+        </Card>
+      </motion.div>
+    </div>
+  );
               </button>
             </div>
           </div>

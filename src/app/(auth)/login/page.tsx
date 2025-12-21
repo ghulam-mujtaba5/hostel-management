@@ -35,20 +35,43 @@ function LoginContent() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError("");
     setLoading(true);
 
     try {
+      if (!email.trim()) {
+        throw new Error("Email is required");
+      }
+      if (!password) {
+        throw new Error("Password is required");
+      }
+
       if (isLogin) {
         const { error } = await signIn(email, password);
-        if (error) throw error;
+        if (error) {
+          if (error.message?.includes('Invalid login credentials')) {
+            throw new Error('Invalid email or password');
+          }
+          throw error;
+        }
+        toast.success('Logged in successfully!', { description: 'Welcome back!' });
         router.push(returnTo || "/");
       } else {
         if (!username.trim()) {
           throw new Error("Username is required");
         }
+        if (password.length < 6) {
+          throw new Error("Password must be at least 6 characters");
+        }
+        
         const { data, error } = await signUp(email, password, username);
-        if (error) throw error;
+        if (error) {
+          if (error.message?.includes('already registered')) {
+            throw new Error('Email is already registered');
+          }
+          throw error;
+        }
+
+        toast.success('Account created!', { description: 'Welcome to the platform!' });
 
         // If we have a hostelName, create it immediately
         if (hostelName && data.user) {

@@ -10,6 +10,7 @@ import { TASK_CATEGORIES, TaskCategory } from "@/types";
 import { motion, AnimatePresence } from "framer-motion";
 import { SlideInCard } from "@/components/Animations";
 import { toast } from "@/components/Toast";
+import { LoadingButton } from "@/components/LoadingButton";
 
 export default function PreferencesPage() {
   const { user, currentSpace } = useAuth();
@@ -25,6 +26,7 @@ export default function PreferencesPage() {
       setPreferredCategories(prev => [...prev, category]);
       setAvoidedCategories(prev => prev.filter(c => c !== category));
     }
+    setSaved(false);
   };
 
   const toggleAvoided = (category: TaskCategory) => {
@@ -34,6 +36,7 @@ export default function PreferencesPage() {
       setAvoidedCategories(prev => [...prev, category]);
       setPreferredCategories(prev => prev.filter(c => c !== category));
     }
+    setSaved(false);
   };
 
   const handleSave = async () => {

@@ -2,17 +2,16 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Card, CardContent } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { ArrowLeft, Sparkles, Calendar, FileText, Tag, Gauge, Check } from "lucide-react";
+import { ArrowLeft, Calendar, FileText, Tag, Check, AlertCircle, Sparkles } from "lucide-react";
 import Link from "next/link";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/lib/supabase";
 import { TASK_CATEGORIES, TaskCategory } from "@/types";
 import { motion, AnimatePresence } from "framer-motion";
-import { SlideInCard } from "@/components/Animations";
 import { toast } from "@/components/Toast";
+import { LoadingButton } from "@/components/LoadingButton";
 
 const DIFFICULTY_LABELS = [
   { range: [1, 3], label: "Easy", color: "text-green-600 dark:text-green-400", bg: "bg-green-100 dark:bg-green-900/30" },
@@ -28,7 +27,7 @@ export default function CreateTaskPage() {
   const { user, currentSpace } = useAuth();
   const router = useRouter();
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
+  const [errors, setErrors] = useState<{ title?: string; description?: string }>({});
   
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
@@ -38,12 +37,35 @@ export default function CreateTaskPage() {
 
   const difficultyInfo = getDifficultyInfo(difficulty);
 
+  const validateForm = () => {
+    const newErrors: typeof errors = {};
+    
+    if (!title.trim()) {
+      newErrors.title = 'Task title is required';
+    } else if (title.length < 5) {
+      newErrors.title = 'Title must be at least 5 characters';
+    } else if (title.length > 100) {
+      newErrors.title = 'Title must be less than 100 characters';
+    }
+
+    if (description && description.length > 500) {
+      newErrors.description = 'Description must be less than 500 characters';
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!currentSpace || !user) return;
     
+    if (!validateForm()) {
+      toast.error('Please fix the errors above');
+      return;
+    }
+
     setLoading(true);
-    setError("");
 
     try {
       const { error: insertError } = await supabase.from('tasks').insert({
@@ -66,10 +88,10 @@ export default function CreateTaskPage() {
         details: { title, category, difficulty },
       });
 
-      toast.success('Task created successfully!', { emoji: '✅' });
-      router.push('/tasks');
+      toast.success('Task created!', { emoji: '✨', subtitle: 'Task added to the list' });
+      setTimeout(() => router.push('/tasks'), 500);
     } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : 'Failed to create task');
+      console.error('Failed to create task:', err);
       toast.error('Failed to create task');
     } finally {
       setLoading(false);

@@ -142,6 +142,8 @@ export function TaskCard({ task, showAssignee = false, onUpdate, recommended = f
       exit={{ opacity: 0, scale: 0.95 }}
       whileHover={{ y: -2 }}
       transition={{ duration: 0.2 }}
+      role="article"
+      aria-label={`Task: ${task.title}`}
     >
       <Card className={cn(
         "overflow-hidden transition-all border border-border/50 shadow-sm hover:shadow-md hover:border-primary/20",
