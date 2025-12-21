@@ -42,3 +42,4 @@ A mobile-first, multi-tenant duties management system for hostels and flats.
 - TypeScript
 - Tailwind CSS
 - Supabase (Auth, Database, Storage)
+# Production deployment
