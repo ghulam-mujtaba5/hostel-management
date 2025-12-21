@@ -2,6 +2,7 @@
 
 import { motion, AnimatePresence, HTMLMotionProps } from "framer-motion";
 import { ReactNode, forwardRef } from "react";
+import { cn } from "@/lib/utils";
 
 // Animation variants
 export const fadeIn = {
