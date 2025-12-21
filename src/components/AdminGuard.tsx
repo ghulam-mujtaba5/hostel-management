@@ -107,7 +107,7 @@ export function AdminGuard({ children }: AdminGuardProps) {
                     }
                   }}
                   className="text-center text-2xl tracking-[1em]"
-                  maxLength={8}
+                  maxLength={9}
                 />
                 {error && <p className="text-sm text-red-500 text-center">{error}</p>}
               </div>
