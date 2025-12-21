@@ -68,7 +68,6 @@ function CreateSpaceContent() {
     }
 
     setLoading(true);
-    setError("");
 
     try {
       // Ensure profile exists (safety check)

@@ -142,25 +142,26 @@ select:focus-visible {
     --color-border: #fff;
   }
 }
-    padding: 10px 16px;
-  }
 
-  /* Extra padding for small icon-only buttons */
-  button:has(svg:only-child),
-  [role="button"]:has(svg:only-child) {
-    padding: 10px;
-  }
+/* Mobile touch targets (44px minimum) */
+button,
+[role="button"],
+a,
+[role="link"] {
+  min-height: 44px;
+  min-width: 44px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
 
-  input, select, textarea {
-    min-height: 44px;
-    font-size: 16px; /* Prevent zoom on iOS */
-    padding: 10px 12px;
-  }
-
-  /* Ensure proper spacing for interactive elements */
-  a {
-    padding: 8px 4px;
-  }
+/* Better spacing for form inputs */
+input,
+textarea,
+select {
+  min-height: 44px;
+  font-size: 16px;
+  padding: 10px 12px;
 }
 
 /* Custom scrollbar */
