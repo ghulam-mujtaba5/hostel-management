@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, Check, Heart, X, Info } from "lucide-react";
+import { ArrowLeft, Check, Heart, X, Info, Sparkles, HelpCircle, RotateCcw, BookOpen } from "lucide-react";
 import Link from "next/link";
 import { useAuth } from "@/contexts/AuthContext";
 import { TASK_CATEGORIES, TaskCategory } from "@/types";
@@ -230,6 +230,60 @@ export default function PreferencesPage() {
               </CardContent>
             </Card>
           </div>
+        </SlideInCard>
+
+        {/* Help & Support Section */}
+        <SlideInCard direction="up" delay={0.4}>
+          <Card className="border border-border/50 shadow-sm rounded-[2rem] bg-white dark:bg-slate-900 overflow-hidden">
+            <CardHeader className="p-8 pb-0">
+              <div className="flex items-center gap-4 mb-2">
+                <div className="h-10 w-10 rounded-xl bg-blue-500/10 flex items-center justify-center">
+                  <HelpCircle className="h-5 w-5 text-blue-600" />
+                </div>
+                <CardTitle className="text-xl font-bold">Help & Support</CardTitle>
+              </div>
+              <CardDescription className="font-medium">
+                Need assistance? Here are some helpful resources.
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="p-8">
+              <div className="grid sm:grid-cols-2 gap-4">
+                <Button variant="outline" className="h-auto py-4 rounded-2xl justify-start gap-4" asChild>
+                  <Link href="/guide">
+                    <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
+                      <BookOpen className="h-5 w-5 text-primary" />
+                    </div>
+                    <div className="text-left">
+                      <p className="font-bold">User Guide</p>
+                      <p className="text-xs text-muted-foreground">Learn how to use HostelMate</p>
+                    </div>
+                  </Link>
+                </Button>
+
+                <Button 
+                  variant="outline" 
+                  className="h-auto py-4 rounded-2xl justify-start gap-4"
+                  onClick={() => {
+                    // Reset onboarding states
+                    localStorage.removeItem("hostelmate_welcome_seen");
+                    localStorage.removeItem("hostelmate_tour_completed");
+                    localStorage.removeItem("hostelmate_dashboard_seen");
+                    localStorage.removeItem("hostelmate_checklist_dismissed");
+                    localStorage.removeItem("hostelmate_banner_dismissed");
+                    toast.success("Onboarding reset! Visit the dashboard to see the welcome tour again.");
+                  }}
+                >
+                  <div className="h-10 w-10 rounded-xl bg-purple-500/10 flex items-center justify-center shrink-0">
+                    <RotateCcw className="h-5 w-5 text-purple-500" />
+                  </div>
+                  <div className="text-left">
+                    <p className="font-bold">Reset Onboarding</p>
+                    <p className="text-xs text-muted-foreground">See the welcome tour again</p>
+                  </div>
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
         </SlideInCard>
       </div>
     </div>

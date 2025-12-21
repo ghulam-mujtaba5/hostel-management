@@ -48,23 +48,30 @@ interface CustomToastProps {
   title: string;
   subtitle?: string;
   points?: number;
+  type?: 'success' | 'error' | 'info' | 'warning';
 }
 
-function CustomToast({ emoji, title, subtitle, points }: CustomToastProps) {
+function CustomToast({ emoji, title, subtitle, points, type = 'info' }: CustomToastProps) {
   return (
     <motion.div
       initial={{ x: 50, opacity: 0 }}
       animate={{ x: 0, opacity: 1 }}
       exit={{ x: 50, opacity: 0 }}
       className="flex items-center gap-3 bg-white dark:bg-gray-900 rounded-xl p-4 shadow-lg border"
+      role="alert"
+      aria-live={type === 'error' ? 'assertive' : 'polite'}
+      aria-atomic="true"
     >
-      <span className="text-2xl">{emoji}</span>
+      <span className="text-2xl" aria-hidden="true">{emoji}</span>
       <div className="flex-1">
         <p className="font-medium">{title}</p>
         {subtitle && <p className="text-sm text-muted-foreground">{subtitle}</p>}
       </div>
       {points && (
-        <div className="bg-gradient-to-r from-green-500 to-emerald-600 text-white px-2 py-1 rounded-full text-sm font-bold">
+        <div 
+          className="bg-gradient-to-r from-green-500 to-emerald-600 text-white px-2 py-1 rounded-full text-sm font-bold"
+          aria-label={`Earned ${points} points`}
+        >
           +{points}
         </div>
       )}
@@ -82,6 +89,7 @@ export const toast = {
           title={message}
           subtitle={options?.subtitle}
           points={options?.points}
+          type="success"
         />
       ),
       { duration: 3000 }
@@ -95,6 +103,7 @@ export const toast = {
           emoji="🎯"
           title={getRandomMessage('task_taken')}
           subtitle={`Started: ${taskTitle}`}
+          type="success"
         />
       ),
       { duration: 3000 }
@@ -109,6 +118,7 @@ export const toast = {
           title={getRandomMessage('task_completed')}
           subtitle={`Completed: ${taskTitle}`}
           points={points}
+          type="success"
         />
       ),
       { duration: 4000 }
@@ -122,6 +132,7 @@ export const toast = {
           emoji="🔥"
           title={getRandomMessage('streak')}
           subtitle={`${days} days and counting!`}
+          type="success"
         />
       ),
       { duration: 4000 }
@@ -136,6 +147,7 @@ export const toast = {
           title={getRandomMessage('points')}
           subtitle={reason}
           points={amount}
+          type="success"
         />
       ),
       { duration: 3000 }
@@ -149,18 +161,35 @@ export const toast = {
           emoji="🏆"
           title="New Badge Earned!"
           subtitle={badgeName}
+          type="success"
         />
       ),
       { duration: 5000 }
     );
   },
 
-  error: (message: string) => {
+  error: (message: string, subtitle?: string) => {
     hotToast.custom(
       (t) => (
         <CustomToast
           emoji="❌"
           title={message}
+          subtitle={subtitle}
+          type="error"
+        />
+      ),
+      { duration: 4000 }
+    );
+  },
+
+  warning: (message: string, subtitle?: string) => {
+    hotToast.custom(
+      (t) => (
+        <CustomToast
+          emoji="⚠️"
+          title={message}
+          subtitle={subtitle}
+          type="warning"
         />
       ),
       { duration: 4000 }
@@ -174,10 +203,43 @@ export const toast = {
           emoji="ℹ️"
           title={message}
           subtitle={subtitle}
+          type="info"
         />
       ),
       { duration: 3000 }
     );
+  },
+
+  loading: (message: string) => {
+    return hotToast.custom(
+      (t) => (
+        <CustomToast
+          emoji="⏳"
+          title={message}
+          type="info"
+        />
+      ),
+      { duration: Infinity }
+    );
+  },
+
+  dismiss: (toastId?: string) => {
+    hotToast.dismiss(toastId);
+  },
+
+  promise: <T,>(
+    promise: Promise<T>,
+    messages: {
+      loading: string;
+      success: string | ((data: T) => string);
+      error: string | ((err: Error) => string);
+    }
+  ) => {
+    return hotToast.promise(promise, {
+      loading: messages.loading,
+      success: (data) => typeof messages.success === 'function' ? messages.success(data) : messages.success,
+      error: (err) => typeof messages.error === 'function' ? messages.error(err) : messages.error,
+    });
   },
 };
 

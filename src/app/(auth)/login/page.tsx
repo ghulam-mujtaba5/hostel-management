@@ -76,6 +76,37 @@ function LoginContent() {
 
         // If we have a hostelName, create it immediately
         if (hostelName && data.user) {
+          // Wait for profile to be created by trigger
+          let profileExists = false;
+          let attempts = 0;
+          while (!profileExists && attempts < 10) {
+            const { data: profileData } = await supabase
+              .from('profiles')
+              .select('id')
+              .eq('id', data.user.id)
+              .single();
+            
+            if (profileData) {
+              profileExists = true;
+              break;
+            }
+            
+            attempts++;
+            await new Promise(resolve => setTimeout(resolve, 100));
+          }
+
+          if (!profileExists) {
+            // Force create the profile
+            await supabase
+              .from('profiles')
+              .upsert({
+                id: data.user.id,
+                username,
+                full_name: username,
+              })
+              .select();
+          }
+
           const { data: space, error: spaceError } = await supabase
             .from('spaces')
             .insert({
@@ -184,13 +215,16 @@ function LoginContent() {
                       <Input
                         id="username"
                         type="text"
-                        placeholder="Username"
+                        placeholder="Username *"
                         value={username}
                         onChange={(e) => setUsername(e.target.value)}
                         required={!isLogin}
-                        className="h-12 pl-12 rounded-xl bg-muted/30 border-border/50 focus:bg-background transition-all"
+                        minLength={3}
+                        maxLength={30}
+                        className={`h-12 pl-12 rounded-xl bg-muted/30 border-border/50 focus:bg-background transition-all ${username.length >= 3 ? 'border-green-500/50' : ''}`}
                       />
                     </div>
+                    <p className="text-xs text-muted-foreground px-1">3-30 characters, letters and numbers only</p>
                   </motion.div>
                 )}
               </AnimatePresence>
@@ -201,11 +235,11 @@ function LoginContent() {
                   <Input
                     id="email"
                     type="email"
-                    placeholder="Email Address"
+                    placeholder="Email Address *"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     required
-                    className="h-12 pl-12 rounded-xl bg-muted/30 border-border/50 focus:bg-background transition-all"
+                    className={`h-12 pl-12 rounded-xl bg-muted/30 border-border/50 focus:bg-background transition-all ${email.includes('@') && email.includes('.') ? 'border-green-500/50' : ''}`}
                   />
                 </div>
               </div>
@@ -220,10 +254,13 @@ function LoginContent() {
                     onChange={(e) => setPassword(e.target.value)}
                     required
                     minLength={6}
-                    className="h-12 pl-12 rounded-xl bg-muted/30 border-border/50 focus:bg-background transition-all"
-                    placeholder="Password"
+                    className={`h-12 pl-12 rounded-xl bg-muted/30 border-border/50 focus:bg-background transition-all ${password.length >= 6 ? 'border-green-500/50' : ''}`}
+                    placeholder="Password *"
                   />
                 </div>
+                {!isLogin && (
+                  <p className="text-xs text-muted-foreground px-1">Minimum 6 characters</p>
+                )}
               </div>
               
               <AnimatePresence>

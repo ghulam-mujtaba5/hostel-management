@@ -1,0 +1,23 @@
+{
+  "mcpServers": {
+    "filesystem": {
+      "command": "npx",
+      "args": ["@modelcontextprotocol/server-filesystem", "e:\\Hostel Managment System\\hostel-management"],
+      "description": "Access project files and directory structure"
+    },
+    "supabase": {
+      "command": "node",
+      "args": ["./scripts/mcp-supabase.js"],
+      "description": "Query and manage Supabase database via CLI",
+      "env": {
+        "SUPABASE_ACCESS_TOKEN": "${SUPABASE_ACCESS_TOKEN}",
+        "SUPABASE_PROJECT_ID": "${SUPABASE_PROJECT_ID}"
+      }
+    },
+    "playwright": {
+      "command": "npx",
+      "args": ["@modelcontextprotocol/server-playwright"],
+      "description": "Run and debug Playwright E2E tests"
+    }
+  }
+}

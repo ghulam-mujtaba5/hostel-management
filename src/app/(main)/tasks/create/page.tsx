@@ -115,7 +115,7 @@ export default function CreateTaskPage() {
     <div className="space-y-6">
       <SlideInCard direction="down" delay={0}>
         <div className="flex items-center gap-4">
-          <Button variant="ghost" size="icon" asChild>
+          <Button variant="ghost" size="icon" asChild className="h-11 w-11 min-h-[44px] min-w-[44px] rounded-xl">
             <Link href="/tasks">
               <ArrowLeft className="h-5 w-5" />
             </Link>
@@ -143,14 +143,22 @@ export default function CreateTaskPage() {
                 <label className="text-sm font-medium flex items-center gap-2">
                   <Sparkles className="h-4 w-4 text-primary" />
                   Title
+                  <span className="text-destructive">*</span>
                 </label>
                 <Input
                   placeholder="e.g., Clean the kitchen"
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
                   required
-                  className="h-12 text-base"
+                  maxLength={100}
+                  className={`h-12 text-base transition-all ${errors.title ? 'border-destructive focus:ring-destructive/20' : title.length >= 5 && title.length <= 100 ? 'border-green-500 focus:ring-green-500/20' : ''}`}
                 />
+                <div className="flex justify-between items-center">
+                  <p className="text-xs text-muted-foreground">Make it clear and actionable (5-100 characters)</p>
+                  <span className={`text-xs ${title.length > 80 ? 'text-orange-500 font-medium' : 'text-muted-foreground'}`}>
+                    {title.length}/100
+                  </span>
+                </div>
               </motion.div>
 
               {/* Description */}
@@ -165,11 +173,18 @@ export default function CreateTaskPage() {
                   Description (optional)
                 </label>
                 <textarea
-                  className="flex min-h-[100px] w-full rounded-xl border border-input bg-background px-4 py-3 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 resize-none"
+                  className={`flex min-h-[100px] w-full rounded-xl border border-input bg-background px-4 py-3 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 resize-none transition-all ${errors.description ? 'border-destructive focus:ring-destructive/20' : ''}`}
                   placeholder="Add any details about this task..."
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
+                  maxLength={500}
                 />
+                <div className="flex justify-between items-center">
+                  <p className="text-xs text-muted-foreground">Add helpful context for your flatmates</p>
+                  <span className={`text-xs ${description.length > 400 ? 'text-orange-500 font-medium' : 'text-muted-foreground'}`}>
+                    {description.length}/500
+                  </span>
+                </div>
               </motion.div>
 
               {/* Category */}

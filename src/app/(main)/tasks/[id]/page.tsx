@@ -14,6 +14,8 @@ import { motion, AnimatePresence } from "framer-motion";
 import { SlideInCard } from "@/components/Animations";
 import { useCelebration } from "@/components/Celebrations";
 import { toast } from "@/components/Toast";
+import { getErrorMessage, parseSupabaseError } from "@/lib/errorMessages";
+import { LoadingButton } from "@/components/LoadingButton";
 
 export default function TaskDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
@@ -22,6 +24,8 @@ export default function TaskDetailPage({ params }: { params: Promise<{ id: strin
   const [task, setTask] = useState<Task | null>(null);
   const [loading, setLoading] = useState(true);
   const [uploading, setUploading] = useState(false);
+  const [taking, setTaking] = useState(false);
+  const [verifying, setVerifying] = useState(false);
   const { celebrate, CelebrationComponent } = useCelebration();
 
   useEffect(() => {
@@ -45,15 +49,25 @@ export default function TaskDetailPage({ params }: { params: Promise<{ id: strin
   const handleTakeTask = async () => {
     if (!task || !user) return;
 
-    const { error } = await supabase.rpc('take_task', { task_id: task.id });
-    if (error) {
-      toast.error(error.message);
-      return;
-    }
+    setTaking(true);
+    try {
+      const { error } = await supabase.rpc('take_task', { task_id: task.id });
+      if (error) {
+        const errorCode = parseSupabaseError(error);
+        const errorMsg = getErrorMessage(errorCode);
+        toast.error(`${errorMsg.title}: ${errorMsg.message}`);
+        return;
+      }
 
-    toast.taskTaken(task.title);
-    celebrate('task_taken');
-    fetchTask();
+      toast.taskTaken(task.title);
+      celebrate('task_taken');
+      fetchTask();
+    } catch (err) {
+      const errorMsg = getErrorMessage('NETWORK_ERROR');
+      toast.error(`${errorMsg.title}: ${errorMsg.message}`);
+    } finally {
+      setTaking(false);
+    }
   };
 
   const handleUploadProof = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -97,24 +111,34 @@ export default function TaskDetailPage({ params }: { params: Promise<{ id: strin
   const handleVerify = async (approved: boolean) => {
     if (!task || !user || !currentSpace) return;
 
-    const { error } = await supabase.rpc('verify_task', {
-      task_id: task.id,
-      approved,
-    });
+    setVerifying(true);
+    try {
+      const { error } = await supabase.rpc('verify_task', {
+        task_id: task.id,
+        approved,
+      });
 
-    if (error) {
-      toast.error(error.message);
-      return;
+      if (error) {
+        const errorCode = parseSupabaseError(error);
+        const errorMsg = getErrorMessage(errorCode);
+        toast.error(`${errorMsg.title}: ${errorMsg.message}`);
+        return;
+      }
+
+      if (approved) {
+        celebrate('task_completed', { points: task.difficulty });
+        toast.taskCompleted(task.title, task.difficulty);
+      } else {
+        toast.error('Proof rejected. Task sent back for redo.');
+      }
+
+      fetchTask();
+    } catch (err) {
+      const errorMsg = getErrorMessage('NETWORK_ERROR');
+      toast.error(`${errorMsg.title}: ${errorMsg.message}`);
+    } finally {
+      setVerifying(false);
     }
-
-    if (approved) {
-      celebrate('task_completed', { points: task.difficulty });
-      toast.taskCompleted(task.title, task.difficulty);
-    } else {
-      toast.error('Proof rejected. Task sent back for redo.');
-    }
-
-    fetchTask();
   };
 
   if (loading) {
@@ -157,7 +181,7 @@ export default function TaskDetailPage({ params }: { params: Promise<{ id: strin
       
       <SlideInCard direction="down" delay={0}>
         <div className="flex items-center gap-4">
-          <Button variant="ghost" size="icon" asChild>
+          <Button variant="ghost" size="icon" asChild className="h-11 w-11 min-h-[44px] min-w-[44px] rounded-xl">
             <Link href="/tasks">
               <ArrowLeft className="h-5 w-5" />
             </Link>
@@ -305,14 +329,16 @@ export default function TaskDetailPage({ params }: { params: Promise<{ id: strin
           {/* Take Task */}
           {!task.assigned_to && task.status === 'todo' && (
             <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
-              <Button 
-                className="w-full h-14 bg-gradient-to-r from-primary to-purple-600 hover:from-primary/90 hover:to-purple-600/90 text-base" 
+              <LoadingButton 
+                className="w-full h-14 bg-gradient-to-r from-primary to-purple-600 hover:from-primary/90 hover:to-purple-600/90 text-base min-h-[56px]" 
                 size="lg" 
                 onClick={handleTakeTask}
+                loading={taking}
+                loadingText="Taking task..."
               >
                 <Sparkles className="mr-2 h-5 w-5" />
                 Take This Task
-              </Button>
+              </LoadingButton>
             </motion.div>
           )}
 
@@ -382,25 +408,31 @@ export default function TaskDetailPage({ params }: { params: Promise<{ id: strin
               </p>
               <div className="grid grid-cols-2 gap-3">
                 <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
-                  <Button 
+                  <LoadingButton 
                     variant="outline" 
                     size="lg"
-                    className="w-full h-12 border-red-300 hover:bg-red-50 hover:border-red-500 dark:border-red-800 dark:hover:bg-red-900/30"
+                    className="w-full h-12 min-h-[48px] border-red-300 hover:bg-red-50 hover:border-red-500 dark:border-red-800 dark:hover:bg-red-900/30"
                     onClick={() => handleVerify(false)}
+                    loading={verifying}
+                    loadingText="..."
+                    disabled={verifying}
                   >
                     <X className="mr-2 h-5 w-5 text-red-500" />
                     <span className="text-red-600 dark:text-red-400">Reject</span>
-                  </Button>
+                  </LoadingButton>
                 </motion.div>
                 <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
-                  <Button 
+                  <LoadingButton 
                     size="lg"
-                    className="w-full h-12 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700"
+                    className="w-full h-12 min-h-[48px] bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700"
                     onClick={() => handleVerify(true)}
+                    loading={verifying}
+                    loadingText="Verifying..."
+                    disabled={verifying}
                   >
                     <Check className="mr-2 h-5 w-5" />
                     Approve
-                  </Button>
+                  </LoadingButton>
                 </motion.div>
               </div>
             </div>

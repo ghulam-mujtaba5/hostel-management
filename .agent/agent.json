@@ -1,0 +1,52 @@
+{
+  "name": "Hostel Management System Agent",
+  "version": "1.0.0",
+  "description": "AI agent configuration for autonomous development in the Hostel Management System",
+  "tools": {
+    "codeAnalysis": {
+      "enabled": true,
+      "maxFileSize": 100000,
+      "searchDepth": 3
+    },
+    "fileModification": {
+      "enabled": true,
+      "allowedPaths": ["src/**", "e2e/**", ".github/**", "supabase/migrations/**"],
+      "protectedPaths": [".env*", "package.json", "tsconfig.json", "next.config.ts"]
+    },
+    "testing": {
+      "enabled": true,
+      "framework": "playwright",
+      "command": "npm run test:e2e",
+      "defaultTimeout": 30000
+    },
+    "build": {
+      "enabled": true,
+      "command": "npm run build",
+      "timeout": 120000
+    },
+    "linting": {
+      "enabled": true,
+      "command": "npm run lint",
+      "autoFix": true
+    },
+    "databaseMigration": {
+      "enabled": true,
+      "requiresApproval": true,
+      "migrationsPath": "supabase/migrations",
+      "environment": ["development", "staging"]
+    }
+  },
+  "goals": [
+    "Maintain type safety with strict TypeScript",
+    "Follow fairness algorithm patterns for task recommendations",
+    "Ensure multi-tenant isolation (always filter by space_id)",
+    "Test all changes with Playwright E2E tests",
+    "Document custom error handling patterns"
+  ],
+  "constraints": [
+    "Never modify auth.users directly - use auth triggers",
+    "Always use the fairness scoring system for task recommendations",
+    "Real-time features must unsubscribe on component unmount",
+    "Validate Supabase credentials before using client SDK"
+  ]
+}

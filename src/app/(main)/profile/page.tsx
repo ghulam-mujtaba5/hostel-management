@@ -15,6 +15,7 @@ import { SlideInCard, ProgressRing } from "@/components/Animations";
 import { BadgeDisplay, BADGES, BadgeType, LevelProgress, calculateLevel, StreakBadge } from "@/components/Achievements";
 import { toast } from "@/components/Toast";
 import { EmptyState } from "@/components/EmptyState";
+import { useSignOutConfirm } from "@/components/ConfirmDialog";
 
 export default function ProfilePage() {
   const { user, profile, currentSpace, spaceMembership, signOut, refreshProfile } = useAuth();
@@ -27,6 +28,7 @@ export default function ProfilePage() {
   const [mounted, setMounted] = useState(false);
   const [uploadingPhoto, setUploadingPhoto] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const { confirmSignOut, DialogComponent: SignOutDialog } = useSignOutConfirm();
 
   // Placeholder badges - in production, these would come from the database
   const earnedBadges: BadgeType[] = ['first_task', 'team_player'];
@@ -99,8 +101,11 @@ export default function ProfilePage() {
   };
 
   const handleSignOut = async () => {
-    await signOut();
-    router.push('/login');
+    const confirmed = await confirmSignOut();
+    if (confirmed) {
+      await signOut();
+      router.push('/login');
+    }
   };
 
   if (!user) {
@@ -123,6 +128,7 @@ export default function ProfilePage() {
 
   return (
     <div className="space-y-10 pb-24">
+      {SignOutDialog}
       {/* Profile Header */}
       <SlideInCard direction="down" delay={0}>
         <Card className="overflow-hidden border border-border/50 shadow-sm rounded-[2rem] bg-white dark:bg-slate-900">

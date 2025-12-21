@@ -183,16 +183,20 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     if (error) return { data, error };
 
     if (data.user) {
+      // Wait a bit for the trigger to create the profile
+      await new Promise(resolve => setTimeout(resolve, 500));
+      
       // Attempt to create profile (trigger might have already created it)
-      const { error: profileError } = await supabase.from('profiles').upsert({
-        id: data.user.id,
-        username,
-        full_name: username,
-      }, {
-        onConflict: 'id'
-      });
+      const { error: profileError } = await supabase
+        .from('profiles')
+        .upsert({
+          id: data.user.id,
+          username,
+          full_name: username,
+        })
+        .select();
 
-      if (profileError) {
+      if (profileError && !profileError.message?.includes('duplicate')) {
         // Log the error but don't block signup
         console.error('Profile creation/update error:', profileError);
       }

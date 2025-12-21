@@ -1,62 +1,79 @@
 @import "tailwindcss";
 
 @theme {
-  /* Light Mode Colors - Refined Palette */
-  --color-background: #f8fafc;
-  --color-foreground: #0f172a;
+  /* Premium Light Mode Colors - Professional SaaS Palette */
+  --color-background: #fafbfc;
+  --color-foreground: #0a0f1a;
   --color-card: #ffffff;
-  --color-card-foreground: #0f172a;
+  --color-card-foreground: #0a0f1a;
   --color-popover: #ffffff;
-  --color-popover-foreground: #0f172a;
-  --color-primary: #2563eb;
+  --color-popover-foreground: #0a0f1a;
+  --color-primary: #6366f1;
   --color-primary-foreground: #ffffff;
   --color-secondary: #f1f5f9;
   --color-secondary-foreground: #1e293b;
   --color-muted: #f1f5f9;
   --color-muted-foreground: #64748b;
-  --color-accent: #f1f5f9;
-  --color-accent-foreground: #1e293b;
+  --color-accent: #f0f9ff;
+  --color-accent-foreground: #0369a1;
   --color-destructive: #ef4444;
   --color-destructive-foreground: #ffffff;
-  --color-border: #e2e8f0;
-  --color-input: #e2e8f0;
-  --color-ring: #3b82f6;
+  --color-border: #e5e7eb;
+  --color-input: #e5e7eb;
+  --color-ring: #6366f1;
   --color-success: #10b981;
   --color-success-foreground: #ffffff;
   --color-warning: #f59e0b;
   --color-warning-foreground: #ffffff;
+  --color-info: #0ea5e9;
+  --color-info-foreground: #ffffff;
   
-  /* Radius - More modern rounded corners */
+  /* Extended Palette */
+  --color-gradient-start: #6366f1;
+  --color-gradient-end: #8b5cf6;
+  --color-gradient-accent: #06b6d4;
+  
+  /* Radius - Premium rounded corners */
   --radius-lg: 1rem;
   --radius-md: 0.75rem;
   --radius-sm: 0.5rem;
+  --radius-xl: 1.5rem;
+  --radius-2xl: 2rem;
+  --radius-3xl: 2.5rem;
   
   /* Ring offset */
   --color-ring-offset-background: #ffffff;
+  
+  /* Shadows */
+  --shadow-soft: 0 2px 15px -3px rgba(0, 0, 0, 0.07), 0 10px 20px -2px rgba(0, 0, 0, 0.04);
+  --shadow-glow: 0 0 40px -10px rgba(99, 102, 241, 0.3);
 }
 
-/* Dark mode theme - Deep & Modern */
+/* Premium Dark Mode - Deep & Sophisticated */
 .dark {
-  --color-background: #020617;
+  --color-background: #030712;
   --color-foreground: #f8fafc;
-  --color-card: #0f172a;
+  --color-card: #111827;
   --color-card-foreground: #f8fafc;
-  --color-popover: #0f172a;
+  --color-popover: #111827;
   --color-popover-foreground: #f8fafc;
-  --color-primary: #3b82f6;
+  --color-primary: #818cf8;
   --color-primary-foreground: #ffffff;
-  --color-secondary: #1e293b;
+  --color-secondary: #1f2937;
   --color-secondary-foreground: #f1f5f9;
-  --color-muted: #1e293b;
-  --color-muted-foreground: #94a3b8;
-  --color-accent: #1e293b;
-  --color-accent-foreground: #f1f5f9;
-  --color-destructive: #ef4444;
+  --color-muted: #1f2937;
+  --color-muted-foreground: #9ca3af;
+  --color-accent: #1e3a5f;
+  --color-accent-foreground: #7dd3fc;
+  --color-destructive: #f87171;
   --color-destructive-foreground: #ffffff;
-  --color-border: #1e293b;
-  --color-input: #1e293b;
-  --color-ring: #3b82f6;
-  --color-ring-offset-background: #020617;
+  --color-border: #1f2937;
+  --color-input: #1f2937;
+  --color-ring: #818cf8;
+  --color-ring-offset-background: #030712;
+  --color-gradient-start: #818cf8;
+  --color-gradient-end: #a78bfa;
+  --color-gradient-accent: #22d3ee;
 }
 
 * {
@@ -66,10 +83,99 @@
 body {
   background-color: var(--color-background);
   color: var(--color-foreground);
-  font-family: system-ui, -apple-system, sans-serif;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
   -webkit-tap-highlight-color: transparent;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
+}
+
+/* Premium Typography */
+h1, h2, h3, h4, h5, h6 {
+  font-weight: 700;
+  line-height: 1.15;
+  letter-spacing: -0.025em;
+}
+
+h1 { font-size: 2.5rem; }
+h2 { font-size: 2rem; }
+h3 { font-size: 1.5rem; }
+
+p {
+  line-height: 1.7;
+}
+
+/* Premium Card Styles */
+.premium-card {
+  background: linear-gradient(135deg, var(--color-card) 0%, color-mix(in srgb, var(--color-card) 95%, var(--color-primary)) 100%);
+  border: 1px solid color-mix(in srgb, var(--color-border) 60%, transparent);
+  box-shadow: var(--shadow-soft);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.premium-card:hover {
+  border-color: color-mix(in srgb, var(--color-primary) 30%, transparent);
+  box-shadow: var(--shadow-glow);
+  transform: translateY(-2px);
+}
+
+/* Gradient Text */
+.text-gradient {
+  background: linear-gradient(135deg, var(--color-gradient-start) 0%, var(--color-gradient-end) 50%, var(--color-gradient-accent) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.text-gradient-primary {
+  background: linear-gradient(135deg, var(--color-gradient-start) 0%, var(--color-gradient-end) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Premium Buttons */
+.btn-premium {
+  background: linear-gradient(135deg, var(--color-gradient-start) 0%, var(--color-gradient-end) 100%);
+  box-shadow: 0 4px 14px -3px color-mix(in srgb, var(--color-primary) 50%, transparent);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.btn-premium:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px -3px color-mix(in srgb, var(--color-primary) 60%, transparent);
+}
+
+.btn-premium:active {
+  transform: translateY(0);
+}
+
+/* Glass Effect */
+.glass {
+  background: color-mix(in srgb, var(--color-card) 80%, transparent);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border: 1px solid color-mix(in srgb, var(--color-border) 50%, transparent);
+}
+
+.glass-strong {
+  background: color-mix(in srgb, var(--color-card) 90%, transparent);
+  backdrop-filter: blur(40px) saturate(200%);
+  -webkit-backdrop-filter: blur(40px) saturate(200%);
+  border: 1px solid color-mix(in srgb, var(--color-border) 30%, transparent);
+}
+
+/* Glow Effects */
+.glow-primary {
+  box-shadow: 0 0 40px -10px var(--color-primary);
+}
+
+.glow-success {
+  box-shadow: 0 0 40px -10px var(--color-success);
+}
+
+.glow-warning {
+  box-shadow: 0 0 40px -10px var(--color-warning);
 }
 
 /* Ring offset utility */
