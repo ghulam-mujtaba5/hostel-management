@@ -84,8 +84,9 @@ export default function Dashboard() {
       setWeeklyProgress({ completed: weeklyTasks.length, goal: 5 });
     }
 
-    // TODO: Calculate actual streak from activity log
-    setStreak(Math.floor(Math.random() * 7) + 1); // Placeholder
+    // TODO: Implement streak calculation from activity log
+    // For now, set to 0 as feature is not fully implemented
+    setStreak(0);
     
     setLoading(false);
   };

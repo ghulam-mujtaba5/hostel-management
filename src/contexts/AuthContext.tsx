@@ -183,16 +183,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     if (error) return { data, error };
 
     if (data.user) {
-      // Create profile
-      const { error: profileError } = await supabase.from('profiles').insert({
+      // Attempt to create profile (trigger might have already created it)
+      const { error: profileError } = await supabase.from('profiles').upsert({
         id: data.user.id,
         username,
         full_name: username,
+      }, {
+        onConflict: 'id'
       });
 
       if (profileError) {
-        // If profile creation fails, we should probably delete the auth user or at least return the error
-        return { data, error: profileError };
+        // Log the error but don't block signup
+        console.error('Profile creation/update error:', profileError);
       }
     }
     
