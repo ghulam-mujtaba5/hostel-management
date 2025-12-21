@@ -1,17 +1,19 @@
 "use client";
 
-
 import { useState, useEffect, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useAuth } from "@/contexts/AuthContext";
-import { Home, Mail, Lock, User, Sparkles, ArrowRight } from "lucide-react";
+import { Home, Mail, Lock, User, Sparkles, ArrowRight, Wand2, KeyRound, ArrowLeft, CheckCircle, Eye, EyeOff } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { supabase } from "@/lib/supabase";
 import { toast } from "sonner";
 import { Logo } from "@/components/Logo";
+
+type AuthMode = 'login' | 'signup' | 'forgot-password' | 'magic-link';
 
 function LoginContent() {
   const searchParams = useSearchParams();
@@ -19,24 +21,91 @@ function LoginContent() {
   const mode = searchParams.get("mode");
   const returnTo = searchParams.get("returnTo");
   
-  const [isLogin, setIsLogin] = useState(mode !== "signup");
+  const [authMode, setAuthMode] = useState<AuthMode>(mode === "signup" ? 'signup' : 'login');
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [username, setUsername] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [emailSent, setEmailSent] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
   const { signIn, signUp, refreshSpaces, setCurrentSpace } = useAuth();
   const router = useRouter();
 
+  const isLogin = authMode === 'login';
+  const isSignup = authMode === 'signup';
+  const isForgotPassword = authMode === 'forgot-password';
+  const isMagicLink = authMode === 'magic-link';
+
   useEffect(() => {
     if (hostelName) {
-      setIsLogin(false);
+      setAuthMode('signup');
     }
   }, [hostelName]);
+
+  const handleForgotPassword = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    setError("");
+
+    try {
+      if (!email.trim()) {
+        throw new Error("Email is required");
+      }
+
+      const { error } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: `${window.location.origin}/login?mode=reset`,
+      });
+
+      if (error) throw error;
+
+      setEmailSent(true);
+      toast.success('Reset link sent!', { 
+        description: 'Check your email for the password reset link.' 
+      });
+    } catch (err: any) {
+      console.error('Forgot password error:', err);
+      setError(err.message || "Failed to send reset email");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleMagicLink = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    setError("");
+
+    try {
+      if (!email.trim()) {
+        throw new Error("Email is required");
+      }
+
+      const { error } = await supabase.auth.signInWithOtp({
+        email,
+        options: {
+          emailRedirectTo: `${window.location.origin}${returnTo || '/'}`,
+        },
+      });
+
+      if (error) throw error;
+
+      setEmailSent(true);
+      toast.success('Magic link sent!', { 
+        description: 'Check your email and click the link to sign in.' 
+      });
+    } catch (err: any) {
+      console.error('Magic link error:', err);
+      setError(err.message || "Failed to send magic link");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
+    setError("");
 
     try {
       if (!email.trim()) {
@@ -146,6 +215,41 @@ function LoginContent() {
     }
   };
 
+  const resetToLogin = () => {
+    setAuthMode('login');
+    setError("");
+    setEmailSent(false);
+  };
+
+  const getTitle = () => {
+    switch (authMode) {
+      case 'login': return 'Welcome Back';
+      case 'signup': return 'Create Account';
+      case 'forgot-password': return 'Reset Password';
+      case 'magic-link': return 'Magic Link Sign In';
+    }
+  };
+
+  const getDescription = () => {
+    if (hostelName) {
+      return <span className="text-primary font-semibold">Setting up &quot;{hostelName}&quot;</span>;
+    }
+    switch (authMode) {
+      case 'login': return 'Sign in to manage your hostel duties';
+      case 'signup': return 'Join HostelMate to simplify your shared living';
+      case 'forgot-password': return 'Enter your email to receive a reset link';
+      case 'magic-link': return 'Sign in without a password using email';
+    }
+  };
+
+  const getIcon = () => {
+    switch (authMode) {
+      case 'forgot-password': return <KeyRound className="h-10 w-10 text-white" />;
+      case 'magic-link': return <Wand2 className="h-10 w-10 text-white" />;
+      default: return <Home className="h-10 w-10 text-white" />;
+    }
+  };
+
   return (
     <div className="flex min-h-screen items-center justify-center p-4 relative overflow-hidden bg-slate-50 dark:bg-slate-950">
       {/* Background decoration */}
@@ -163,14 +267,32 @@ function LoginContent() {
       >
         <Card className="border border-border/50 shadow-2xl bg-card/80 backdrop-blur-xl rounded-[2rem] overflow-hidden">
           <CardHeader className="text-center pt-12 pb-6">
+            {/* Back button for forgot password and magic link */}
+            {(isForgotPassword || isMagicLink) && !emailSent && (
+              <motion.button
+                initial={{ opacity: 0, x: -10 }}
+                animate={{ opacity: 1, x: 0 }}
+                onClick={resetToLogin}
+                className="absolute top-6 left-6 p-2 rounded-xl hover:bg-muted/50 transition-colors"
+                aria-label="Back to login"
+              >
+                <ArrowLeft className="h-5 w-5 text-muted-foreground" />
+              </motion.button>
+            )}
+
             <div className="flex justify-center mb-8">
               <motion.div
+                key={authMode}
                 initial={{ scale: 0.5, opacity: 0 }}
                 animate={{ scale: 1, opacity: 1 }}
                 transition={{ type: "spring", stiffness: 200, damping: 20 }}
-                className="h-20 w-20 rounded-2xl bg-primary flex items-center justify-center shadow-lg shadow-primary/20"
+                className={`h-20 w-20 rounded-2xl flex items-center justify-center shadow-lg ${
+                  isForgotPassword ? 'bg-orange-500 shadow-orange-500/20' :
+                  isMagicLink ? 'bg-purple-500 shadow-purple-500/20' :
+                  'bg-primary shadow-primary/20'
+                }`}
               >
-                <Home className="h-10 w-10 text-white" />
+                {getIcon()}
               </motion.div>
             </div>
             <motion.div
@@ -180,136 +302,366 @@ function LoginContent() {
               className="space-y-3"
             >
               <CardTitle className="text-3xl font-bold tracking-tight">
-                {isLogin ? "Welcome Back" : "Create Account"}
-              </CardTitle>
-              <CardDescription className="text-base font-medium text-muted-foreground px-6">
                 <AnimatePresence mode="wait">
                   <motion.span
-                    key={isLogin ? 'login' : 'signup'}
+                    key={authMode}
                     initial={{ opacity: 0, y: 5 }}
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: -5 }}
                   >
-                    {hostelName ? (
-                      <span className="text-primary font-semibold">Setting up "{hostelName}"</span>
-                    ) : (
-                      isLogin ? "Sign in to manage your hostel duties" : "Join HostelMate to simplify your shared living"
-                    )}
+                    {getTitle()}
+                  </motion.span>
+                </AnimatePresence>
+              </CardTitle>
+              <CardDescription className="text-base font-medium text-muted-foreground px-6">
+                <AnimatePresence mode="wait">
+                  <motion.span
+                    key={authMode}
+                    initial={{ opacity: 0, y: 5 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -5 }}
+                  >
+                    {getDescription()}
                   </motion.span>
                 </AnimatePresence>
               </CardDescription>
             </motion.div>
           </CardHeader>
           <CardContent className="p-8 pt-0">
-            <form onSubmit={handleSubmit} className="grid gap-4">
-              <AnimatePresence mode="popLayout">
-                {!isLogin && (
-                  <motion.div 
-                    initial={{ opacity: 0, height: 0 }}
-                    animate={{ opacity: 1, height: 'auto' }}
-                    exit={{ opacity: 0, height: 0 }}
-                    className="grid gap-2"
-                  >
-                    <div className="relative">
-                      <User className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
-                      <Input
-                        id="username"
-                        type="text"
-                        placeholder="Username *"
-                        value={username}
-                        onChange={(e) => setUsername(e.target.value)}
-                        required={!isLogin}
-                        minLength={3}
-                        maxLength={30}
-                        className={`h-12 pl-12 rounded-xl bg-muted/30 border-border/50 focus:bg-background transition-all ${username.length >= 3 ? 'border-green-500/50' : ''}`}
-                      />
-                    </div>
-                    <p className="text-xs text-muted-foreground px-1">3-30 characters, letters and numbers only</p>
-                  </motion.div>
-                )}
-              </AnimatePresence>
-              
-              <div className="grid gap-2">
-                <div className="relative">
-                  <Mail className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
-                  <Input
-                    id="email"
-                    type="email"
-                    placeholder="Email Address *"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    required
-                    className={`h-12 pl-12 rounded-xl bg-muted/30 border-border/50 focus:bg-background transition-all ${email.includes('@') && email.includes('.') ? 'border-green-500/50' : ''}`}
-                  />
+            {/* Email sent success state */}
+            {emailSent ? (
+              <motion.div
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                className="text-center py-8 space-y-6"
+              >
+                <div className="mx-auto w-16 h-16 rounded-full bg-green-500/10 flex items-center justify-center">
+                  <CheckCircle className="h-8 w-8 text-green-500" />
                 </div>
-              </div>
-              
-              <div className="grid gap-2">
-                <div className="relative">
-                  <Lock className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
-                  <Input
-                    id="password"
-                    type="password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    required
-                    minLength={6}
-                    className={`h-12 pl-12 rounded-xl bg-muted/30 border-border/50 focus:bg-background transition-all ${password.length >= 6 ? 'border-green-500/50' : ''}`}
-                    placeholder="Password *"
-                  />
+                <div className="space-y-2">
+                  <h3 className="text-xl font-bold">Check Your Email</h3>
+                  <p className="text-muted-foreground">
+                    We&apos;ve sent a {isForgotPassword ? 'password reset' : 'magic sign-in'} link to:
+                  </p>
+                  <p className="font-semibold text-primary">{email}</p>
                 </div>
-                {!isLogin && (
-                  <p className="text-xs text-muted-foreground px-1">Minimum 6 characters</p>
-                )}
-              </div>
-              
-              <AnimatePresence>
-                {error && (
-                  <motion.div 
-                    initial={{ opacity: 0, scale: 0.95 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    exit={{ opacity: 0, scale: 0.95 }}
-                    className="text-sm font-medium text-destructive bg-destructive/5 p-3 rounded-xl border border-destructive/10 flex items-center gap-2"
+                <div className="space-y-3 pt-4">
+                  <p className="text-sm text-muted-foreground">
+                    Didn&apos;t receive it? Check your spam folder or
+                  </p>
+                  <Button
+                    variant="outline"
+                    onClick={() => setEmailSent(false)}
+                    className="rounded-xl"
                   >
-                    <div className="h-1.5 w-1.5 rounded-full bg-destructive" />
-                    {error}
-                  </motion.div>
-                )}
-              </AnimatePresence>
-              
-              <div className="space-y-4 pt-4">
-                <Button 
-                  type="submit" 
-                  className="w-full h-12 rounded-xl bg-primary hover:bg-primary/90 text-base font-semibold shadow-lg shadow-primary/20 transition-all active:scale-[0.98]" 
-                  disabled={loading}
+                    Try again
+                  </Button>
+                </div>
+                <Button
+                  variant="ghost"
+                  onClick={resetToLogin}
+                  className="text-muted-foreground"
                 >
-                  {loading ? (
-                    <div className="flex items-center gap-2">
-                      <div className="h-4 w-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                      Processing...
-                    </div>
-                  ) : (
-                    <div className="flex items-center gap-2">
-                      {isLogin ? "Sign In" : "Create Account"}
-                      <ArrowRight className="h-4 w-4" />
-                    </div>
-                  )}
+                  <ArrowLeft className="h-4 w-4 mr-2" />
+                  Back to login
                 </Button>
-              </div>
-            </form>
-            
-            <div className="mt-8 text-center">
-              <p className="text-sm text-muted-foreground font-medium">
-                {isLogin ? "New to HostelMate?" : "Already have an account?"}{" "}
-                <button
-                  type="button"
-                  onClick={() => { setIsLogin(!isLogin); setError(""); }}
-                  className="font-bold text-primary hover:underline transition-all"
-                >
-                  {isLogin ? "Create an account" : "Sign in here"}
-                </button>
-              </p>
-            </div>
+              </motion.div>
+            ) : (
+              <>
+                {/* Forgot Password Form */}
+                {isForgotPassword && (
+                  <form onSubmit={handleForgotPassword} className="grid gap-5">
+                    <div className="grid gap-2">
+                      <Label htmlFor="forgot-email" className="text-sm font-semibold text-foreground ml-1">
+                        Email Address <span className="text-destructive">*</span>
+                      </Label>
+                      <div className="relative">
+                        <Mail className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+                        <Input
+                          id="forgot-email"
+                          type="email"
+                          placeholder="Enter your email address"
+                          value={email}
+                          onChange={(e) => setEmail(e.target.value)}
+                          required
+                          autoComplete="email"
+                          className="h-12 pl-12 rounded-xl bg-muted/30 border-border/50 focus:bg-background transition-all"
+                        />
+                      </div>
+                      <p className="text-xs text-muted-foreground px-1">We&apos;ll send a password reset link to this email</p>
+                    </div>
+
+                    <AnimatePresence>
+                      {error && (
+                        <motion.div 
+                          initial={{ opacity: 0, scale: 0.95 }}
+                          animate={{ opacity: 1, scale: 1 }}
+                          exit={{ opacity: 0, scale: 0.95 }}
+                          className="text-sm font-medium text-destructive bg-destructive/5 p-3 rounded-xl border border-destructive/10 flex items-center gap-2"
+                        >
+                          <div className="h-1.5 w-1.5 rounded-full bg-destructive" />
+                          {error}
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+
+                    <Button 
+                      type="submit" 
+                      className="w-full h-12 rounded-xl bg-orange-500 hover:bg-orange-600 text-base font-semibold shadow-lg shadow-orange-500/20 transition-all active:scale-[0.98]" 
+                      disabled={loading}
+                    >
+                      {loading ? (
+                        <div className="flex items-center gap-2">
+                          <div className="h-4 w-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                          Sending...
+                        </div>
+                      ) : (
+                        <div className="flex items-center gap-2">
+                          Send Reset Link
+                          <ArrowRight className="h-4 w-4" />
+                        </div>
+                      )}
+                    </Button>
+                  </form>
+                )}
+
+                {/* Magic Link Form */}
+                {isMagicLink && (
+                  <form onSubmit={handleMagicLink} className="grid gap-5">
+                    <div className="grid gap-2">
+                      <Label htmlFor="magic-email" className="text-sm font-semibold text-foreground ml-1">
+                        Email Address <span className="text-destructive">*</span>
+                      </Label>
+                      <div className="relative">
+                        <Mail className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+                        <Input
+                          id="magic-email"
+                          type="email"
+                          placeholder="Enter your email address"
+                          value={email}
+                          onChange={(e) => setEmail(e.target.value)}
+                          required
+                          autoComplete="email"
+                          className="h-12 pl-12 rounded-xl bg-muted/30 border-border/50 focus:bg-background transition-all"
+                        />
+                      </div>
+                    </div>
+
+                    <AnimatePresence>
+                      {error && (
+                        <motion.div 
+                          initial={{ opacity: 0, scale: 0.95 }}
+                          animate={{ opacity: 1, scale: 1 }}
+                          exit={{ opacity: 0, scale: 0.95 }}
+                          className="text-sm font-medium text-destructive bg-destructive/5 p-3 rounded-xl border border-destructive/10 flex items-center gap-2"
+                        >
+                          <div className="h-1.5 w-1.5 rounded-full bg-destructive" />
+                          {error}
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+
+                    <Button 
+                      type="submit" 
+                      className="w-full h-12 rounded-xl bg-purple-500 hover:bg-purple-600 text-base font-semibold shadow-lg shadow-purple-500/20 transition-all active:scale-[0.98]" 
+                      disabled={loading}
+                    >
+                      {loading ? (
+                        <div className="flex items-center gap-2">
+                          <div className="h-4 w-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                          Sending...
+                        </div>
+                      ) : (
+                        <div className="flex items-center gap-2">
+                          <Wand2 className="h-4 w-4" />
+                          Send Magic Link
+                        </div>
+                      )}
+                    </Button>
+
+                    <p className="text-xs text-center text-muted-foreground mt-2">
+                      No password needed! We&apos;ll send you a link to sign in instantly.
+                    </p>
+                  </form>
+                )}
+
+                {/* Login/Signup Form */}
+                {(isLogin || isSignup) && (
+                  <>
+                    <form onSubmit={handleSubmit} className="grid gap-5">
+                      <AnimatePresence mode="popLayout">
+                        {isSignup && (
+                          <motion.div 
+                            initial={{ opacity: 0, height: 0 }}
+                            animate={{ opacity: 1, height: 'auto' }}
+                            exit={{ opacity: 0, height: 0 }}
+                            className="grid gap-2"
+                          >
+                            <Label htmlFor="username" className="text-sm font-semibold text-foreground ml-1">
+                              Username <span className="text-destructive">*</span>
+                            </Label>
+                            <div className="relative">
+                              <User className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+                              <Input
+                                id="username"
+                                type="text"
+                                placeholder="Enter your username"
+                                value={username}
+                                onChange={(e) => setUsername(e.target.value)}
+                                required={isSignup}
+                                minLength={3}
+                                maxLength={30}
+                                autoComplete="username"
+                                className={`h-12 pl-12 rounded-xl bg-muted/30 border-border/50 focus:bg-background transition-all ${username.length >= 3 ? 'border-green-500/50 focus:border-green-500' : ''}`}
+                              />
+                            </div>
+                            <p className="text-xs text-muted-foreground px-1">3-30 characters, letters and numbers only</p>
+                          </motion.div>
+                        )}
+                      </AnimatePresence>
+                      
+                      <div className="grid gap-2">
+                        <Label htmlFor="email" className="text-sm font-semibold text-foreground ml-1">
+                          Email Address <span className="text-destructive">*</span>
+                        </Label>
+                        <div className="relative">
+                          <Mail className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+                          <Input
+                            id="email"
+                            type="email"
+                            placeholder="you@example.com"
+                            value={email}
+                            onChange={(e) => setEmail(e.target.value)}
+                            required
+                            autoComplete="email"
+                            className={`h-12 pl-12 rounded-xl bg-muted/30 border-border/50 focus:bg-background transition-all ${email.includes('@') && email.includes('.') ? 'border-green-500/50 focus:border-green-500' : ''}`}
+                          />
+                        </div>
+                      </div>
+                      
+                      <div className="grid gap-2">
+                        <Label htmlFor="password" className="text-sm font-semibold text-foreground ml-1">
+                          Password <span className="text-destructive">*</span>
+                        </Label>
+                        <div className="relative">
+                          <Lock className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+                          <Input
+                            id="password"
+                            type={showPassword ? "text" : "password"}
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
+                            required
+                            minLength={6}
+                            autoComplete={isSignup ? "new-password" : "current-password"}
+                            className={`h-12 pl-12 pr-12 rounded-xl bg-muted/30 border-border/50 focus:bg-background transition-all ${password.length >= 6 ? 'border-green-500/50 focus:border-green-500' : ''}`}
+                            placeholder={isSignup ? "Create a password (min 6 chars)" : "Enter your password"}
+                          />
+                          <button
+                            type="button"
+                            onClick={() => setShowPassword(!showPassword)}
+                            className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                            aria-label={showPassword ? "Hide password" : "Show password"}
+                          >
+                            {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+                          </button>
+                        </div>
+                        {isSignup && (
+                          <p className="text-xs text-muted-foreground px-1">Minimum 6 characters required</p>
+                        )}
+                      </div>
+
+                      {/* Forgot Password Link */}
+                      {isLogin && (
+                        <div className="flex justify-end">
+                          <button
+                            type="button"
+                            onClick={() => { setAuthMode('forgot-password'); setError(""); }}
+                            className="text-sm text-muted-foreground hover:text-primary transition-colors"
+                          >
+                            Forgot password?
+                          </button>
+                        </div>
+                      )}
+                      
+                      <AnimatePresence>
+                        {error && (
+                          <motion.div 
+                            initial={{ opacity: 0, scale: 0.95 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            exit={{ opacity: 0, scale: 0.95 }}
+                            className="text-sm font-medium text-destructive bg-destructive/5 p-3 rounded-xl border border-destructive/10 flex items-center gap-2"
+                          >
+                            <div className="h-1.5 w-1.5 rounded-full bg-destructive" />
+                            {error}
+                          </motion.div>
+                        )}
+                      </AnimatePresence>
+                      
+                      <div className="space-y-4 pt-4">
+                        <Button 
+                          type="submit" 
+                          className="w-full h-12 rounded-xl bg-primary hover:bg-primary/90 text-base font-semibold shadow-lg shadow-primary/20 transition-all active:scale-[0.98]" 
+                          disabled={loading}
+                        >
+                          {loading ? (
+                            <div className="flex items-center gap-2">
+                              <div className="h-4 w-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                              Processing...
+                            </div>
+                          ) : (
+                            <div className="flex items-center gap-2">
+                              {isLogin ? "Sign In" : "Create Account"}
+                              <ArrowRight className="h-4 w-4" />
+                            </div>
+                          )}
+                        </Button>
+                      </div>
+                    </form>
+
+                    {/* Divider */}
+                    {isLogin && (
+                      <>
+                        <div className="relative my-6">
+                          <div className="absolute inset-0 flex items-center">
+                            <span className="w-full border-t border-muted" />
+                          </div>
+                          <div className="relative flex justify-center text-xs uppercase">
+                            <span className="bg-card px-2 text-muted-foreground font-bold">Or</span>
+                          </div>
+                        </div>
+
+                        {/* Magic Link Button */}
+                        <Button 
+                          type="button"
+                          variant="outline"
+                          onClick={() => { setAuthMode('magic-link'); setError(""); }}
+                          className="w-full h-12 rounded-xl border-purple-500/30 hover:bg-purple-500/10 hover:text-purple-600 hover:border-purple-500/50 transition-all"
+                        >
+                          <Wand2 className="h-4 w-4 mr-2" />
+                          Sign in with Magic Link
+                        </Button>
+                      </>
+                    )}
+                  </>
+                )}
+
+                {/* Toggle Login/Signup */}
+                {(isLogin || isSignup) && (
+                  <div className="mt-8 text-center">
+                    <p className="text-sm text-muted-foreground font-medium">
+                      {isLogin ? "New to HostelMate?" : "Already have an account?"}{" "}
+                      <button
+                        type="button"
+                        onClick={() => { setAuthMode(isLogin ? 'signup' : 'login'); setError(""); }}
+                        className="font-bold text-primary hover:underline transition-all"
+                      >
+                        {isLogin ? "Create an account" : "Sign in here"}
+                      </button>
+                    </p>
+                  </div>
+                )}
+              </>
+            )}
           </CardContent>
         </Card>
       </motion.div>

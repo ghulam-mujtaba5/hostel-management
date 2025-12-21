@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Plus, Filter, CheckCircle, Calendar, ListTodo, Clock, CheckCircle2, Search, Sparkles } from "lucide-react";
+import { Plus, Filter, CheckCircle, Calendar, ListTodo, Clock, CheckCircle2, Search, Sparkles, LogIn, UserPlus } from "lucide-react";
 import Link from "next/link";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/lib/supabase";
@@ -17,7 +17,7 @@ import { SlideInCard } from "@/components/Animations";
 type TabType = 'my' | 'available' | 'completed';
 
 export default function TasksPage() {
-  const { user, currentSpace } = useAuth();
+  const { user, currentSpace, loading: authLoading } = useAuth();
   const [tasks, setTasks] = useState<Task[]>([]);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<TabType>('my');
@@ -63,6 +63,55 @@ export default function TasksPage() {
                          t.description?.toLowerCase().includes(searchQuery.toLowerCase());
     return matchesCategory && matchesSearch;
   });
+
+  // Show loading while checking auth
+  if (authLoading) {
+    return (
+      <div className="space-y-6">
+        <TaskCardSkeleton />
+        <TaskCardSkeleton />
+        <TaskCardSkeleton />
+      </div>
+    );
+  }
+
+  // Show sign-in prompt for unauthenticated users
+  if (!user) {
+    return (
+      <div className="min-h-[60vh] flex flex-col items-center justify-center text-center p-6">
+        <motion.div
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.3 }}
+          className="space-y-6 max-w-md"
+        >
+          <div className="h-24 w-24 rounded-[2rem] bg-gradient-to-br from-primary/20 to-purple-500/20 flex items-center justify-center mx-auto">
+            <ListTodo className="h-12 w-12 text-primary" />
+          </div>
+          <div className="space-y-2">
+            <h2 className="text-3xl font-black tracking-tight">Sign In Required</h2>
+            <p className="text-muted-foreground font-medium">
+              Please sign in to view and manage tasks with your flatmates.
+            </p>
+          </div>
+          <div className="flex flex-col sm:flex-row gap-3 justify-center pt-4">
+            <Button asChild size="lg" className="rounded-xl px-8 font-bold gap-2">
+              <Link href="/login">
+                <LogIn className="h-4 w-4" />
+                Sign In
+              </Link>
+            </Button>
+            <Button asChild size="lg" variant="outline" className="rounded-xl px-8 font-bold gap-2">
+              <Link href="/login?mode=signup">
+                <UserPlus className="h-4 w-4" />
+                Create Account
+              </Link>
+            </Button>
+          </div>
+        </motion.div>
+      </div>
+    );
+  }
 
   if (!currentSpace) {
     return (
