@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import Link from "next/link";
-import { ArrowRight, CheckCircle, Trophy, Sparkles, Plus, Users, Flame, TrendingUp, Target } from "lucide-react";
+import { ArrowRight, CheckCircle, Trophy, Sparkles, Plus, Users, Flame, TrendingUp, Target, Scale, Shield, UserPlus, BookOpen } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/lib/supabase";
 import { Task, SpaceMember, Profile, TASK_CATEGORIES, getDifficultyLabel } from "@/types";
@@ -19,6 +19,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { toast } from "@/components/Toast";
 import { Home } from "lucide-react";
 import { Logo } from "@/components/Logo";
+import { cn } from "@/lib/utils";
 
 export default function Dashboard() {
   const { user, profile, currentSpace, loading: authLoading } = useAuth();
@@ -324,8 +325,8 @@ export default function Dashboard() {
             transition={{ delay: 0.4 }}
             className="grid sm:grid-cols-2 gap-6 max-w-2xl mx-auto"
           >
-            <Card className="border-2 border-primary/10 hover:border-primary/30 transition-all group cursor-pointer overflow-hidden" asChild>
-              <Link href="/spaces/create">
+            <Link href="/spaces/create" className="block">
+              <Card className="border-2 border-primary/10 hover:border-primary/30 transition-all group cursor-pointer overflow-hidden h-full">
                 <CardContent className="p-8 text-center space-y-4">
                   <div className="mx-auto h-16 w-16 rounded-2xl bg-primary/10 flex items-center justify-center group-hover:scale-110 transition-transform">
                     <Plus className="h-8 w-8 text-primary" />
@@ -333,11 +334,11 @@ export default function Dashboard() {
                   <h3 className="text-2xl font-bold">Create a Space</h3>
                   <p className="text-muted-foreground">Start a new community for your hostel or flat.</p>
                 </CardContent>
-              </Link>
-            </Card>
+              </Card>
+            </Link>
 
-            <Card className="border-2 border-purple-500/10 hover:border-purple-500/30 transition-all group cursor-pointer overflow-hidden" asChild>
-              <Link href="/spaces/join">
+            <Link href="/spaces/join" className="block">
+              <Card className="border-2 border-purple-500/10 hover:border-purple-500/30 transition-all group cursor-pointer overflow-hidden h-full">
                 <CardContent className="p-8 text-center space-y-4">
                   <div className="mx-auto h-16 w-16 rounded-2xl bg-purple-500/10 flex items-center justify-center group-hover:scale-110 transition-transform">
                     <UserPlus className="h-8 w-8 text-purple-500" />
@@ -345,8 +346,8 @@ export default function Dashboard() {
                   <h3 className="text-2xl font-bold">Join a Space</h3>
                   <p className="text-muted-foreground">Use an invite code to join your flatmates.</p>
                 </CardContent>
-              </Link>
-            </Card>
+              </Card>
+            </Link>
           </motion.div>
 
           <motion.div
@@ -372,21 +373,21 @@ export default function Dashboard() {
   const levelInfo = calculateLevel(userPoints);
 
   return (
-    <div className="space-y-8 pb-20">
+    <div className="space-y-10 pb-20">
       {CelebrationComponent}
       
       {/* Welcome & Daily Inspiration */}
       <div className="grid lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2">
           <SlideInCard direction="down" delay={0}>
-            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-gradient-to-br from-primary/10 via-purple-500/5 to-transparent p-8 rounded-[2.5rem] border border-primary/10">
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 bg-white dark:bg-slate-900 p-8 rounded-[2rem] border border-border/50 shadow-sm">
               <div className="space-y-2">
-                <h1 className="text-3xl md:text-4xl font-black tracking-tight">
-                  Assalamu Alaikum, <br />
-                  <span className="text-primary">{profile?.full_name || profile?.username || 'Brother'}!</span>
+                <h1 className="text-3xl md:text-4xl font-bold tracking-tight">
+                  Welcome back, <br />
+                  <span className="text-primary">{profile?.full_name || profile?.username || 'User'}!</span>
                   <motion.span
-                    animate={{ rotate: [0, 20, 0] }}
-                    transition={{ duration: 0.5, repeat: Infinity, repeatDelay: 2 }}
+                    animate={{ rotate: [0, 15, 0] }}
+                    transition={{ duration: 1.5, repeat: Infinity, repeatDelay: 3 }}
                     className="inline-block ml-3"
                   >
                     👋
@@ -394,16 +395,16 @@ export default function Dashboard() {
                 </h1>
                 <p className="text-muted-foreground font-medium flex items-center gap-2">
                   <Home className="h-4 w-4" />
-                  {currentSpace.name} • {userMemberInfo?.room_number ? `Room ${userMemberInfo.room_number}` : 'No Room Assigned'}
+                  {currentSpace.name} {userMemberInfo?.room_number && `• Room ${userMemberInfo.room_number}`}
                 </p>
               </div>
               {streak > 0 && (
-                <div className="flex items-center gap-4">
+                <div className="flex items-center gap-6">
                   <StreakBadge streak={streak} />
                   <div className="h-12 w-[1px] bg-border hidden md:block" />
                   <div className="text-right hidden md:block">
-                    <p className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Current Rank</p>
-                    <p className="text-2xl font-black text-primary">#{userRank}</p>
+                    <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Current Rank</p>
+                    <p className="text-2xl font-bold text-primary">#{userRank}</p>
                   </div>
                 </div>
               )}
@@ -412,18 +413,18 @@ export default function Dashboard() {
         </div>
 
         <SlideInCard direction="right" delay={0.1}>
-          <Card className="h-full border-0 shadow-xl bg-gradient-to-br from-amber-500/10 to-orange-500/5 rounded-[2.5rem] overflow-hidden relative group">
+          <Card className="h-full border-0 shadow-sm bg-gradient-to-br from-primary/5 to-blue-500/5 rounded-[2rem] overflow-hidden relative group">
             <div className="absolute top-0 right-0 p-6 opacity-10 group-hover:scale-110 transition-transform duration-500">
-              <Sparkles size={80} className="text-amber-600" />
+              <Sparkles size={80} className="text-primary" />
             </div>
             <CardContent className="p-8 space-y-4 relative">
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-500/20 text-amber-700 dark:text-amber-400 text-xs font-bold uppercase tracking-wider">
-                Daily Reminder
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 text-primary text-xs font-bold uppercase tracking-wider">
+                Daily Motivation
               </div>
-              <p className="text-lg font-medium italic leading-relaxed">
-                "Cleanliness is half of faith (Iman)."
+              <p className="text-lg font-medium leading-relaxed">
+                "Small acts, when multiplied by millions of people, can transform the world."
               </p>
-              <p className="text-sm text-muted-foreground font-bold">— Sahih Muslim</p>
+              <p className="text-sm text-muted-foreground font-semibold">— Howard Zinn</p>
             </CardContent>
           </Card>
         </SlideInCard>
@@ -433,8 +434,8 @@ export default function Dashboard() {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         {/* Level Card */}
         <SlideInCard direction="up" delay={0.15} className="lg:col-span-2">
-          <Card className="h-full border-0 shadow-xl bg-card/50 backdrop-blur-sm rounded-[2.5rem] p-2">
-            <CardContent className="p-6">
+          <Card className="h-full border border-border/50 shadow-sm bg-white dark:bg-slate-900 rounded-[2rem]">
+            <CardContent className="p-8">
               <LevelProgress 
                 currentPoints={levelInfo.currentLevelPoints}
                 currentLevel={levelInfo.level}
@@ -446,14 +447,14 @@ export default function Dashboard() {
 
         {/* Tasks Summary */}
         <SlideInCard direction="up" delay={0.2}>
-          <Card className="h-full border-0 shadow-xl bg-card/50 backdrop-blur-sm rounded-[2.5rem] group hover:bg-primary/5 transition-colors">
+          <Card className="h-full border border-border/50 shadow-sm bg-white dark:bg-slate-900 rounded-[2rem] group hover:border-primary/30 transition-all">
             <CardContent className="p-8 flex flex-col justify-between h-full">
-              <div className="w-12 h-12 rounded-2xl bg-blue-500/10 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+              <div className="w-12 h-12 rounded-xl bg-blue-500/10 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
                 <CheckCircle className="h-6 w-6 text-blue-500" />
               </div>
               <div>
-                <p className="text-4xl font-black">{tasks.length}</p>
-                <p className="text-muted-foreground font-bold">Pending Tasks</p>
+                <p className="text-4xl font-bold">{tasks.length}</p>
+                <p className="text-muted-foreground font-semibold">Pending Tasks</p>
               </div>
             </CardContent>
           </Card>
@@ -461,31 +462,31 @@ export default function Dashboard() {
 
         {/* Points Summary */}
         <SlideInCard direction="up" delay={0.25}>
-          <Card className="h-full border-0 shadow-xl bg-card/50 backdrop-blur-sm rounded-[2.5rem] group hover:bg-yellow-500/5 transition-colors">
+          <Card className="h-full border border-border/50 shadow-sm bg-white dark:bg-slate-900 rounded-[2rem] group hover:border-yellow-500/30 transition-all">
             <CardContent className="p-8 flex flex-col justify-between h-full">
-              <div className="w-12 h-12 rounded-2xl bg-yellow-500/10 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+              <div className="w-12 h-12 rounded-xl bg-yellow-500/10 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
                 <Trophy className="h-6 w-6 text-yellow-500" />
               </div>
               <div>
                 <div className="flex items-baseline gap-1">
-                  <span className="text-4xl font-black">{userPoints}</span>
-                  <span className="text-sm font-bold text-muted-foreground">pts</span>
+                  <span className="text-4xl font-bold">{userPoints}</span>
+                  <span className="text-sm font-semibold text-muted-foreground">pts</span>
                 </div>
-                <p className="text-muted-foreground font-bold">Total Contribution</p>
+                <p className="text-muted-foreground font-semibold">Total Points</p>
               </div>
             </CardContent>
           </Card>
         </SlideInCard>
       </div>
 
-      <div className="grid lg:grid-cols-3 gap-8">
-        <div className="lg:col-span-2 space-y-8">
+      <div className="grid lg:grid-cols-3 gap-10">
+        <div className="lg:col-span-2 space-y-10">
           {/* Recommended Tasks */}
           <SlideInCard direction="up" delay={0.3}>
-            <div className="space-y-4">
+            <div className="space-y-6">
               <div className="flex items-center justify-between px-2">
-                <h2 className="text-2xl font-black tracking-tight">Recommended for You</h2>
-                <Button variant="ghost" size="sm" className="font-bold" asChild>
+                <h2 className="text-2xl font-bold tracking-tight">Recommended for You</h2>
+                <Button variant="ghost" size="sm" className="font-semibold text-primary hover:bg-primary/5" asChild>
                   <Link href="/tasks/pick">View All <ArrowRight className="ml-2 h-4 w-4" /></Link>
                 </Button>
               </div>
@@ -500,10 +501,10 @@ export default function Dashboard() {
           {/* Your Active Tasks */}
           {tasks.length > 0 && (
             <SlideInCard direction="up" delay={0.35}>
-              <div className="space-y-4">
+              <div className="space-y-6">
                 <div className="flex items-center justify-between px-2">
-                  <h2 className="text-2xl font-black tracking-tight">Your Active Tasks</h2>
-                  <Button variant="ghost" size="sm" className="font-bold" asChild>
+                  <h2 className="text-2xl font-bold tracking-tight">Your Active Tasks</h2>
+                  <Button variant="ghost" size="sm" className="font-semibold text-primary hover:bg-primary/5" asChild>
                     <Link href="/tasks">Manage <ArrowRight className="ml-2 h-4 w-4" /></Link>
                   </Button>
                 </div>
@@ -530,25 +531,25 @@ export default function Dashboard() {
           )}
         </div>
 
-        <div className="space-y-8">
+        <div className="space-y-10">
           {/* Weekly Goal */}
           <SlideInCard direction="up" delay={0.4}>
-            <Card className="border-0 shadow-xl bg-card/50 backdrop-blur-sm rounded-[2.5rem] overflow-hidden">
+            <Card className="border border-border/50 shadow-sm bg-white dark:bg-slate-900 rounded-[2rem] overflow-hidden">
               <CardHeader className="pb-2">
-                <CardTitle className="text-xl font-black">Weekly Goal</CardTitle>
+                <CardTitle className="text-xl font-bold">Weekly Goal</CardTitle>
               </CardHeader>
-              <CardContent className="p-6 pt-2">
-                <div className="flex items-center gap-6">
+              <CardContent className="p-8 pt-2">
+                <div className="flex items-center gap-8">
                   <ProgressRing 
                     progress={(weeklyProgress.completed / weeklyProgress.goal) * 100} 
-                    size={80} 
-                    strokeWidth={8}
+                    size={90} 
+                    strokeWidth={10}
                   >
                     <Target className="h-6 w-6 text-primary" />
                   </ProgressRing>
                   <div className="space-y-1">
-                    <p className="text-2xl font-black">{weeklyProgress.completed}/{weeklyProgress.goal}</p>
-                    <p className="text-sm text-muted-foreground font-bold uppercase tracking-wider">Tasks Completed</p>
+                    <p className="text-3xl font-bold">{weeklyProgress.completed}/{weeklyProgress.goal}</p>
+                    <p className="text-sm text-muted-foreground font-semibold uppercase tracking-wider">Tasks Done</p>
                   </div>
                 </div>
               </CardContent>
@@ -557,14 +558,14 @@ export default function Dashboard() {
 
           {/* Leaderboard Preview */}
           <SlideInCard direction="up" delay={0.45}>
-            <div className="space-y-4">
+            <div className="space-y-6">
               <div className="flex items-center justify-between px-2">
-                <h2 className="text-xl font-black tracking-tight">Top Contributors</h2>
-                <Button variant="ghost" size="sm" className="font-bold" asChild>
+                <h2 className="text-xl font-bold tracking-tight">Top Contributors</h2>
+                <Button variant="ghost" size="sm" className="font-semibold text-primary hover:bg-primary/5" asChild>
                   <Link href="/leaderboard">Full List</Link>
                 </Button>
               </div>
-              <Card className="border-0 shadow-xl bg-card/50 backdrop-blur-sm rounded-[2.5rem] overflow-hidden">
+              <Card className="border border-border/50 shadow-sm bg-white dark:bg-slate-900 rounded-[2rem] overflow-hidden">
                 <CardContent className="p-4">
                   <div className="space-y-2">
                     {leaderboard.slice(0, 3).map((member, index) => (
@@ -573,30 +574,30 @@ export default function Dashboard() {
                         initial={{ opacity: 0, y: 10 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: 0.5 + index * 0.1 }}
-                        className={`flex items-center justify-between p-4 rounded-2xl transition-all ${
-                          member.user_id === user.id ? 'bg-primary/10 ring-1 ring-primary/20' : 'hover:bg-muted/50'
+                        className={`flex items-center justify-between p-4 rounded-xl transition-all ${
+                          member.user_id === user.id ? 'bg-primary/5 ring-1 ring-primary/10' : 'hover:bg-muted/30'
                         }`}
                       >
                         <div className="flex items-center gap-4">
-                          <div className={`flex h-10 w-10 items-center justify-center rounded-xl font-black text-sm ${
-                            index === 0 ? 'bg-yellow-500 text-white shadow-lg shadow-yellow-500/20' :
+                          <div className={`flex h-10 w-10 items-center justify-center rounded-lg font-bold text-sm ${
+                            index === 0 ? 'bg-yellow-500 text-white shadow-md shadow-yellow-500/20' :
                             index === 1 ? 'bg-slate-300 text-slate-700' :
                             index === 2 ? 'bg-orange-400 text-white' :
                             'bg-muted text-muted-foreground'
                           }`}>
-                            {index === 0 ? '1' : index === 1 ? '2' : index === 2 ? '3' : index + 1}
+                            {index + 1}
                           </div>
                           <div>
-                            <p className="font-bold text-sm">
+                            <p className="font-semibold text-sm">
                               {member.profile?.username || member.profile?.full_name || 'User'}
                               {member.user_id === user.id && (
-                                <span className="ml-2 text-[10px] bg-primary/20 text-primary px-2 py-0.5 rounded-full uppercase">You</span>
+                                <span className="ml-2 text-[10px] bg-primary/10 text-primary px-2 py-0.5 rounded-full uppercase font-bold">You</span>
                               )}
                             </p>
                             <p className="text-xs text-muted-foreground font-medium">Level {calculateLevel(member.points).level}</p>
                           </div>
                         </div>
-                        <span className="font-black text-primary">{member.points}</span>
+                        <span className="font-bold text-primary">{member.points}</span>
                       </motion.div>
                     ))}
                   </div>
@@ -610,26 +611,26 @@ export default function Dashboard() {
             <div className="grid grid-cols-2 gap-4">
               <Button 
                 variant="outline" 
-                className="h-24 rounded-[2rem] flex-col gap-2 border-primary/10 bg-card/50 backdrop-blur-sm hover:bg-primary/5 hover:border-primary/30 transition-all group" 
+                className="h-28 rounded-[2rem] flex-col gap-3 border-border/50 bg-white dark:bg-slate-900 hover:border-primary/30 hover:bg-primary/5 transition-all group" 
                 asChild
               >
                 <Link href="/tasks/create">
-                  <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center group-hover:scale-110 transition-transform">
-                    <Plus className="h-5 w-5 text-primary" />
+                  <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center group-hover:scale-110 transition-transform">
+                    <Plus className="h-6 w-6 text-primary" />
                   </div>
-                  <span className="font-bold text-xs">New Task</span>
+                  <span className="font-bold text-xs uppercase tracking-wider">New Task</span>
                 </Link>
               </Button>
               <Button 
                 variant="outline" 
-                className="h-24 rounded-[2rem] flex-col gap-2 border-purple-500/10 bg-card/50 backdrop-blur-sm hover:bg-purple-500/5 hover:border-purple-500/30 transition-all group" 
+                className="h-28 rounded-[2rem] flex-col gap-3 border-border/50 bg-white dark:bg-slate-900 hover:border-purple-500/30 hover:bg-purple-500/5 transition-all group" 
                 asChild
               >
                 <Link href="/feedback/submit">
-                  <div className="w-10 h-10 rounded-xl bg-purple-500/10 flex items-center justify-center group-hover:scale-110 transition-transform">
-                    <Sparkles className="h-5 w-5 text-purple-500" />
+                  <div className="w-12 h-12 rounded-xl bg-purple-500/10 flex items-center justify-center group-hover:scale-110 transition-transform">
+                    <Sparkles className="h-6 w-6 text-purple-500" />
                   </div>
-                  <span className="font-bold text-xs">Feedback</span>
+                  <span className="font-bold text-xs uppercase tracking-wider">Feedback</span>
                 </Link>
               </Button>
             </div>

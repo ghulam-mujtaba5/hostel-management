@@ -12,6 +12,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { motion, AnimatePresence } from "framer-motion";
 import { toast } from "@/components/Toast";
 import { triggerQuickCelebration } from "@/components/Celebrations";
+import { cn } from "@/lib/utils";
 
 interface TaskCardProps {
   task: Task;
@@ -37,6 +38,16 @@ export function TaskCard({ task, showAssignee = false, onUpdate, recommended = f
     
     setTaking(true);
 
+    // Handle demo mode
+    if (user.id === 'demo-user') {
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      triggerQuickCelebration('burst');
+      toast.taskTaken(task.title);
+      setTaking(false);
+      onUpdate?.();
+      return;
+    }
+
     const { error } = await supabase.rpc('take_task', { task_id: task.id });
     if (error) {
       toast.error(error.message);
@@ -55,6 +66,15 @@ export function TaskCard({ task, showAssignee = false, onUpdate, recommended = f
     if (!file || !user || !currentSpace) return;
 
     setUploading(true);
+
+    // Handle demo mode
+    if (user.id === 'demo-user') {
+      await new Promise(resolve => setTimeout(resolve, 1500));
+      toast.success('Proof uploaded!', { emoji: '📸', subtitle: 'Waiting for verification' });
+      setUploading(false);
+      onUpdate?.();
+      return;
+    }
 
     try {
       const fileExt = file.name.split('.').pop();
@@ -108,19 +128,22 @@ export function TaskCard({ task, showAssignee = false, onUpdate, recommended = f
       layout
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, scale: 0.9 }}
-      whileHover={{ scale: 1.01 }}
+      exit={{ opacity: 0, scale: 0.95 }}
+      whileHover={{ y: -2 }}
       transition={{ duration: 0.2 }}
     >
-      <Card className={`overflow-hidden transition-shadow hover:shadow-md ${recommended ? 'ring-2 ring-primary/50 bg-primary/5' : ''}`}>
+      <Card className={cn(
+        "overflow-hidden transition-all border border-border/50 shadow-sm hover:shadow-md hover:border-primary/20",
+        recommended && "ring-1 ring-primary/30 bg-primary/5"
+      )}>
         <Link href={`/tasks/${task.id}`}>
-          <CardContent className="p-4">
+          <CardContent className="p-5">
             {/* Recommended Badge */}
             {recommended && (
               <motion.div
                 initial={{ opacity: 0, x: -10 }}
                 animate={{ opacity: 1, x: 0 }}
-                className="flex items-center gap-1 text-xs text-primary mb-2"
+                className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider text-primary mb-3"
               >
                 <Sparkles className="h-3 w-3" />
                 <span>Recommended for you</span>
@@ -132,50 +155,49 @@ export function TaskCard({ task, showAssignee = false, onUpdate, recommended = f
               </motion.div>
             )}
 
-            <div className="flex items-start justify-between mb-2">
-              <div className="flex items-center gap-2 min-w-0 flex-1">
-                <motion.span 
-                  className="text-xl flex-shrink-0"
-                  whileHover={{ scale: 1.2, rotate: 10 }}
-                  transition={{ type: "spring", stiffness: 400 }}
-                >
+            <div className="flex items-start justify-between mb-4">
+              <div className="flex items-center gap-3 min-w-0 flex-1">
+                <div className="h-10 w-10 rounded-xl bg-muted/50 flex items-center justify-center text-xl flex-shrink-0">
                   {category.emoji}
-                </motion.span>
+                </div>
                 <div className="min-w-0">
-                  <h3 className="font-medium line-clamp-1">{task.title}</h3>
+                  <h3 className="font-bold text-base line-clamp-1">{task.title}</h3>
                   {task.description && (
-                    <p className="text-xs text-muted-foreground line-clamp-1">{task.description}</p>
+                    <p className="text-xs text-muted-foreground line-clamp-1 mt-0.5">{task.description}</p>
                   )}
                 </div>
               </div>
-              <motion.span 
-                whileHover={{ scale: 1.1 }}
-                className={`px-2.5 py-1 rounded-full text-xs font-bold ${getDifficultyColor(task.difficulty)} flex-shrink-0 ml-2`}
-              >
-                +{task.difficulty}
-              </motion.span>
+              <div className={cn(
+                "px-2.5 py-1 rounded-lg text-[10px] font-bold uppercase tracking-wider flex-shrink-0 ml-3",
+                getDifficultyColor(task.difficulty)
+              )}>
+                +{task.difficulty} pts
+              </div>
             </div>
 
-            <div className="flex items-center justify-between text-xs text-muted-foreground">
-              <div className="flex items-center gap-3">
+            <div className="flex items-center justify-between text-xs">
+              <div className="flex items-center gap-4 text-muted-foreground font-medium">
                 {task.due_date && (
-                  <div className="flex items-center gap-1">
-                    <Clock className="h-3 w-3" />
+                  <div className="flex items-center gap-1.5">
+                    <Clock className="h-3.5 w-3.5" />
                     <span>{formatDistanceToNow(new Date(task.due_date), { addSuffix: true })}</span>
                   </div>
                 )}
                 {showAssignee && task.assignee && (
-                  <div className="flex items-center gap-1">
-                    <User className="h-3 w-3" />
-                    <span>{task.assignee.username || task.assignee.full_name}</span>
+                  <div className="flex items-center gap-1.5">
+                    <User className="h-3.5 w-3.5" />
+                    <span className="truncate max-w-[80px]">{task.assignee.username || task.assignee.full_name}</span>
                   </div>
                 )}
               </div>
               <div className="flex items-center gap-2">
-                <span className={`px-2 py-0.5 rounded text-xs ${statusConfig.bg}`}>
+                <span className={cn(
+                  "px-2 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-wider",
+                  statusConfig.bg
+                )}>
                   {statusConfig.label}
                 </span>
-                <ChevronRight className="h-4 w-4 text-muted-foreground/50" />
+                <ChevronRight className="h-4 w-4 text-muted-foreground/30" />
               </div>
             </div>
           </CardContent>
@@ -188,21 +210,17 @@ export function TaskCard({ task, showAssignee = false, onUpdate, recommended = f
               initial={{ opacity: 0, height: 0 }}
               animate={{ opacity: 1, height: 'auto' }}
               exit={{ opacity: 0, height: 0 }}
-              className="px-4 pb-4"
+              className="px-5 pb-5"
             >
               <Button 
                 size="sm" 
-                className="w-full gap-2 bg-gradient-to-r from-primary to-purple-600 hover:from-primary/90 hover:to-purple-600/90"
+                className="w-full gap-2 bg-primary hover:bg-primary/90 shadow-sm"
                 onClick={handleTakeTask}
                 disabled={taking}
               >
                 {taking ? (
                   <>
-                    <motion.div
-                      animate={{ rotate: 360 }}
-                      transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-                      className="h-4 w-4 border-2 border-white border-t-transparent rounded-full"
-                    />
+                    <div className="h-4 w-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
                     Taking...
                   </>
                 ) : (
@@ -220,7 +238,7 @@ export function TaskCard({ task, showAssignee = false, onUpdate, recommended = f
               initial={{ opacity: 0, height: 0 }}
               animate={{ opacity: 1, height: 'auto' }}
               exit={{ opacity: 0, height: 0 }}
-              className="px-4 pb-4"
+              className="px-5 pb-5"
             >
               <input
                 ref={fileInputRef}
@@ -234,7 +252,7 @@ export function TaskCard({ task, showAssignee = false, onUpdate, recommended = f
               <Button 
                 size="sm" 
                 variant="secondary"
-                className="w-full gap-2"
+                className="w-full gap-2 border border-border/50"
                 onClick={(e) => {
                   e.preventDefault();
                   e.stopPropagation();
@@ -244,11 +262,7 @@ export function TaskCard({ task, showAssignee = false, onUpdate, recommended = f
               >
                 {uploading ? (
                   <>
-                    <motion.div
-                      animate={{ rotate: 360 }}
-                      transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-                      className="h-4 w-4 border-2 border-current border-t-transparent rounded-full"
-                    />
+                    <div className="h-4 w-4 border-2 border-primary/30 border-t-primary rounded-full animate-spin" />
                     Uploading...
                   </>
                 ) : (

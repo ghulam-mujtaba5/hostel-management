@@ -75,193 +75,160 @@ export default function PreferencesPage() {
   }
 
   return (
-    <div className="space-y-6">
-      <SlideInCard direction="down" delay={0}>
-        <div className="flex items-center gap-4">
-          <Button variant="ghost" size="icon" asChild>
-            <Link href="/profile">
-              <ArrowLeft className="h-5 w-5" />
-            </Link>
-          </Button>
-          <div>
-            <h1 className="text-2xl font-bold bg-gradient-to-r from-primary to-purple-600 bg-clip-text text-transparent">
-              Task Preferences
+    <div className="space-y-10 pb-24">
+      {/* Header Section */}
+      <div className="relative">
+        <div className="absolute -top-20 -left-20 w-64 h-64 bg-primary/5 rounded-full blur-3xl -z-10" />
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
+          <div className="space-y-2">
+            <div className="flex items-center gap-4 mb-4">
+              <Button variant="ghost" size="icon" asChild className="h-10 w-10 rounded-xl bg-muted/30 hover:bg-muted">
+                <Link href="/profile">
+                  <ArrowLeft className="h-5 w-5" />
+                </Link>
+              </Button>
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 text-primary text-[10px] font-bold uppercase tracking-wider">
+                <Heart className="h-3 w-3" />
+                Personalization
+              </div>
+            </div>
+            <h1 className="text-4xl md:text-5xl font-bold tracking-tight">
+              Task <br />
+              <span className="text-primary">Preferences</span>
             </h1>
-            <p className="text-sm text-muted-foreground">Customize your task recommendations</p>
+            <p className="text-muted-foreground font-medium">
+              Customize your task recommendations to suit your style.
+            </p>
           </div>
         </div>
-      </SlideInCard>
+      </div>
 
-      <SlideInCard direction="up" delay={0.1}>
-        <Card className="border-green-200 dark:border-green-800">
-          <CardHeader>
-            <CardTitle className="text-lg flex items-center gap-2">
-              <div className="h-8 w-8 rounded-full bg-green-100 dark:bg-green-900/30 flex items-center justify-center">
-                <Heart className="h-4 w-4 text-green-600 dark:text-green-400" />
+      <div className="grid gap-6">
+        <SlideInCard direction="up" delay={0.1}>
+          <Card className="border border-border/50 shadow-sm rounded-[2rem] bg-white dark:bg-slate-900 overflow-hidden">
+            <CardHeader className="p-8 pb-0">
+              <div className="flex items-center gap-4 mb-2">
+                <div className="h-10 w-10 rounded-xl bg-green-500/10 flex items-center justify-center">
+                  <Heart className="h-5 w-5 text-green-600" />
+                </div>
+                <CardTitle className="text-xl font-bold">Preferred Tasks</CardTitle>
               </div>
-              Preferred Tasks
-            </CardTitle>
-            <CardDescription>
-              Tasks you enjoy doing. The system will recommend these more often when available.
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-4 gap-2">
-              {Object.entries(TASK_CATEGORIES).map(([key, { label, emoji }]) => {
-                const isSelected = preferredCategories.includes(key as TaskCategory);
-                return (
-                  <motion.button
-                    key={key}
-                    onClick={() => togglePreferred(key as TaskCategory)}
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                    className={`p-3 rounded-xl border-2 text-center transition-all relative overflow-hidden ${
-                      isSelected 
-                        ? 'border-green-500 bg-green-50 dark:bg-green-900/30 text-green-800 dark:text-green-200 shadow-md' 
-                        : 'border-border hover:bg-muted/50 hover:border-green-300'
-                    }`}
-                  >
-                    <motion.span 
-                      className="text-2xl block"
-                      animate={isSelected ? { scale: [1, 1.2, 1] } : {}}
-                      transition={{ duration: 0.3 }}
+              <CardDescription className="font-medium">
+                Tasks you enjoy doing. The system will recommend these more often when available.
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="p-8">
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                {Object.entries(TASK_CATEGORIES).map(([key, { label, emoji }]) => {
+                  const isSelected = preferredCategories.includes(key as TaskCategory);
+                  return (
+                    <motion.button
+                      key={key}
+                      onClick={() => togglePreferred(key as TaskCategory)}
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
+                      className={`p-4 rounded-2xl border transition-all relative overflow-hidden flex flex-col items-center gap-2 ${
+                        isSelected 
+                          ? 'border-green-500 bg-green-500/5 text-green-700 dark:text-green-400 shadow-sm' 
+                          : 'border-border/50 hover:border-green-300 bg-muted/30'
+                      }`}
                     >
-                      {emoji}
-                    </motion.span>
-                    <p className="text-xs mt-1 font-medium">{label}</p>
-                    <AnimatePresence>
+                      <span className="text-3xl">{emoji}</span>
+                      <p className="text-[10px] font-bold uppercase tracking-wider">{label}</p>
                       {isSelected && (
-                        <motion.div
-                          initial={{ scale: 0 }}
-                          animate={{ scale: 1 }}
-                          exit={{ scale: 0 }}
-                          className="absolute top-1 right-1"
-                        >
-                          <Check className="h-4 w-4 text-green-600 dark:text-green-400" />
-                        </motion.div>
+                        <div className="absolute top-2 right-2">
+                          <Check className="h-3 w-3 text-green-600" />
+                        </div>
                       )}
-                    </AnimatePresence>
-                  </motion.button>
-                );
-              })}
-            </div>
-          </CardContent>
-        </Card>
-      </SlideInCard>
-
-      <SlideInCard direction="up" delay={0.2}>
-        <Card className="border-red-200 dark:border-red-800">
-          <CardHeader>
-            <CardTitle className="text-lg flex items-center gap-2">
-              <div className="h-8 w-8 rounded-full bg-red-100 dark:bg-red-900/30 flex items-center justify-center">
-                <X className="h-4 w-4 text-red-600 dark:text-red-400" />
+                    </motion.button>
+                  );
+                })}
               </div>
-              Tasks to Avoid
-            </CardTitle>
-            <CardDescription>
-              Tasks you'd prefer not to do. The system will recommend these less (but fairness still applies).
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-4 gap-2">
-              {Object.entries(TASK_CATEGORIES).map(([key, { label, emoji }]) => {
-                const isSelected = avoidedCategories.includes(key as TaskCategory);
-                return (
-                  <motion.button
-                    key={key}
-                    onClick={() => toggleAvoided(key as TaskCategory)}
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                    className={`p-3 rounded-xl border-2 text-center transition-all relative overflow-hidden ${
-                      isSelected 
-                        ? 'border-red-500 bg-red-50 dark:bg-red-900/30 text-red-800 dark:text-red-200 shadow-md' 
-                        : 'border-border hover:bg-muted/50 hover:border-red-300'
-                    }`}
-                  >
-                    <motion.span 
-                      className="text-2xl block"
-                      animate={isSelected ? { scale: [1, 1.2, 1] } : {}}
-                      transition={{ duration: 0.3 }}
+            </CardContent>
+          </Card>
+        </SlideInCard>
+
+        <SlideInCard direction="up" delay={0.2}>
+          <Card className="border border-border/50 shadow-sm rounded-[2rem] bg-white dark:bg-slate-900 overflow-hidden">
+            <CardHeader className="p-8 pb-0">
+              <div className="flex items-center gap-4 mb-2">
+                <div className="h-10 w-10 rounded-xl bg-red-500/10 flex items-center justify-center">
+                  <X className="h-5 w-5 text-red-600" />
+                </div>
+                <CardTitle className="text-xl font-bold">Tasks to Avoid</CardTitle>
+              </div>
+              <CardDescription className="font-medium">
+                Tasks you'd prefer not to do. The system will recommend these less often.
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="p-8">
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                {Object.entries(TASK_CATEGORIES).map(([key, { label, emoji }]) => {
+                  const isSelected = avoidedCategories.includes(key as TaskCategory);
+                  return (
+                    <motion.button
+                      key={key}
+                      onClick={() => toggleAvoided(key as TaskCategory)}
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
+                      className={`p-4 rounded-2xl border transition-all relative overflow-hidden flex flex-col items-center gap-2 ${
+                        isSelected 
+                          ? 'border-red-500 bg-red-500/5 text-red-700 dark:text-red-400 shadow-sm' 
+                          : 'border-border/50 hover:border-red-300 bg-muted/30'
+                      }`}
                     >
-                      {emoji}
-                    </motion.span>
-                    <p className="text-xs mt-1 font-medium">{label}</p>
-                    <AnimatePresence>
+                      <span className="text-3xl">{emoji}</span>
+                      <p className="text-[10px] font-bold uppercase tracking-wider">{label}</p>
                       {isSelected && (
-                        <motion.div
-                          initial={{ scale: 0 }}
-                          animate={{ scale: 1 }}
-                          exit={{ scale: 0 }}
-                          className="absolute top-1 right-1"
-                        >
-                          <X className="h-4 w-4 text-red-600 dark:text-red-400" />
-                        </motion.div>
+                        <div className="absolute top-2 right-2">
+                          <X className="h-3 w-3 text-red-600" />
+                        </div>
                       )}
-                    </AnimatePresence>
-                  </motion.button>
-                );
-              })}
-            </div>
-          </CardContent>
-        </Card>
-      </SlideInCard>
+                    </motion.button>
+                  );
+                })}
+              </div>
+            </CardContent>
+          </Card>
+        </SlideInCard>
 
-      <SlideInCard direction="up" delay={0.3}>
-        <motion.div whileHover={{ scale: 1.01 }} whileTap={{ scale: 0.99 }}>
-          <Button 
-            onClick={handleSave} 
-            className="w-full h-12 bg-gradient-to-r from-primary to-purple-600 hover:from-primary/90 hover:to-purple-600/90" 
-            disabled={saving}
-          >
-            <AnimatePresence mode="wait">
-              {saving ? (
-                <motion.span
-                  key="saving"
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  exit={{ opacity: 0 }}
-                >
-                  Saving...
-                </motion.span>
-              ) : saved ? (
-                <motion.span
-                  key="saved"
-                  initial={{ opacity: 0, scale: 0.5 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  exit={{ opacity: 0 }}
-                  className="flex items-center gap-2"
-                >
-                  <Check className="h-4 w-4" />
-                  Saved!
-                </motion.span>
-              ) : (
-                <motion.span
-                  key="save"
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  exit={{ opacity: 0 }}
-                >
-                  Save Preferences
-                </motion.span>
-              )}
-            </AnimatePresence>
-          </Button>
-        </motion.div>
-      </SlideInCard>
+        <SlideInCard direction="up" delay={0.3}>
+          <div className="flex flex-col gap-4">
+            <Button 
+              onClick={handleSave} 
+              className="w-full h-14 rounded-2xl font-bold text-lg shadow-sm" 
+              disabled={saving}
+            >
+              <AnimatePresence mode="wait">
+                {saving ? (
+                  <motion.span key="saving">Saving...</motion.span>
+                ) : saved ? (
+                  <motion.span key="saved" className="flex items-center gap-2">
+                    <Check className="h-5 w-5" />
+                    Preferences Saved!
+                  </motion.span>
+                ) : (
+                  <motion.span key="save">Save Preferences</motion.span>
+                )}
+              </AnimatePresence>
+            </Button>
 
-      <SlideInCard direction="up" delay={0.4}>
-        <Card className="bg-muted/50 border-dashed">
-          <CardContent className="p-4">
-            <div className="flex items-start gap-3">
-              <Info className="h-5 w-5 text-muted-foreground flex-shrink-0 mt-0.5" />
-              <p className="text-sm text-muted-foreground">
-                These preferences influence recommendations but don't guarantee you won't get tasks you want to avoid. 
-                <strong className="text-foreground"> Fairness comes first!</strong> Everyone needs to pitch in equally.
-              </p>
-            </div>
-          </CardContent>
-        </Card>
-      </SlideInCard>
+            <Card className="bg-muted/30 border-dashed border-border/50 rounded-2xl">
+              <CardContent className="p-6">
+                <div className="flex items-start gap-4">
+                  <div className="h-10 w-10 rounded-xl bg-white dark:bg-slate-800 flex items-center justify-center flex-shrink-0 shadow-sm">
+                    <Info className="h-5 w-5 text-muted-foreground" />
+                  </div>
+                  <p className="text-xs text-muted-foreground font-medium leading-relaxed">
+                    These preferences influence recommendations but don't guarantee you won't get tasks you want to avoid. 
+                    <span className="text-foreground font-bold"> Fairness comes first!</span> Everyone needs to pitch in equally to maintain the community.
+                  </p>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        </SlideInCard>
+      </div>
     </div>
   );
 }

@@ -1,15 +1,15 @@
 @import "tailwindcss";
 
 @theme {
-  /* Light Mode Colors */
-  --color-background: #ffffff;
+  /* Light Mode Colors - Refined Palette */
+  --color-background: #f8fafc;
   --color-foreground: #0f172a;
   --color-card: #ffffff;
   --color-card-foreground: #0f172a;
   --color-popover: #ffffff;
   --color-popover-foreground: #0f172a;
-  --color-primary: #3b82f6;
-  --color-primary-foreground: #f8fafc;
+  --color-primary: #2563eb;
+  --color-primary-foreground: #ffffff;
   --color-secondary: #f1f5f9;
   --color-secondary-foreground: #1e293b;
   --color-muted: #f1f5f9;
@@ -17,34 +17,34 @@
   --color-accent: #f1f5f9;
   --color-accent-foreground: #1e293b;
   --color-destructive: #ef4444;
-  --color-destructive-foreground: #f8fafc;
+  --color-destructive-foreground: #ffffff;
   --color-border: #e2e8f0;
   --color-input: #e2e8f0;
   --color-ring: #3b82f6;
-  --color-success: #22c55e;
-  --color-success-foreground: #f0fdf4;
+  --color-success: #10b981;
+  --color-success-foreground: #ffffff;
   --color-warning: #f59e0b;
-  --color-warning-foreground: #fefce8;
+  --color-warning-foreground: #ffffff;
   
-  /* Radius */
-  --radius-lg: 0.75rem;
-  --radius-md: 0.5rem;
-  --radius-sm: 0.25rem;
+  /* Radius - More modern rounded corners */
+  --radius-lg: 1rem;
+  --radius-md: 0.75rem;
+  --radius-sm: 0.5rem;
   
   /* Ring offset */
   --color-ring-offset-background: #ffffff;
 }
 
-/* Dark mode theme */
+/* Dark mode theme - Deep & Modern */
 .dark {
-  --color-background: #0a0a0a;
-  --color-foreground: #fafafa;
-  --color-card: #0a0a0a;
-  --color-card-foreground: #fafafa;
-  --color-popover: #0a0a0a;
-  --color-popover-foreground: #fafafa;
+  --color-background: #020617;
+  --color-foreground: #f8fafc;
+  --color-card: #0f172a;
+  --color-card-foreground: #f8fafc;
+  --color-popover: #0f172a;
+  --color-popover-foreground: #f8fafc;
   --color-primary: #3b82f6;
-  --color-primary-foreground: #f8fafc;
+  --color-primary-foreground: #ffffff;
   --color-secondary: #1e293b;
   --color-secondary-foreground: #f1f5f9;
   --color-muted: #1e293b;
@@ -52,11 +52,11 @@
   --color-accent: #1e293b;
   --color-accent-foreground: #f1f5f9;
   --color-destructive: #ef4444;
-  --color-destructive-foreground: #f8fafc;
-  --color-border: #27272a;
-  --color-input: #27272a;
+  --color-destructive-foreground: #ffffff;
+  --color-border: #1e293b;
+  --color-input: #1e293b;
   --color-ring: #3b82f6;
-  --color-ring-offset-background: #0a0a0a;
+  --color-ring-offset-background: #020617;
 }
 
 * {

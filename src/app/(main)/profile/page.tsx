@@ -124,26 +124,25 @@ export default function ProfilePage() {
     <div className="space-y-10 pb-24">
       {/* Profile Header */}
       <SlideInCard direction="down" delay={0}>
-        <Card className="overflow-hidden border-0 shadow-2xl rounded-[3rem] bg-card/50 backdrop-blur-xl">
-          <div className="h-48 bg-gradient-to-br from-primary via-purple-600 to-blue-600 relative">
-            <div className="absolute inset-0 bg-black/10" />
-            <div className="absolute inset-0 opacity-20 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')]" />
+        <Card className="overflow-hidden border border-border/50 shadow-sm rounded-[2rem] bg-white dark:bg-slate-900">
+          <div className="h-40 bg-primary/5 relative">
+            <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-transparent to-transparent" />
             
             <div className="absolute -bottom-16 left-1/2 -translate-x-1/2">
               <motion.div 
                 className="relative"
-                whileHover={{ scale: 1.05 }}
+                whileHover={{ scale: 1.02 }}
                 transition={{ type: "spring", stiffness: 400 }}
               >
-                <div className="h-36 w-36 rounded-[2.5rem] bg-background flex items-center justify-center p-1.5 shadow-2xl">
-                  <div className="h-full w-full rounded-[2.2rem] bg-gradient-to-br from-primary to-purple-600 flex items-center justify-center text-5xl font-black text-white overflow-hidden relative group">
+                <div className="h-32 w-32 rounded-3xl bg-white dark:bg-slate-900 flex items-center justify-center p-1 shadow-xl">
+                  <div className="h-full w-full rounded-2xl bg-slate-100 dark:bg-slate-800 flex items-center justify-center text-4xl font-bold text-primary overflow-hidden relative group">
                     {profile?.avatar_url ? (
                       <img src={profile.avatar_url} alt="Avatar" className="h-full w-full object-cover" />
                     ) : (
                       (profile?.username?.[0] || profile?.full_name?.[0] || 'U').toUpperCase()
                     )}
                     <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                      <Camera className="h-8 w-8 text-white" />
+                      <Camera className="h-6 w-6 text-white" />
                     </div>
                   </div>
                 </div>
@@ -157,19 +156,19 @@ export default function ProfilePage() {
                 <button 
                   onClick={() => fileInputRef.current?.click()}
                   disabled={uploadingPhoto}
-                  className="absolute bottom-2 right-2 h-11 w-11 rounded-2xl bg-primary text-primary-foreground shadow-xl hover:bg-primary/90 transition-all flex items-center justify-center border-4 border-background disabled:opacity-50"
+                  className="absolute bottom-1 right-1 h-9 w-9 rounded-xl bg-primary text-white shadow-lg hover:bg-primary/90 transition-all flex items-center justify-center border-4 border-white dark:border-slate-900 disabled:opacity-50"
                 >
                   {uploadingPhoto ? (
-                    <div className="h-5 w-5 border-3 border-white/30 border-t-white rounded-full animate-spin" />
+                    <div className="h-4 w-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
                   ) : (
-                    <Camera className="h-5 w-5" />
+                    <Camera className="h-4 w-4" />
                   )}
                 </button>
               </motion.div>
             </div>
           </div>
           
-          <CardContent className="pt-20 pb-10 text-center">
+          <CardContent className="pt-20 pb-8 text-center">
             {editing ? (
               <motion.div 
                 initial={{ opacity: 0, y: 10 }}
@@ -178,34 +177,34 @@ export default function ProfilePage() {
               >
                 <div className="grid gap-3">
                   <div className="relative">
-                    <User className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+                    <User className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                     <Input
                       placeholder="Username"
                       value={username}
                       onChange={(e) => setUsername(e.target.value)}
-                      className="pl-12 rounded-2xl h-14 bg-muted/50 border-0 focus-visible:ring-2 focus-visible:ring-primary"
+                      className="pl-10 rounded-xl h-12 bg-muted/30 border-border/50 focus-visible:ring-1 focus-visible:ring-primary"
                     />
                   </div>
                   <div className="relative">
-                    <Mail className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+                    <Mail className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                     <Input
                       placeholder="Full Name"
                       value={fullName}
                       onChange={(e) => setFullName(e.target.value)}
-                      className="pl-12 rounded-2xl h-14 bg-muted/50 border-0 focus-visible:ring-2 focus-visible:ring-primary"
+                      className="pl-10 rounded-xl h-12 bg-muted/30 border-border/50 focus-visible:ring-1 focus-visible:ring-primary"
                     />
                   </div>
                 </div>
                 <div className="flex gap-3">
                   <Button 
                     variant="outline" 
-                    className="flex-1 h-12 rounded-xl font-bold"
+                    className="flex-1 h-11 rounded-xl font-bold"
                     onClick={() => setEditing(false)}
                   >
                     Cancel
                   </Button>
                   <Button 
-                    className="flex-1 h-12 rounded-xl font-bold bg-gradient-to-r from-primary to-purple-600"
+                    className="flex-1 h-11 rounded-xl font-bold"
                     onClick={handleSave}
                     disabled={saving}
                   >
@@ -216,18 +215,18 @@ export default function ProfilePage() {
             ) : (
               <div className="space-y-4">
                 <div className="space-y-1">
-                  <h1 className="text-4xl font-black tracking-tight">{profile?.full_name || profile?.username || 'User'}</h1>
-                  <p className="text-muted-foreground font-bold flex items-center justify-center gap-2">
-                    <Mail className="h-4 w-4" />
+                  <h1 className="text-3xl font-bold tracking-tight">{profile?.full_name || profile?.username || 'User'}</h1>
+                  <p className="text-muted-foreground font-medium flex items-center justify-center gap-2 text-sm">
+                    <Mail className="h-3.5 w-3.5" />
                     {user.email}
                   </p>
                 </div>
                 
-                <div className="flex flex-wrap items-center justify-center gap-3">
-                  <div className="px-4 py-1.5 rounded-full bg-primary/10 text-primary text-xs font-black uppercase tracking-widest border border-primary/20">
+                <div className="flex flex-wrap items-center justify-center gap-2">
+                  <div className="px-3 py-1 rounded-full bg-primary/5 text-primary text-[10px] font-bold uppercase tracking-wider border border-primary/10">
                     {currentSpace?.name || 'No Space'}
                   </div>
-                  <div className="px-4 py-1.5 rounded-full bg-purple-500/10 text-purple-600 dark:text-purple-400 text-xs font-black uppercase tracking-widest border border-purple-500/20">
+                  <div className="px-3 py-1 rounded-full bg-purple-500/5 text-purple-600 dark:text-purple-400 text-[10px] font-bold uppercase tracking-wider border border-purple-500/10">
                     Level {levelInfo.level}
                   </div>
                   {streak > 0 && <StreakBadge streak={streak} />}
@@ -235,9 +234,9 @@ export default function ProfilePage() {
 
                 <Button 
                   variant="secondary" 
-                  size="lg"
+                  size="sm"
                   onClick={() => setEditing(true)}
-                  className="mt-4 rounded-2xl px-8 font-black shadow-lg hover:scale-105 transition-transform"
+                  className="mt-2 rounded-xl px-6 font-bold"
                 >
                   Edit Profile
                 </Button>
@@ -250,51 +249,47 @@ export default function ProfilePage() {
       {/* Stats Grid */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <SlideInCard direction="up" delay={0.1} className="md:col-span-2">
-          <Card className="h-full rounded-[2.5rem] border-0 shadow-xl bg-card/50 backdrop-blur-sm overflow-hidden group">
+          <Card className="h-full rounded-[2rem] border border-border/50 shadow-sm bg-white dark:bg-slate-900 overflow-hidden group">
             <CardContent className="p-8">
               <div className="flex flex-col md:flex-row items-center gap-8">
                 <div className="relative">
                   <ProgressRing 
                     progress={(levelInfo.currentLevelPoints / levelInfo.pointsForNextLevel) * 100}
-                    size={120}
-                    strokeWidth={10}
+                    size={110}
+                    strokeWidth={8}
                   >
                     <div className="text-center">
-                      <span className="text-4xl font-black text-primary">{levelInfo.level}</span>
-                      <p className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground">Level</p>
+                      <span className="text-3xl font-bold text-primary">{levelInfo.level}</span>
+                      <p className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Level</p>
                     </div>
                   </ProgressRing>
-                  <motion.div 
-                    animate={{ rotate: 360 }}
-                    transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
-                    className="absolute -top-2 -right-2 h-10 w-10 rounded-2xl bg-yellow-400 flex items-center justify-center shadow-xl border-4 border-background"
-                  >
-                    <Star className="h-5 w-5 text-white fill-white" />
-                  </motion.div>
+                  <div className="absolute -top-1 -right-1 h-8 w-8 rounded-xl bg-yellow-400 flex items-center justify-center shadow-lg border-4 border-white dark:border-slate-900">
+                    <Star className="h-4 w-4 text-white fill-white" />
+                  </div>
                 </div>
                 
                 <div className="flex-1 w-full space-y-6">
                   <div>
-                    <p className="text-xs font-black uppercase tracking-[0.2em] text-muted-foreground mb-2">Contribution Points</p>
+                    <p className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground mb-1">Contribution Points</p>
                     <div className="flex items-baseline gap-2">
-                      <span className="text-5xl font-black tracking-tighter">{points}</span>
-                      <span className="text-lg font-bold text-muted-foreground">Total PTS</span>
+                      <span className="text-4xl font-bold tracking-tight">{points}</span>
+                      <span className="text-sm font-bold text-muted-foreground">Total PTS</span>
                     </div>
                   </div>
                   
                   <div className="space-y-2">
-                    <div className="flex justify-between text-xs font-black uppercase tracking-widest">
+                    <div className="flex justify-between text-[10px] font-bold uppercase tracking-wider">
                       <span className="text-primary">Progress to Level {levelInfo.level + 1}</span>
                       <span className="text-muted-foreground">{Math.round((levelInfo.currentLevelPoints / levelInfo.pointsForNextLevel) * 100)}%</span>
                     </div>
-                    <div className="h-3 w-full bg-muted rounded-full overflow-hidden p-0.5">
+                    <div className="h-2 w-full bg-muted rounded-full overflow-hidden">
                       <motion.div 
                         initial={{ width: 0 }}
                         animate={{ width: `${(levelInfo.currentLevelPoints / levelInfo.pointsForNextLevel) * 100}%` }}
-                        className="h-full bg-gradient-to-r from-primary to-purple-600 rounded-full shadow-[0_0_10px_rgba(var(--primary),0.5)]"
+                        className="h-full bg-primary rounded-full"
                       />
                     </div>
-                    <p className="text-[10px] font-bold text-muted-foreground text-right uppercase tracking-widest">
+                    <p className="text-[10px] font-bold text-muted-foreground text-right uppercase tracking-wider">
                       {levelInfo.pointsForNextLevel - levelInfo.currentLevelPoints} PTS remaining
                     </p>
                   </div>
@@ -305,24 +300,24 @@ export default function ProfilePage() {
         </SlideInCard>
 
         <SlideInCard direction="up" delay={0.15}>
-          <Card className="h-full rounded-[2.5rem] border-0 shadow-xl bg-gradient-to-br from-blue-600/10 to-cyan-600/5 backdrop-blur-sm overflow-hidden relative group">
-            <div className="absolute top-0 right-0 p-8 opacity-5 group-hover:scale-110 transition-transform duration-700">
-              <Home size={120} />
+          <Card className="h-full rounded-[2rem] border border-border/50 shadow-sm bg-white dark:bg-slate-900 overflow-hidden relative group">
+            <div className="absolute top-0 right-0 p-6 opacity-5 group-hover:scale-110 transition-transform duration-700">
+              <Home size={100} />
             </div>
             <CardContent className="p-8 flex flex-col justify-between h-full relative">
               <div className="space-y-1">
-                <p className="text-xs font-black uppercase tracking-[0.2em] text-blue-600 dark:text-blue-400">Accommodation</p>
-                <h3 className="text-2xl font-black">Current Stay</h3>
+                <p className="text-[10px] font-bold uppercase tracking-wider text-primary">Accommodation</p>
+                <h3 className="text-xl font-bold">Current Stay</h3>
               </div>
               
-              <div className="grid gap-4">
-                <div className="p-4 rounded-2xl bg-background/40 backdrop-blur-md border border-blue-500/10">
-                  <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground mb-1">Room Number</p>
-                  <p className="text-3xl font-black text-blue-600">{(spaceMembership as any)?.room_number || 'TBD'}</p>
+              <div className="grid gap-3">
+                <div className="p-4 rounded-xl bg-muted/30 border border-border/50">
+                  <p className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground mb-1">Room Number</p>
+                  <p className="text-2xl font-bold text-primary">{(spaceMembership as any)?.room_number || 'TBD'}</p>
                 </div>
-                <div className="p-4 rounded-2xl bg-background/40 backdrop-blur-md border border-blue-500/10">
-                  <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground mb-1">Bed Position</p>
-                  <p className="text-3xl font-black text-cyan-600">{(spaceMembership as any)?.bed_number || 'TBD'}</p>
+                <div className="p-4 rounded-xl bg-muted/30 border border-border/50">
+                  <p className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground mb-1">Bed Position</p>
+                  <p className="text-2xl font-bold text-primary">{(spaceMembership as any)?.bed_number || 'TBD'}</p>
                 </div>
               </div>
             </CardContent>
@@ -337,29 +332,29 @@ export default function ProfilePage() {
           <SlideInCard direction="up" delay={0.2}>
             <div className="space-y-4">
               <div className="flex items-center justify-between px-4">
-                <h2 className="text-2xl font-black tracking-tight flex items-center gap-3">
-                  <Award className="h-6 w-6 text-yellow-500" />
+                <h2 className="text-xl font-bold tracking-tight flex items-center gap-2">
+                  <Award className="h-5 w-5 text-yellow-500" />
                   Achievements
                 </h2>
-                <span className="px-3 py-1 rounded-full bg-muted text-xs font-black uppercase tracking-widest">
+                <span className="px-2 py-0.5 rounded-full bg-muted text-[10px] font-bold uppercase tracking-wider">
                   {earnedBadges.length} Unlocked
                 </span>
               </div>
-              <Card className="border-0 shadow-xl bg-card/50 backdrop-blur-sm rounded-[2.5rem] p-8">
-                <div className="flex flex-wrap gap-8 justify-center md:justify-start">
+              <Card className="border border-border/50 shadow-sm bg-white dark:bg-slate-900 rounded-[2rem] p-8">
+                <div className="flex flex-wrap gap-6 justify-center md:justify-start">
                   {earnedBadges.map((badgeType) => (
                     <motion.div
                       key={badgeType}
-                      whileHover={{ scale: 1.1, y: -10 }}
+                      whileHover={{ scale: 1.05, y: -5 }}
                       className="flex-shrink-0"
                     >
                       <BadgeDisplay type={badgeType} size="md" />
                     </motion.div>
                   ))}
                   {earnedBadges.length === 0 && (
-                    <div className="w-full py-12 text-center border-4 border-dashed border-muted rounded-[2rem]">
-                      <Sparkles className="h-12 w-12 text-muted/30 mx-auto mb-4" />
-                      <p className="text-lg font-bold text-muted-foreground">Complete tasks to earn your first badge!</p>
+                    <div className="w-full py-12 text-center border-2 border-dashed border-muted rounded-2xl">
+                      <Sparkles className="h-10 w-10 text-muted/30 mx-auto mb-3" />
+                      <p className="text-sm font-bold text-muted-foreground">Complete tasks to earn your first badge!</p>
                     </div>
                   )}
                 </div>
@@ -377,13 +372,13 @@ export default function ProfilePage() {
                 <Link 
                   key={i}
                   href={item.href} 
-                  className="group p-6 rounded-[2rem] bg-card/50 backdrop-blur-sm border-0 shadow-lg hover:bg-primary/5 transition-all"
+                  className="group p-6 rounded-[2rem] bg-white dark:bg-slate-900 border border-border/50 shadow-sm hover:border-primary/30 transition-all"
                 >
-                  <div className={`h-14 w-14 rounded-2xl bg-${item.color}-500/10 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform`}>
-                    <item.icon className={`h-7 w-7 text-${item.color}-500`} />
+                  <div className={`h-12 w-12 rounded-xl bg-muted/50 flex items-center justify-center mb-4 group-hover:scale-105 transition-transform`}>
+                    <item.icon className={`h-6 w-6 text-primary`} />
                   </div>
-                  <h4 className="text-xl font-black mb-1">{item.title}</h4>
-                  <p className="text-sm text-muted-foreground font-medium">{item.desc}</p>
+                  <h4 className="text-lg font-bold mb-1">{item.title}</h4>
+                  <p className="text-xs text-muted-foreground font-medium">{item.desc}</p>
                 </Link>
               ))}
             </div>
@@ -393,47 +388,47 @@ export default function ProfilePage() {
         <div className="space-y-8">
           {/* Appearance & Info */}
           <SlideInCard direction="up" delay={0.3}>
-            <Card className="border-0 shadow-xl bg-card/50 backdrop-blur-sm rounded-[2.5rem] overflow-hidden">
-              <CardContent className="p-4">
-                <div className="grid gap-2">
+            <Card className="border border-border/50 shadow-sm bg-white dark:bg-slate-900 rounded-[2rem] overflow-hidden">
+              <CardContent className="p-2">
+                <div className="grid gap-1">
                   {mounted && (
                     <button 
                       onClick={() => setTheme(resolvedTheme === 'dark' ? 'light' : 'dark')}
-                      className="w-full flex items-center justify-between p-5 rounded-2xl hover:bg-muted/50 transition-all group"
+                      className="w-full flex items-center justify-between p-4 rounded-xl hover:bg-muted/50 transition-all group"
                     >
                       <div className="flex items-center gap-4">
-                        <div className="h-12 w-12 rounded-xl bg-amber-400/10 flex items-center justify-center group-hover:rotate-12 transition-transform">
+                        <div className="h-10 w-10 rounded-lg bg-amber-400/5 flex items-center justify-center group-hover:rotate-12 transition-transform">
                           {resolvedTheme === 'dark' ? (
-                            <Moon className="h-6 w-6 text-amber-500" />
+                            <Moon className="h-5 w-5 text-amber-500" />
                           ) : (
-                            <Sun className="h-6 w-6 text-amber-500" />
+                            <Sun className="h-5 w-5 text-amber-500" />
                           )}
                         </div>
                         <div className="text-left">
-                          <span className="font-black block">Appearance</span>
-                          <p className="text-xs text-muted-foreground font-bold uppercase tracking-tighter">
+                          <span className="font-bold block text-sm">Appearance</span>
+                          <p className="text-[10px] text-muted-foreground font-bold uppercase tracking-wider">
                             {resolvedTheme === 'dark' ? 'Dark Mode' : 'Light Mode'}
                           </p>
                         </div>
                       </div>
-                      <Palette className="h-5 w-5 text-muted-foreground" />
+                      <Palette className="h-4 w-4 text-muted-foreground" />
                     </button>
                   )}
                   
                   <Link 
                     href="/fairness-info" 
-                    className="flex items-center justify-between p-5 rounded-2xl hover:bg-muted/50 transition-all group"
+                    className="flex items-center justify-between p-4 rounded-xl hover:bg-muted/50 transition-all group"
                   >
                     <div className="flex items-center gap-4">
-                      <div className="h-12 w-12 rounded-xl bg-green-500/10 flex items-center justify-center group-hover:scale-110 transition-transform">
-                        <Info className="h-6 w-6 text-green-500" />
+                      <div className="h-10 w-10 rounded-lg bg-green-500/5 flex items-center justify-center group-hover:scale-105 transition-transform">
+                        <Info className="h-5 w-5 text-green-500" />
                       </div>
                       <div className="text-left">
-                        <span className="font-black block">How It Works</span>
-                        <p className="text-xs text-muted-foreground font-bold uppercase tracking-tighter">Fairness Algorithm</p>
+                        <span className="font-bold block text-sm">How It Works</span>
+                        <p className="text-[10px] text-muted-foreground font-bold uppercase tracking-wider">Fairness Algorithm</p>
                       </div>
                     </div>
-                    <ChevronRight className="h-5 w-5 text-muted-foreground" />
+                    <ChevronRight className="h-4 w-4 text-muted-foreground" />
                   </Link>
                 </div>
               </CardContent>
@@ -445,21 +440,18 @@ export default function ProfilePage() {
             <div className="space-y-4">
               <Button 
                 variant="destructive" 
-                className="w-full h-16 rounded-[1.5rem] font-black text-lg shadow-xl shadow-destructive/20 hover:scale-[1.02] active:scale-[0.98] transition-all"
+                className="w-full h-14 rounded-2xl font-bold text-base shadow-sm hover:scale-[1.01] active:scale-[0.99] transition-all"
                 onClick={handleSignOut}
               >
-                <LogOut className="mr-3 h-6 w-6" />
+                <LogOut className="mr-2 h-5 w-5" />
                 Sign Out
               </Button>
               
               <div className="text-center space-y-2">
-                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-muted text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground/60">
+                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-muted/50 text-[10px] font-bold uppercase tracking-wider text-muted-foreground/60">
                   <Sparkles className="h-3 w-3" />
                   HostelMate v2.0.0
                 </div>
-                <p className="text-[10px] font-bold text-muted-foreground/30 uppercase tracking-widest">
-                  Securely encrypted session
-                </p>
               </div>
             </div>
           </SlideInCard>

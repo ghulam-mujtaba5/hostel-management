@@ -1,0 +1,185 @@
+# Page snapshot
+
+```yaml
+- generic [ref=e1]:
+  - generic [ref=e3]:
+    - generic [ref=e4]:
+      - img [ref=e5]
+      - text: BETA
+    - generic [ref=e7]: "Testing Phase: Some features may be incomplete"
+  - generic [ref=e8]:
+    - generic [ref=e10]:
+      - generic [ref=e12]: Step 1/4
+      - heading "Welcome to HostelMate! 👋" [level=3] [ref=e13]
+      - paragraph [ref=e14]: This is your dashboard. Here you can track your tasks, points, and progress.
+      - generic [ref=e15]:
+        - button "Skip Tour" [ref=e16]
+        - button "Next" [ref=e17]
+    - generic [ref=e20]:
+      - generic [ref=e21]:
+        - heading "Hey, Demo User! 👋" [level=1] [ref=e22]:
+          - text: Hey, Demo User!
+          - generic [ref=e23]: 👋
+        - paragraph [ref=e24]: Demo Space • 2 pending tasks
+      - generic [ref=e25]:
+        - generic [ref=e26]: ✨
+        - generic [ref=e27]: 5 day streak
+    - generic [ref=e32]:
+      - generic [ref=e33]:
+        - img [ref=e34]
+        - generic [ref=e36]: Level 7
+      - generic [ref=e37]: 200 / 350
+    - generic [ref=e40]:
+      - generic [ref=e42]:
+        - generic [ref=e43]:
+          - heading "Your Tasks" [level=3] [ref=e44]
+          - img [ref=e45]
+        - generic [ref=e48]:
+          - generic [ref=e49]: 2 Pending
+          - paragraph [ref=e50]: 1 due today
+      - generic [ref=e52]:
+        - generic [ref=e53]:
+          - heading "Your Rank" [level=3] [ref=e54]
+          - img [ref=e55]
+        - generic [ref=e61]:
+          - generic [ref=e62]:
+            - generic [ref=e63]: "#1"
+            - generic [ref=e64]: 🥇
+          - generic [ref=e65]:
+            - generic [ref=e66]: 1,250
+            - text: points
+    - generic [ref=e71]:
+      - generic [ref=e72]:
+        - img [ref=e73]
+        - img [ref=e77]
+      - generic [ref=e81]:
+        - paragraph [ref=e82]: Weekly Goal
+        - paragraph [ref=e83]: 3/5 tasks completed
+    - generic [ref=e85]:
+      - generic [ref=e86]:
+        - heading "Your Tasks" [level=2] [ref=e87]
+        - button "View All" [ref=e88]:
+          - text: View All
+          - img [ref=e89]
+      - generic [ref=e91]:
+        - generic [ref=e94]:
+          - link "🍳 Clean the Kitchen Wipe counters and sweep the floor +5 pts less than a minute ago To Do" [ref=e95] [cursor=pointer]:
+            - /url: /tasks/1
+            - generic [ref=e96]:
+              - generic [ref=e97]:
+                - generic [ref=e98]:
+                  - generic [ref=e99]: 🍳
+                  - generic [ref=e100]:
+                    - heading "Clean the Kitchen" [level=3] [ref=e101]
+                    - paragraph [ref=e102]: Wipe counters and sweep the floor
+                - generic [ref=e103]: +5 pts
+              - generic [ref=e104]:
+                - generic [ref=e106]:
+                  - img [ref=e107]
+                  - generic [ref=e110]: less than a minute ago
+                - generic [ref=e111]:
+                  - generic [ref=e112]: To Do
+                  - img [ref=e113]
+          - button "Take This Task" [ref=e116]:
+            - img [ref=e117]
+            - text: Take This Task
+        - generic [ref=e121]:
+          - link "🗑️ Take out Trash Main bin is full +3 pts in 1 day In Progress" [ref=e122] [cursor=pointer]:
+            - /url: /tasks/2
+            - generic [ref=e123]:
+              - generic [ref=e124]:
+                - generic [ref=e125]:
+                  - generic [ref=e126]: 🗑️
+                  - generic [ref=e127]:
+                    - heading "Take out Trash" [level=3] [ref=e128]
+                    - paragraph [ref=e129]: Main bin is full
+                - generic [ref=e130]: +3 pts
+              - generic [ref=e131]:
+                - generic [ref=e133]:
+                  - img [ref=e134]
+                  - generic [ref=e137]: in 1 day
+                - generic [ref=e138]:
+                  - generic [ref=e139]: In Progress
+                  - img [ref=e140]
+          - button "Upload Proof Photo" [ref=e143]:
+            - img [ref=e144]
+            - text: Upload Proof Photo
+    - generic [ref=e148]:
+      - heading "Quick Actions" [level=2] [ref=e149]
+      - generic [ref=e150]:
+        - button "Pick a Task" [ref=e152]:
+          - img [ref=e153]
+          - generic [ref=e156]: Pick a Task
+        - button "New Task" [ref=e158]:
+          - img [ref=e159]
+          - generic [ref=e160]: New Task
+    - button "Restart Tour" [ref=e162]:
+      - img [ref=e163]
+      - text: Restart Tour
+  - generic [active]:
+    - generic [ref=e167]:
+      - generic [ref=e168]:
+        - generic [ref=e169]:
+          - navigation [ref=e170]:
+            - button "previous" [disabled] [ref=e171]:
+              - img "previous" [ref=e172]
+            - generic [ref=e174]:
+              - generic [ref=e175]: 1/
+              - text: "1"
+            - button "next" [disabled] [ref=e176]:
+              - img "next" [ref=e177]
+          - img
+        - generic [ref=e179]:
+          - generic [ref=e180]:
+            - img [ref=e181]
+            - generic "Latest available version is detected (16.1.0)." [ref=e183]: Next.js 16.1.0
+            - generic [ref=e184]: Turbopack
+          - img
+      - dialog "Build Error" [ref=e186]:
+        - generic [ref=e189]:
+          - generic [ref=e190]:
+            - generic [ref=e191]:
+              - generic [ref=e193]: Build Error
+              - generic [ref=e194]:
+                - button "Copy Error Info" [ref=e195] [cursor=pointer]:
+                  - img [ref=e196]
+                - button "No related documentation found" [disabled] [ref=e198]:
+                  - img [ref=e199]
+                - button "Attach Node.js inspector" [ref=e201] [cursor=pointer]:
+                  - img [ref=e202]
+            - generic [ref=e211]: Parsing ecmascript source code failed
+          - generic [ref=e213]:
+            - generic [ref=e215]:
+              - img [ref=e217]
+              - generic [ref=e220]: ./src/app/(main)/tasks/page.tsx (236:6)
+              - button "Open in editor" [ref=e221] [cursor=pointer]:
+                - img [ref=e223]
+            - generic [ref=e226]:
+              - generic [ref=e227]: Parsing ecmascript source code failed
+              - generic [ref=e228]: 234 |
+              - text: </div>
+              - generic [ref=e229]: 235 |
+              - text: </div> >
+              - generic [ref=e230]: 236 |
+              - text: </div>
+              - generic [ref=e231]: "|"
+              - text: ^^^^^
+              - generic [ref=e232]: 237 |
+              - generic [ref=e233]: )
+              - text: ;
+              - generic [ref=e234]: 238 |
+              - generic [ref=e235]: "}"
+              - generic [ref=e236]: 239 |
+              - generic [ref=e237]: Unterminated regexp literal
+        - generic [ref=e238]: "1"
+        - generic [ref=e239]: "2"
+    - generic [ref=e244] [cursor=pointer]:
+      - button "Open Next.js Dev Tools" [ref=e245]:
+        - img [ref=e246]
+      - button "Open issues overlay" [ref=e250]:
+        - generic [ref=e251]:
+          - generic [ref=e252]: "0"
+          - generic [ref=e253]: "1"
+        - generic [ref=e254]: Issue
+  - alert [ref=e255]
+```

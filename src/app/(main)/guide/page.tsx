@@ -25,7 +25,8 @@ import {
   ChevronLeft,
   Star,
   Shield,
-  Zap
+  Zap,
+  Sparkles
 } from "lucide-react";
 import Link from "next/link";
 
