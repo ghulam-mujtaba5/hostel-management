@@ -1,19 +1,22 @@
-import { createClient } from "@supabase/supabase-js";
+import { createClient } from "@/lib/supabase/server";
 import { NextResponse } from "next/server";
 
 export async function GET(request: Request) {
   const requestUrl = new URL(request.url);
   const code = requestUrl.searchParams.get("code");
+  const error_description = requestUrl.searchParams.get("error_description");
+  const next = requestUrl.searchParams.get("next") ?? "/";
+
+  // Handle OAuth errors
+  if (error_description) {
+    console.error("OAuth error:", error_description);
+    return NextResponse.redirect(
+      `${requestUrl.origin}/login?error=${encodeURIComponent(error_description)}`
+    );
+  }
 
   if (code) {
-    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
-    const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
-    
-    const supabase = createClient(supabaseUrl, supabaseAnonKey, {
-      auth: {
-        flowType: "pkce",
-      },
-    });
+    const supabase = await createClient();
 
     try {
       const { data, error } = await supabase.auth.exchangeCodeForSession(code);
@@ -25,32 +28,40 @@ export async function GET(request: Request) {
         );
       }
 
-      // If user exists and session is valid, redirect to home
-      if (data.session) {
+      // If user exists and session is valid, create profile and redirect
+      if (data.session && data.user) {
+        const user = data.user;
+        
         // Create profile if it doesn't exist
         const { data: existingProfile } = await supabase
           .from("profiles")
           .select("id")
-          .eq("id", data.session.user.id)
+          .eq("id", user.id)
           .single();
 
         if (!existingProfile) {
-          const user = data.session.user;
           const username = 
             user.user_metadata?.name ||
             user.user_metadata?.full_name ||
             user.email?.split("@")[0] ||
             "User";
 
-          await supabase.from("profiles").upsert({
+          const { error: profileError } = await supabase.from("profiles").upsert({
             id: user.id,
             username: username.replace(/\s+/g, "_").toLowerCase(),
             full_name: user.user_metadata?.full_name || username,
             avatar_url: user.user_metadata?.avatar_url || user.user_metadata?.picture,
+            email: user.email,
           });
+
+          if (profileError) {
+            console.error("Profile creation error:", profileError);
+            // Continue anyway - user can update profile later
+          }
         }
 
-        return NextResponse.redirect(`${requestUrl.origin}/`);
+        // Successful auth - redirect to home or next page
+        return NextResponse.redirect(`${requestUrl.origin}${next}`);
       }
     } catch (err) {
       console.error("Auth callback exception:", err);
