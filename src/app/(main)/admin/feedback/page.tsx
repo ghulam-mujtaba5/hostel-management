@@ -32,10 +32,14 @@ export default function AdminFeedbackPage() {
   useEffect(() => {
     const getUser = async () => {
       const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        console.warn('No authenticated user found');
+      }
       setUserId(user?.id || null);
+      // Fetch feedback regardless of user auth status
+      await fetchFeedback();
     };
     getUser();
-    fetchFeedback();
   }, []);
 
   useEffect(() => {
@@ -45,6 +49,7 @@ export default function AdminFeedbackPage() {
   }, [selectedFeedback]);
 
   const fetchFeedback = async () => {
+    setLoading(true);
     try {
       const { data, error } = await supabase
         .from('feedback')
@@ -54,26 +59,46 @@ export default function AdminFeedbackPage() {
         `)
         .order('created_at', { ascending: false });
 
-      if (error) throw error;
+      if (error) {
+        console.error('Feedback fetch error:', error);
+        throw error;
+      }
+
+      if (!data || data.length === 0) {
+        console.log('No feedback found');
+        setFeedback([]);
+        return;
+      }
 
       const feedbackWithVotes = await Promise.all(
-        (data || []).map(async (item) => {
-          const { count } = await supabase
-            .from('feedback_votes')
-            .select('*', { count: 'exact', head: true })
-            .eq('feedback_id', item.id);
+        data.map(async (item) => {
+          try {
+            const { count } = await supabase
+              .from('feedback_votes')
+              .select('*', { count: 'exact', head: true })
+              .eq('feedback_id', item.id);
 
-          return {
-            ...item,
-            vote_count: count || 0
-          };
+            return {
+              ...item,
+              vote_count: count || 0
+            };
+          } catch (voteError) {
+            console.error('Error counting votes for feedback:', item.id, voteError);
+            return {
+              ...item,
+              vote_count: 0
+            };
+          }
         })
       );
 
       setFeedback(feedbackWithVotes);
     } catch (err) {
       console.error('Error fetching feedback:', err);
-      toast.error('Failed to load feedback');
+      // Show more detailed error message
+      const errorMsg = err instanceof Error ? err.message : 'Failed to load feedback';
+      toast.error(errorMsg);
+      setFeedback([]);
     } finally {
       setLoading(false);
     }
