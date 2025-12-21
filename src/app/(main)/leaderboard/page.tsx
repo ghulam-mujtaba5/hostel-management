@@ -10,6 +10,7 @@ import { SpaceMember, Profile } from "@/types";
 import { motion, AnimatePresence } from "framer-motion";
 import { PointsCounter, calculateLevel, LevelProgress, StreakBadge } from "@/components/Achievements";
 import { SlideInCard, ProgressRing } from "@/components/Animations";
+import { AdvancedLoading } from "@/components/AdvancedLoading";
 import Link from "next/link";
 
 export default function LeaderboardPage() {
@@ -123,13 +124,7 @@ export default function LeaderboardPage() {
       </div>
 
       {loading ? (
-        <div className="flex flex-col items-center justify-center py-32 gap-6">
-          <div className="relative">
-            <div className="h-12 w-12 border-4 border-primary/10 border-t-primary rounded-full animate-spin" />
-            <Trophy className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 h-5 w-5 text-primary/40" />
-          </div>
-          <p className="text-sm font-bold text-muted-foreground animate-pulse">Calculating rankings...</p>
-        </div>
+        <AdvancedLoading fullPage={false} text="Calculating rankings..." className="py-32" />
       ) : (
         <>
           {/* Podium for Top 3 */}

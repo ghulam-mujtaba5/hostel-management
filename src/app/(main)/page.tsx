@@ -20,6 +20,7 @@ import { toast } from "@/components/Toast";
 import { Home } from "lucide-react";
 import { Logo } from "@/components/Logo";
 import { cn } from "@/lib/utils";
+import { AdvancedLoading } from "@/components/AdvancedLoading";
 
 export default function Dashboard() {
   const { user, profile, currentSpace, loading: authLoading } = useAuth();
@@ -95,15 +96,7 @@ export default function Dashboard() {
   };
 
   if (authLoading || loading) {
-    return (
-      <div className="flex h-[60vh] items-center justify-center">
-        <motion.div
-          animate={{ rotate: 360 }}
-          transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-          className="rounded-full h-12 w-12 border-4 border-muted border-t-primary"
-        />
-      </div>
-    );
+    return <AdvancedLoading fullPage={false} className="h-[60vh]" />;
   }
 
   if (!user) {

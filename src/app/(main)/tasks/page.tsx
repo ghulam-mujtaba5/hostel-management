@@ -11,6 +11,7 @@ import { Task, TASK_CATEGORIES, TaskCategory } from "@/types";
 import { TaskCard } from "@/components/TaskCard";
 import { motion, AnimatePresence } from "framer-motion";
 import { SlideInCard } from "@/components/Animations";
+import { AdvancedLoading } from "@/components/AdvancedLoading";
 
 type TabType = 'my' | 'available' | 'completed';
 
@@ -176,13 +177,7 @@ export default function TasksPage() {
       {/* Task List */}
       <div className="space-y-6">
         {loading ? (
-          <div className="flex flex-col items-center justify-center py-32 gap-6">
-            <div className="relative">
-              <div className="h-12 w-12 border-4 border-primary/10 border-t-primary rounded-full animate-spin" />
-              <ListTodo className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 h-5 w-5 text-primary/40" />
-            </div>
-            <p className="text-sm font-bold text-muted-foreground animate-pulse">Syncing tasks...</p>
-          </div>
+          <AdvancedLoading fullPage={false} text="Syncing tasks..." className="py-32" />
         ) : filteredTasks.length === 0 ? (
           <SlideInCard direction="up">
             <Card className="border border-border/50 shadow-sm bg-white dark:bg-slate-900 rounded-[2rem] overflow-hidden">

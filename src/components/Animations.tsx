@@ -323,15 +323,16 @@ interface SkeletonProps {
   variant?: 'text' | 'circular' | 'rectangular';
   width?: string | number;
   height?: string | number;
+  animate?: boolean;
 }
 
 export function Skeleton({ 
   className = '', 
   variant = 'rectangular',
   width,
-  height 
+  height,
+  animate = true
 }: SkeletonProps) {
-  const baseClass = "animate-pulse bg-muted";
   const variantClass = {
     text: "rounded h-4",
     circular: "rounded-full",
@@ -340,7 +341,12 @@ export function Skeleton({
 
   return (
     <div 
-      className={`${baseClass} ${variantClass[variant]} ${className}`}
+      className={cn(
+        "bg-muted relative overflow-hidden",
+        animate && "after:absolute after:inset-0 after:-translate-x-full after:animate-[shimmer_2s_infinite] after:bg-gradient-to-r after:from-transparent after:via-white/10 after:to-transparent dark:after:via-white/5",
+        variantClass[variant],
+        className
+      )}
       style={{ width, height }}
     />
   );
@@ -350,20 +356,68 @@ export function Skeleton({
 interface SpinnerProps {
   size?: 'sm' | 'md' | 'lg';
   className?: string;
+  variant?: 'default' | 'gradient' | 'dots';
 }
 
-export function Spinner({ size = 'md', className = '' }: SpinnerProps) {
+export function Spinner({ size = 'md', className = '', variant = 'default' }: SpinnerProps) {
   const sizeClass = {
     sm: 'h-4 w-4',
     md: 'h-8 w-8',
     lg: 'h-12 w-12',
   };
 
+  if (variant === 'dots') {
+    return (
+      <div className={cn("flex gap-1 items-center justify-center", className)}>
+        {[0, 1, 2].map((i) => (
+          <motion.div
+            key={i}
+            animate={{
+              scale: [1, 1.5, 1],
+              opacity: [0.5, 1, 0.5],
+            }}
+            transition={{
+              duration: 1,
+              repeat: Infinity,
+              delay: i * 0.2,
+              ease: "easeInOut",
+            }}
+            className={cn(
+              "rounded-full bg-primary",
+              size === 'sm' ? 'w-1 h-1' : size === 'md' ? 'w-2 h-2' : 'w-3 h-3'
+            )}
+          />
+        ))}
+      </div>
+    );
+  }
+
+  if (variant === 'gradient') {
+    return (
+      <div className={cn("relative", sizeClass[size], className)}>
+        <motion.div
+          animate={{ rotate: 360 }}
+          transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+          className="absolute inset-0 rounded-full border-2 border-transparent border-t-primary border-r-purple-500"
+        />
+        <motion.div
+          animate={{ rotate: -360 }}
+          transition={{ duration: 1.5, repeat: Infinity, ease: "linear" }}
+          className="absolute inset-1 rounded-full border-2 border-transparent border-b-purple-600 border-l-primary opacity-50"
+        />
+      </div>
+    );
+  }
+
   return (
     <motion.div
       animate={{ rotate: 360 }}
       transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-      className={`${sizeClass[size]} border-2 border-muted border-t-primary rounded-full ${className}`}
+      className={cn(
+        sizeClass[size],
+        "border-2 border-muted border-t-primary rounded-full",
+        className
+      )}
     />
   );
 }
