@@ -160,6 +160,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const signIn = async (email: string, password: string) => {
     const { error } = await supabase.auth.signInWithPassword({ email, password });
+    
+    // Development workaround: If email not confirmed error, try OTP
+    if (error && error.message.includes('Email not confirmed')) {
+      console.warn('Email not confirmed. In production, user should confirm email.');
+      // For now, return a more helpful error
+      return { error: new Error('Email not confirmed. Please check your email or contact admin to confirm your account.') as any };
+    }
+    
     return { error };
   };
 

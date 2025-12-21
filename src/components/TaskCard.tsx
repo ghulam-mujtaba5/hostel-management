@@ -38,16 +38,6 @@ export function TaskCard({ task, showAssignee = false, onUpdate, recommended = f
     
     setTaking(true);
 
-    // Handle demo mode
-    if (user.id === 'demo-user') {
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      triggerQuickCelebration('burst');
-      toast.taskTaken(task.title);
-      setTaking(false);
-      onUpdate?.();
-      return;
-    }
-
     const { error } = await supabase.rpc('take_task', { task_id: task.id });
     if (error) {
       toast.error(error.message);
@@ -66,15 +56,6 @@ export function TaskCard({ task, showAssignee = false, onUpdate, recommended = f
     if (!file || !user || !currentSpace) return;
 
     setUploading(true);
-
-    // Handle demo mode
-    if (user.id === 'demo-user') {
-      await new Promise(resolve => setTimeout(resolve, 1500));
-      toast.success('Proof uploaded!', { emoji: '📸', subtitle: 'Waiting for verification' });
-      setUploading(false);
-      onUpdate?.();
-      return;
-    }
 
     try {
       const fileExt = file.name.split('.').pop();

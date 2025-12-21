@@ -157,8 +157,8 @@ export default function Dashboard() {
                 </Link>
               </Button>
               <Button size="lg" variant="outline" className="h-14 px-8 rounded-2xl text-lg font-bold border-2" asChild>
-                <Link href="/demo">
-                  Try Live Demo
+                <Link href="/login">
+                  Sign In
                 </Link>
               </Button>
             </motion.div>

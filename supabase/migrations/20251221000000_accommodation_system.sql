@@ -3,9 +3,12 @@ ALTER TABLE public.space_members ADD COLUMN IF NOT EXISTS room_number TEXT;
 ALTER TABLE public.space_members ADD COLUMN IF NOT EXISTS bed_number TEXT;
 ALTER TABLE public.space_members ADD COLUMN IF NOT EXISTS status TEXT DEFAULT 'active' CHECK (status IN ('active', 'inactive', 'pending'));
 
+-- Ensure UUID extension is available
+CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+
 -- Create a table for hostel rooms if we want more structure
 CREATE TABLE IF NOT EXISTS public.rooms (
-  id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
+  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
   space_id UUID REFERENCES public.spaces(id) ON DELETE CASCADE NOT NULL,
   room_number TEXT NOT NULL,
   capacity INT DEFAULT 4,

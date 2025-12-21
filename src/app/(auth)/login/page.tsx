@@ -234,25 +234,6 @@ function LoginContent() {
                     </div>
                   )}
                 </Button>
-
-                <div className="relative py-2">
-                  <div className="absolute inset-0 flex items-center">
-                    <span className="w-full border-t border-border/50" />
-                  </div>
-                  <div className="relative flex justify-center text-xs uppercase">
-                    <span className="bg-card px-2 text-muted-foreground font-semibold">Or continue with</span>
-                  </div>
-                </div>
-
-                <Button 
-                  type="button"
-                  variant="outline"
-                  className="w-full h-11 rounded-xl border-border/50 hover:bg-muted/50 font-semibold"
-                  onClick={() => router.push('/demo')}
-                >
-                  <Sparkles className="mr-2 h-4 w-4 text-primary" />
-                  Try Live Demo
-                </Button>
               </div>
             </form>
             

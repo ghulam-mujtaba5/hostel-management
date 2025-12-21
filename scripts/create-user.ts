@@ -10,9 +10,9 @@ const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
 const supabase = createClient(supabaseUrl, supabaseKey);
 
 async function createUser() {
-  const email = 'admin@hostel.com';
+  const email = 'workinguser@hostel.com';
   const password = 'password123';
-  const username = 'admin';
+  const username = 'workinguser';
 
   console.log(`Attempting to create user: ${email}`);
 
