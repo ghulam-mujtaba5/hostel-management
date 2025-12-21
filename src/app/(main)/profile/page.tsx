@@ -4,7 +4,7 @@ import { useState, useEffect, useRef } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { LogOut, Settings, User, ChevronRight, Shield, Bell, Moon, Sun, Camera, Award, Palette, Info, Sparkles, Star, Home, Mail, MapPin } from "lucide-react";
+import { LogOut, Settings, User, ChevronRight, Shield, Bell, Moon, Sun, Camera, Award, Palette, Info, Home, Mail, MapPin, Star, Sparkles } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/lib/supabase";
 import { useTheme } from "next-themes";
@@ -12,8 +12,9 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { SlideInCard, ProgressRing } from "@/components/Animations";
-import { BadgeDisplay, BADGES, BadgeType, PointsCounter, LevelProgress, calculateLevel, StreakBadge } from "@/components/Achievements";
+import { BadgeDisplay, BADGES, BadgeType, LevelProgress, calculateLevel, StreakBadge } from "@/components/Achievements";
 import { toast } from "@/components/Toast";
+import { EmptyState } from "@/components/EmptyState";
 
 export default function ProfilePage() {
   const { user, profile, currentSpace, spaceMembership, signOut, refreshProfile } = useAuth();

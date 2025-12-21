@@ -3,14 +3,15 @@
 import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Trophy, Medal, TrendingUp, Crown, Star, Flame, Info, ArrowUp, ArrowDown, Minus, CheckCircle } from "lucide-react";
+import { Trophy, Medal, TrendingUp, Crown, Star, Info, ArrowUp, ArrowDown, CheckCircle } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/lib/supabase";
 import { SpaceMember, Profile } from "@/types";
 import { motion, AnimatePresence } from "framer-motion";
-import { PointsCounter, calculateLevel, LevelProgress, StreakBadge } from "@/components/Achievements";
+import { calculateLevel, LevelProgress } from "@/components/Achievements";
 import { SlideInCard, ProgressRing } from "@/components/Animations";
-import { AdvancedLoading } from "@/components/AdvancedLoading";
+import { EmptyState } from "@/components/EmptyState";
+import { LeaderboardSkeleton } from "@/components/Skeleton";
 import Link from "next/link";
 
 export default function LeaderboardPage() {
@@ -124,7 +125,20 @@ export default function LeaderboardPage() {
       </div>
 
       {loading ? (
-        <AdvancedLoading fullPage={false} text="Calculating rankings..." className="py-32" />
+        <div className="space-y-4">
+          <LeaderboardSkeleton />
+          <LeaderboardSkeleton />
+          <LeaderboardSkeleton />
+          <LeaderboardSkeleton />
+          <LeaderboardSkeleton />
+        </div>
+      ) : members.length === 0 ? (
+        <EmptyState
+          icon={Trophy}
+          title="No rankings yet"
+          description="Start completing tasks to climb the leaderboard!"
+          action={{ label: 'Browse Tasks', href: '/tasks' }}
+        />
       ) : (
         <>
           {/* Podium for Top 3 */}

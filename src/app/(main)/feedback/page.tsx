@@ -7,9 +7,11 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Feedback, FeedbackType, FeedbackStatus } from '@/types';
 import { motion, AnimatePresence } from 'framer-motion';
-import { MessageSquare, Plus, ThumbsUp, Filter, Search, Clock, CheckCircle2, AlertTriangle } from 'lucide-react';
+import { MessageSquare, Plus, ThumbsUp } from 'lucide-react';
 import { SlideInCard } from '@/components/Animations';
 import { toast } from '@/components/Toast';
+import { EmptyState } from '@/components/EmptyState';
+import { Skeleton } from '@/components/Skeleton';
 
 export default function FeedbackPage() {
   const router = useRouter();
@@ -223,19 +225,18 @@ export default function FeedbackPage() {
 
       <div className="space-y-4">
         {loading ? (
-          <div className="flex justify-center py-12">
-            <motion.div
-              animate={{ rotate: 360 }}
-              transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-              className="h-8 w-8 border-4 border-primary border-t-transparent rounded-full"
-            />
+          <div className="space-y-4">
+            <Skeleton className="h-32" />
+            <Skeleton className="h-32" />
+            <Skeleton className="h-32" />
           </div>
         ) : feedback.length === 0 ? (
-          <Card className="p-12 text-center">
-            <MessageSquare className="mx-auto h-12 w-12 text-muted-foreground mb-4 opacity-20" />
-            <h3 className="text-lg font-medium">No feedback found</h3>
-            <p className="text-muted-foreground">Be the first to share your thoughts!</p>
-          </Card>
+          <EmptyState
+            icon={MessageSquare}
+            title="No feedback yet"
+            description="Be the first to share ideas, report issues, or give suggestions for this space!"
+            action={{ label: 'Submit Feedback', href: '/feedback/submit' }}
+          />
         ) : (
           <AnimatePresence mode="popLayout">
             {feedback.map((item, index) => (
