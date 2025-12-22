@@ -348,11 +348,19 @@ test.describe('API Endpoint Coverage', () => {
     const requestsPromise = page.evaluate(() => {
       const requests: string[] = [];
       // Listen to fetch/XHR
-      const origFetch = window.fetch;
-      (window as any).fetch = function(...args: any[]) {
-        requests.push(args[0]);
-        return origFetch.apply(this, args);
-      };
+      const origFetch = window.fetch.bind(window);
+      window.fetch = ((input: RequestInfo | URL, init?: RequestInit) => {
+        try {
+          if (typeof input === "string") {
+            requests.push(input);
+          } else {
+            requests.push(input.toString());
+          }
+        } catch {
+          // best-effort only
+        }
+        return origFetch(input, init);
+      }) as typeof window.fetch;
       return requests;
     });
 

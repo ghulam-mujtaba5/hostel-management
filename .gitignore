@@ -42,3 +42,13 @@ next-env.d.ts
 
 .vercel
 .env*.local
+
+# Playwright test reports
+/playwright-report/
+/test-results/
+
+# Temporary documentation (should be in docs/)
+*_COMPLETE.md
+*_SUMMARY.md
+*_STATUS*.md
+*_REPORT.md

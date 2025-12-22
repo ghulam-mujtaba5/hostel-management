@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { requireAdminSession } from "@/lib/adminSession";
-import { getSupabaseAdminClient } from "@/lib/supabaseAdmin";
+import { getSupabaseAdminClient } from "../../../../../../lib/supabaseAdmin";
 
 export async function GET(_req: NextRequest, ctx: { params: Promise<{ id: string }> }) {
   try {

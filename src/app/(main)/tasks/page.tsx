@@ -7,6 +7,7 @@ import { Plus, Filter, CheckCircle, Calendar, ListTodo, Clock, CheckCircle2, Sea
 import Link from "next/link";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/lib/supabase";
+import { useRealtimeSubscription } from "@/lib/realtime";
 import { Task, TASK_CATEGORIES, TaskCategory } from "@/types";
 import { TaskCard } from "@/components/TaskCard";
 import { EmptyState } from "@/components/EmptyState";
@@ -23,6 +24,18 @@ export default function TasksPage() {
   const [activeTab, setActiveTab] = useState<TabType>('my');
   const [filterCategory, setFilterCategory] = useState<TaskCategory | 'all'>('all');
   const [searchQuery, setSearchQuery] = useState("");
+
+  // Subscribe to real-time task updates
+  useRealtimeSubscription<Task>(
+    'tasks',
+    (payload) => {
+      // Only refresh if the change is relevant to the current space
+      if (currentSpace && payload.new.space_id === currentSpace.id) {
+        fetchTasks();
+      }
+    },
+    currentSpace ? `space_id=eq.${currentSpace.id}` : undefined
+  );
 
   useEffect(() => {
     if (currentSpace) {

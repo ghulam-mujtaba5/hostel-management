@@ -87,12 +87,19 @@ export function RecommendedTasks({ spaceId, userId, onTaskTaken }: RecommendedTa
       last_task_date: null,
     })) || [];
 
+    const storedPrefs = localStorage.getItem(`prefs_${spaceId}_${userId}`);
+    const preferences = storedPrefs ? JSON.parse(storedPrefs) : undefined;
+
     const recs = calculateTaskRecommendations(
       tasks,
       {
         userId,
         recentTasks: recentTasks || [],
         stats: userStats,
+        preferences: preferences ? {
+          preferred_categories: preferences.preferred || [],
+          avoided_categories: preferences.avoided || []
+        } : undefined
       },
       allStats
     );
