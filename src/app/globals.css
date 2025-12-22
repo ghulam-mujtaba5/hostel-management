@@ -584,3 +584,15 @@ a:active {
     scroll-behavior: auto !important;
   }
 }
+
+/* Hide browser-specific icons in inputs to prevent collision with custom icons */
+input::-ms-reveal,
+input::-ms-clear {
+  display: none;
+}
+input::-webkit-credentials-auto-fill-button {
+    visibility: hidden;
+    pointer-events: none;
+    position: absolute;
+    right: 0;
+}

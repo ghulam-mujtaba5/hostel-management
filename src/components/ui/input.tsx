@@ -3,15 +3,16 @@ import { cn } from "@/lib/utils"
 
 export interface InputProps
   extends React.InputHTMLAttributes<HTMLInputElement> {
-  variant?: 'default' | 'filled' | 'ghost';
+  variant?: 'default' | 'filled' | 'ghost' | 'glass';
 }
 
 const Input = React.forwardRef<HTMLInputElement, InputProps>(
   ({ className, type, variant = 'default', ...props }, ref) => {
     const variants = {
-      default: "border border-input bg-background hover:border-primary/50 focus:border-primary",
+      default: "border border-input bg-background hover:border-primary/50 focus:border-primary shadow-sm",
       filled: "border-transparent bg-muted/50 hover:bg-muted focus:bg-background focus:border-primary",
-      ghost: "border-transparent bg-transparent hover:bg-muted/50 focus:bg-muted/50"
+      ghost: "border-transparent bg-transparent hover:bg-muted/50 focus:bg-muted/50",
+      glass: "border-white/10 bg-white/5 backdrop-blur-xl text-foreground placeholder:text-muted-foreground/50 hover:bg-white/10 focus:bg-white/10 focus:border-primary/50"
     }
     
     return (
