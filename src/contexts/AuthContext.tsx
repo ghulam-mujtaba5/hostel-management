@@ -115,9 +115,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setUser(session?.user ?? null);
       setLoading(false);
 
-      // Clean up URL hash if session is present
-      if (session && typeof window !== 'undefined' && window.location.hash) {
-        window.history.replaceState(null, '', window.location.pathname + window.location.search);
+      // Clean up URL hash if session is present (from OAuth callbacks)
+      if (typeof window !== 'undefined') {
+        const hash = window.location.hash;
+        if (hash && (hash.includes('access_token') || hash.includes('error') || hash === '#')) {
+          window.history.replaceState(null, '', window.location.pathname + window.location.search);
+        }
       }
     };
 
@@ -125,12 +128,21 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, session) => {
+        console.log('Auth state changed:', event);
         setSession(session);
         setUser(session?.user ?? null);
 
-        // Clean up URL hash after successful sign in from email link
-        if (event === 'SIGNED_IN' && typeof window !== 'undefined' && window.location.hash) {
-          window.history.replaceState(null, '', window.location.pathname + window.location.search);
+        // Clean up URL hash after successful sign in from email link or OAuth
+        if ((event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') && typeof window !== 'undefined') {
+          const hash = window.location.hash;
+          if (hash) {
+            window.history.replaceState(null, '', window.location.pathname + window.location.search);
+          }
+          
+          // If on login page and signed in, redirect to home
+          if (window.location.pathname === '/login') {
+            window.location.href = '/';
+          }
         }
       }
     );

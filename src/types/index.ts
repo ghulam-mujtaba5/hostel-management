@@ -4,6 +4,7 @@ export interface Profile {
   username: string | null;
   full_name: string | null;
   avatar_url: string | null;
+  email?: string | null;
   created_at: string;
 }
 
@@ -13,6 +14,20 @@ export interface Space {
   invite_code: string;
   created_by: string;
   created_at: string;
+}
+
+export interface SpaceProfile {
+  id: string;
+  space_id: string;
+  description: string | null;
+  address: string | null;
+  rules: string | null;
+  announcement: string | null;
+  avatar_url: string | null;
+  cover_url: string | null;
+  timezone: string;
+  created_at: string;
+  updated_at: string;
 }
 
 export interface SpaceMember {
@@ -26,6 +41,122 @@ export interface SpaceMember {
   bed_number?: string | null;
   status?: 'active' | 'inactive' | 'pending' | (string & {});
   profile?: Profile;
+}
+
+export interface Notification {
+  id: string;
+  user_id: string;
+  space_id: string | null;
+  type: 'task_assigned' | 'task_completed' | 'cleaning_request' | 'token_used' | 'member_joined' | 'announcement';
+  title: string;
+  message: string | null;
+  data: Record<string, unknown>;
+  read: boolean;
+  created_at: string;
+}
+
+export interface TaskToken {
+  id: string;
+  user_id: string;
+  space_id: string;
+  tokens_used: number;
+  max_tokens: number;
+  period_start: string;
+  period_type: 'weekly' | 'monthly';
+  created_at: string;
+  updated_at: string;
+}
+
+export interface TaskRequest {
+  id: string;
+  space_id: string;
+  requester_id: string;
+  assigned_to: string | null;
+  title: string;
+  description: string | null;
+  category: TaskCategory;
+  priority: 'low' | 'normal' | 'high' | 'urgent';
+  proof_image_url: string | null;
+  status: 'pending' | 'accepted' | 'in_progress' | 'completed' | 'rejected';
+  token_cost: number;
+  created_at: string;
+  updated_at: string;
+  requester?: Profile;
+  assignee?: Profile;
+}
+
+export interface ServiceQueue {
+  id: string;
+  space_id: string;
+  user_id: string;
+  service_type: string;
+  description: string | null;
+  urgency: 'low' | 'normal' | 'high' | 'urgent';
+  queue_position: number;
+  original_position: number;
+  priority_skips_used: number;
+  priority_skips_available: number;
+  status: 'queued' | 'in_service' | 'completed' | 'cancelled';
+  queued_at: string;
+  started_at: string | null;
+  completed_at: string | null;
+  estimated_wait_minutes: number | null;
+  actual_wait_minutes: number | null;
+  is_hostel_member: boolean;
+  membership_tier: 'standard' | 'premium' | 'vip';
+  created_at: string;
+  updated_at: string;
+  profile?: Profile;
+}
+
+export interface QueuePriorityHistory {
+  id: string;
+  queue_entry_id: string;
+  user_id: string;
+  space_id: string;
+  skip_count: number;
+  reason: 'urgency' | 'membership_priority' | 'available_skip';
+  previous_position: number;
+  new_position: number;
+  skipped_at: string;
+}
+
+export interface QueueSettings {
+  id: string;
+  space_id: string;
+  max_priority_skips_per_member: number;
+  priority_skip_reset_period: 'weekly' | 'monthly' | 'never';
+  avg_service_time_minutes: number;
+  max_concurrent_services: number;
+  enable_membership_priority: boolean;
+  enable_urgency_priority: boolean;
+  enable_time_based_priority: boolean;
+  max_wait_before_boost_minutes: number;
+  prevent_skip_abuse: boolean;
+  min_time_between_skips_hours: number;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface QueueStatus {
+  total_queued: number;
+  in_service: number;
+  avg_wait_minutes: number;
+  max_concurrent: number;
+  spots_available: number;
+}
+
+export interface TaskSettings {
+  id: string;
+  space_id: string;
+  rotation_enabled: boolean;
+  rotation_type: 'round_robin' | 'random' | 'weighted';
+  auto_assign_enabled: boolean;
+  max_requests_per_period: number;
+  request_period: 'weekly' | 'monthly';
+  notification_before_due: number;
+  created_at: string;
+  updated_at: string;
 }
 
 export interface Task {

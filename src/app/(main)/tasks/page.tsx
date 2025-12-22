@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Plus, Filter, CheckCircle, Calendar, ListTodo, Clock, CheckCircle2, Search, Sparkles, LogIn, UserPlus } from "lucide-react";
+import { Plus, Filter, CheckCircle, Calendar, ListTodo, Clock, CheckCircle2, Search, Sparkles, LogIn, UserPlus, Hand } from "lucide-react";
 import Link from "next/link";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/lib/supabase";
@@ -199,12 +199,20 @@ export default function TasksPage() {
             </p>
           </div>
 
-          <Button asChild size="lg" className="h-12 px-8 rounded-xl font-bold shadow-lg shadow-primary/20 bg-primary hover:bg-primary/90 transition-all group">
-            <Link href="/tasks/create">
-              <Plus className="mr-2 h-5 w-5 group-hover:rotate-90 transition-transform duration-300" />
-              Create Task
-            </Link>
-          </Button>
+          <div className="flex gap-3">
+            <Button asChild size="lg" variant="outline" className="h-12 px-6 rounded-xl font-bold border-orange-500/30 hover:bg-orange-500/10 hover:text-orange-600 hover:border-orange-500/50 transition-all">
+              <Link href="/tasks/request">
+                <Hand className="mr-2 h-5 w-5" />
+                Request Help
+              </Link>
+            </Button>
+            <Button asChild size="lg" className="h-12 px-8 rounded-xl font-bold shadow-lg shadow-primary/20 bg-primary hover:bg-primary/90 transition-all group">
+              <Link href="/tasks/create">
+                <Plus className="mr-2 h-5 w-5 group-hover:rotate-90 transition-transform duration-300" />
+                Create Task
+              </Link>
+            </Button>
+          </div>
         </div>
       </div>
 

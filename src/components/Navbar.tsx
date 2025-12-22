@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Home, CheckSquare, User, Trophy, Moon, Sun, Sparkles, MessageSquare, Shield, BookOpen, Bell, Search, Menu, X, Settings, LogOut, ChevronDown } from "lucide-react";
+import { Home, CheckSquare, User, Trophy, Moon, Sun, Sparkles, MessageSquare, Shield, BookOpen, Bell, Search, Menu, X, Settings, LogOut, ChevronDown, Building, Users } from "lucide-react";
 import { usePathname } from "next/navigation";
 import { useTheme } from "next-themes";
 import { cn } from "@/lib/utils";
@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button";
 import { useState, useEffect } from "react";
 import { Logo } from "@/components/Logo";
 import { useAuth } from "@/contexts/AuthContext";
+import { NotificationBell } from "@/components/NotificationBell";
 
 export function Navbar() {
   const pathname = usePathname();
@@ -38,6 +39,7 @@ export function Navbar() {
   const desktopLinks = [
     { href: "/", label: "Dashboard", icon: Home },
     { href: "/tasks", label: "Tasks", icon: CheckSquare },
+    { href: "/queue", label: "Queue", icon: Users },
     { href: "/leaderboard", label: "Leaderboard", icon: Trophy },
     { href: "/feedback", label: "Feedback", icon: MessageSquare },
     { href: "/guide", label: "Help", icon: BookOpen },
@@ -128,6 +130,9 @@ export function Navbar() {
 
             {/* Actions */}
             <div className="flex items-center gap-2">
+              {/* Notifications */}
+              {user && <NotificationBell />}
+
               {/* Theme Toggle */}
               {mounted && (
                 <Button
@@ -184,6 +189,12 @@ export function Navbar() {
                           <Button variant="ghost" className="w-full justify-start gap-3 h-10 rounded-xl">
                             <User className="h-4 w-4" />
                             Profile
+                          </Button>
+                        </Link>
+                        <Link href="/spaces" onClick={() => setProfileMenuOpen(false)}>
+                          <Button variant="ghost" className="w-full justify-start gap-3 h-10 rounded-xl">
+                            <Building className="h-4 w-4" />
+                            My Hostels
                           </Button>
                         </Link>
                         <Link href="/preferences" onClick={() => setProfileMenuOpen(false)}>

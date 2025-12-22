@@ -3,17 +3,19 @@
 import { useState, useEffect, use } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, Users, Copy, Check, UserMinus, Crown, Settings, Share2 } from "lucide-react";
+import { ArrowLeft, Users, Copy, Check, UserMinus, Crown, Settings, Share2, ClipboardList, Bell, Shuffle } from "lucide-react";
 import Link from "next/link";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/lib/supabase";
-import { Space, SpaceMember, Profile } from "@/types";
+import { Space, SpaceMember, Profile, SpaceProfile } from "@/types";
 import { toast } from "sonner";
+import { motion } from "framer-motion";
 
 export default function SpaceDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
-  const { user, refreshSpaces } = useAuth();
+  const { user, refreshSpaces, setCurrentSpace } = useAuth();
   const [space, setSpace] = useState<Space | null>(null);
+  const [spaceProfile, setSpaceProfile] = useState<SpaceProfile | null>(null);
   const [members, setMembers] = useState<(SpaceMember & { profile: Profile })[]>([]);
   const [loading, setLoading] = useState(true);
   const [copied, setCopied] = useState(false);
@@ -30,6 +32,15 @@ export default function SpaceDetailPage({ params }: { params: Promise<{ id: stri
       .single();
 
     if (spaceData) setSpace(spaceData);
+
+    // Fetch space profile
+    const { data: profileData } = await supabase
+      .from('space_profiles')
+      .select('*')
+      .eq('space_id', id)
+      .single();
+
+    if (profileData) setSpaceProfile(profileData);
 
     const { data: membersData } = await supabase
       .from('space_members')
@@ -60,6 +71,13 @@ export default function SpaceDetailPage({ params }: { params: Promise<{ id: stri
     }
   };
 
+  const switchToSpace = () => {
+    if (space) {
+      setCurrentSpace(space);
+      toast.success(`Switched to ${space.name}`);
+    }
+  };
+
   const currentMember = members.find(m => m.user_id === user?.id);
   const isAdmin = currentMember?.role === 'admin';
 
@@ -83,7 +101,7 @@ export default function SpaceDetailPage({ params }: { params: Promise<{ id: stri
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 pb-20">
       <div className="flex items-center gap-4">
         <Button variant="ghost" size="icon" asChild>
           <Link href="/spaces">
@@ -94,15 +112,66 @@ export default function SpaceDetailPage({ params }: { params: Promise<{ id: stri
           <h1 className="text-xl font-bold">{space.name}</h1>
           <p className="text-sm text-muted-foreground">{members.length} members</p>
         </div>
+        <Button variant="default" size="sm" onClick={switchToSpace} className="rounded-xl">
+          Use This Hostel
+        </Button>
         {isAdmin && (
           <Button variant="ghost" size="icon" asChild>
-            <Link href={`/spaces/${id}/admin`}>
+            <Link href={`/spaces/${id}/settings`}>
               <Settings className="h-5 w-5" />
             </Link>
           </Button>
         )}
       </div>
 
+      {/* Announcement Banner */}
+      {spaceProfile?.announcement && (
+        <motion.div
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-2xl p-4"
+        >
+          <div className="flex items-start gap-3">
+            <Bell className="h-5 w-5 text-yellow-600 flex-shrink-0 mt-0.5" />
+            <div>
+              <p className="font-semibold text-yellow-800 dark:text-yellow-200 text-sm">Announcement</p>
+              <p className="text-yellow-700 dark:text-yellow-300 text-sm mt-1">{spaceProfile.announcement}</p>
+            </div>
+          </div>
+        </motion.div>
+      )}
+
+      {/* Quick Actions for Admin */}
+      {isAdmin && (
+        <div className="grid grid-cols-3 gap-3">
+          <Link href={`/spaces/${id}/admin`}>
+            <Card className="hover:bg-muted/50 transition-colors cursor-pointer h-full">
+              <CardContent className="p-4 text-center">
+                <Users className="h-6 w-6 mx-auto mb-2 text-blue-500" />
+                <span className="text-xs font-bold">Manage Members</span>
+              </CardContent>
+            </Card>
+          </Link>
+          <Link href={`/spaces/${id}/settings`}>
+            <Card className="hover:bg-muted/50 transition-colors cursor-pointer h-full">
+              <CardContent className="p-4 text-center">
+                <Settings className="h-6 w-6 mx-auto mb-2 text-purple-500" />
+                <span className="text-xs font-bold">Settings</span>
+              </CardContent>
+            </Card>
+          </Link>
+          <Link href="/tasks/create">
+            <Card className="hover:bg-muted/50 transition-colors cursor-pointer h-full">
+              <CardContent className="p-4 text-center">
+                <ClipboardList className="h-6 w-6 mx-auto mb-2 text-green-500" />
+                <span className="text-xs font-bold">Create Task</span>
+              </CardContent>
+            </Card>
+          </Link>
+        </div>
+      )}
+
+      {/* Invite Code & Link */}
       <Card>
         <CardHeader>
           <CardTitle className="text-sm font-medium">Invite Code & Link</CardTitle>
@@ -125,6 +194,29 @@ export default function SpaceDetailPage({ params }: { params: Promise<{ id: stri
           </p>
         </CardContent>
       </Card>
+
+      {/* Description & Rules */}
+      {(spaceProfile?.description || spaceProfile?.rules) && (
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-sm font-medium">About This Hostel</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            {spaceProfile?.description && (
+              <div>
+                <p className="text-xs font-bold text-muted-foreground uppercase mb-1">Description</p>
+                <p className="text-sm">{spaceProfile.description}</p>
+              </div>
+            )}
+            {spaceProfile?.rules && (
+              <div>
+                <p className="text-xs font-bold text-muted-foreground uppercase mb-1">House Rules</p>
+                <p className="text-sm whitespace-pre-line">{spaceProfile.rules}</p>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+      )}
 
       {/* Members */}
       <Card>
@@ -154,12 +246,15 @@ export default function SpaceDetailPage({ params }: { params: Promise<{ id: stri
                         </span>
                       )}
                       <span>{member.points} points</span>
+                      {member.room_number && <span>• Room {member.room_number}</span>}
                     </div>
                   </div>
                 </div>
                 {isAdmin && member.user_id !== user?.id && (
-                  <Button variant="ghost" size="icon" className="text-muted-foreground">
-                    <UserMinus className="h-4 w-4" />
+                  <Button variant="ghost" size="icon" className="text-muted-foreground" asChild>
+                    <Link href={`/spaces/${id}/admin`}>
+                      <UserMinus className="h-4 w-4" />
+                    </Link>
                   </Button>
                 )}
               </div>

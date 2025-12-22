@@ -5,6 +5,7 @@ import { cn } from "@/lib/utils";
 import { ThemeProvider } from "@/components/ThemeProvider";
 import { ToastProvider } from "@/components/Toast";
 import { AuthProvider } from "@/contexts/AuthContext";
+import { NotificationProvider } from "@/contexts/NotificationContext";
 import { BetaBanner } from "@/components/BetaBanner";
 import { HelpTooltipProvider } from "@/components/HelpTooltip";
 import { NetworkStatus } from "@/components/NetworkStatus";
@@ -66,12 +67,14 @@ export default function RootLayout({
         </a>
         <ThemeProvider>
           <AuthProvider>
-            <HelpTooltipProvider>
-              <NetworkStatus />
-              <BetaBanner />
-              <ToastProvider />
-              {children}
-            </HelpTooltipProvider>
+            <NotificationProvider>
+              <HelpTooltipProvider>
+                <NetworkStatus />
+                <BetaBanner />
+                <ToastProvider />
+                {children}
+              </HelpTooltipProvider>
+            </NotificationProvider>
           </AuthProvider>
         </ThemeProvider>
       </body>

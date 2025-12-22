@@ -39,6 +39,8 @@ export async function GET(request: Request) {
           .eq("id", user.id)
           .single();
 
+        let isFirstUser = false;
+        
         if (!existingProfile) {
           const username = 
             user.user_metadata?.name ||
@@ -58,10 +60,25 @@ export async function GET(request: Request) {
             console.error("Profile creation error:", profileError);
             // Continue anyway - user can update profile later
           }
+          
+          isFirstUser = true;
         }
 
-        // Successful auth - redirect to home or next page
-        return NextResponse.redirect(`${requestUrl.origin}${next}`);
+        // Check if user has any spaces, if not redirect to onboarding
+        const { data: userSpaces } = await supabase
+          .from("space_members")
+          .select("space_id")
+          .eq("user_id", user.id)
+          .limit(1);
+
+        // Redirect to onboarding if no spaces, otherwise to dashboard
+        const redirectPath = (!userSpaces || userSpaces.length === 0) 
+          ? "/spaces/create?welcome=true" 
+          : next;
+
+        // Successful auth - redirect with clean URL
+        const redirectUrl = new URL(redirectPath, requestUrl.origin);
+        return NextResponse.redirect(redirectUrl.toString());
       }
     } catch (err) {
       console.error("Auth callback exception:", err);
