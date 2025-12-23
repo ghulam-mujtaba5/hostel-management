@@ -299,3 +299,56 @@ export const getDifficultyColor = (difficulty: number): string => {
   if (difficulty <= 6) return 'bg-yellow-100 text-yellow-800';
   return 'bg-red-100 text-red-800';
 };
+
+export interface Service {
+  id: string;
+  space_id: string;
+  name: string;
+  description: string | null;
+  default_duration_minutes: number;
+  is_active: boolean;
+  created_by: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface Note {
+  id: string;
+  user_id: string;
+  space_id: string | null;
+  title: string;
+  content: string | null;
+  is_private: boolean;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface SpaceIssue {
+  id: string;
+  space_id: string;
+  reporter_id: string;
+  title: string;
+  description: string | null;
+  priority: 'low' | 'normal' | 'high' | 'critical';
+  status: 'open' | 'in_progress' | 'resolved' | 'closed';
+  assigned_to: string | null;
+  created_at: string;
+  updated_at: string;
+  reporter?: Profile;
+  assignee?: Profile;
+}
+
+export interface DailyInspiration {
+  id: string;
+  content: string;
+  source: string | null;
+  category: 'islamic' | 'motivation' | 'wellness' | 'general';
+  created_at: string;
+}
+
+export interface NotificationPreferences {
+  email: boolean;
+  push: boolean;
+  marketing: boolean;
+}
+
