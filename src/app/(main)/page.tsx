@@ -15,6 +15,8 @@ import { TaskCard } from "@/components/TaskCard";
 import { DashboardSkeleton } from "@/components/Skeleton";
 import { motion } from "framer-motion";
 import { LandingPage } from "@/components/LandingPage";
+import { SmartAssistant } from "@/components/SmartAssistant";
+import WellnessWidget from "@/components/WellnessWidget";
 
 export default function Dashboard() {
   const { user, profile, currentSpace, loading: authLoading } = useAuth();
@@ -189,6 +191,8 @@ export default function Dashboard() {
         </Card>
       </div>
 
+      <SmartAssistant />
+
       <div className="grid lg:grid-cols-3 gap-8">
         {/* Main Content */}
         <div className="lg:col-span-2 space-y-6">
@@ -225,6 +229,7 @@ export default function Dashboard() {
 
         {/* Sidebar */}
         <div className="space-y-6">
+          <WellnessWidget />
           <Card>
             <CardHeader>
               <CardTitle className="text-lg">Quick Actions</CardTitle>
