@@ -45,15 +45,9 @@ export default function FairnessInfoPage() {
           },
           {
             icon: <Brain className="h-6 w-6" />,
-            title: "Difficulty Shuffling",
-            desc: "Not all tasks are equal. Cleaning the washroom is harder than taking out trash. The system ensures no one gets stuck doing only 'hard' tasks. If you did a difficult task recently, you'll be recommended easier ones next.",
+            title: "Category Diversity",
+            desc: "The system avoids giving you the same type of task repeatedly. If you just cleaned the kitchen, you'll likely be recommended a different category next to keep things interesting.",
             color: "purple"
-          },
-          {
-            icon: <Heart className="h-6 w-6" />,
-            title: "Your Preferences",
-            desc: "We respect your choices. You can mark tasks as 'Preferred' or 'Avoid'. While fairness comes first, the system tries to give you tasks you enjoy whenever possible.",
-            color: "pink"
           },
           {
             icon: <ShieldCheck className="h-6 w-6" />,

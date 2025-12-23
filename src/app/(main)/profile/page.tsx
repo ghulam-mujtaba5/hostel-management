@@ -373,8 +373,8 @@ export default function ProfilePage() {
           <SlideInCard direction="up" delay={0.25}>
             <div className="grid sm:grid-cols-2 gap-4">
               {[
-                { href: "/preferences", icon: Settings, color: "blue", title: "Task Preferences", desc: "Customize recommendations" },
                 { href: "/spaces", icon: Shield, color: "purple", title: "Manage Spaces", desc: "Switch or join hostel flats" },
+                { href: "/feedback", icon: Mail, color: "blue", title: "Feedback", desc: "Report issues or suggest features" },
               ].map((item, i) => (
                 <Link 
                   key={i}

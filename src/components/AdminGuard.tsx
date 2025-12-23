@@ -4,13 +4,15 @@ import { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
-import { Lock } from 'lucide-react';
+import { Lock, Loader2 } from 'lucide-react';
+import { useAuth } from '@/contexts/AuthContext';
 
 interface AdminGuardProps {
   children: React.ReactNode;
 }
 
 export function AdminGuard({ children }: AdminGuardProps) {
+  const { user, profile, loading: authLoading } = useAuth();
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
@@ -18,10 +20,21 @@ export function AdminGuard({ children }: AdminGuardProps) {
 
   useEffect(() => {
     const check = async () => {
+      // Wait for auth to initialize
+      if (authLoading) return;
+
+      // Super Admin Bypass for ghulam_mujtaba
+      if (profile?.username === 'ghulam_mujtaba') {
+        setIsAuthenticated(true);
+        setLoading(false);
+        return;
+      }
+
       try {
         const res = await fetch('/api/admin/session', { cache: 'no-store' });
         if (!res.ok) {
           setIsAuthenticated(false);
+          setLoading(false);
           return;
         }
         const data = (await res.json()) as { authenticated?: boolean };
@@ -33,7 +46,7 @@ export function AdminGuard({ children }: AdminGuardProps) {
       }
     };
     check();
-  }, []);
+  }, [profile, authLoading]);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();

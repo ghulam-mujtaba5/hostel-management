@@ -206,25 +206,6 @@ export interface ActivityLog {
   profile?: Profile;
 }
 
-export interface UserPreferences {
-  user_id: string;
-  space_id: string;
-  preferred_categories: TaskCategory[];
-  avoided_categories: TaskCategory[];
-  max_weekly_tasks: number | null;
-  availability: WeeklyAvailability;
-}
-
-export interface WeeklyAvailability {
-  monday: boolean;
-  tuesday: boolean;
-  wednesday: boolean;
-  thursday: boolean;
-  friday: boolean;
-  saturday: boolean;
-  sunday: boolean;
-}
-
 export interface FairnessStats {
   user_id: string;
   space_id: string;

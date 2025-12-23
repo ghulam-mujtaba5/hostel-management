@@ -242,12 +242,6 @@ export function Navbar() {
                               My Spaces
                             </Button>
                           </Link>
-                          <Link href="/preferences" onClick={() => setProfileMenuOpen(false)}>
-                            <Button variant="ghost" className="w-full justify-start gap-3 h-11 rounded-xl font-medium hover:bg-primary/10 hover:text-primary transition-colors">
-                              <Settings className="h-4 w-4" />
-                              Preferences
-                            </Button>
-                          </Link>
                         </div>
                         
                         {/* Sign Out */}

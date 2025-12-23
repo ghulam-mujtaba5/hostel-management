@@ -29,6 +29,9 @@ export default function Dashboard() {
   const [streak, setStreak] = useState(0);
   const [weeklyProgress, setWeeklyProgress] = useState({ completed: 0, goal: 5 });
   const { celebrate, CelebrationComponent } = useCelebration();
+  
+  // Welcome modal for first-time users
+  const { isOpen: isWelcomeOpen, closeModal: closeWelcome } = useWelcomeModal();
 
   useEffect(() => {
     if (currentSpace) {
@@ -304,9 +307,6 @@ export default function Dashboard() {
   const userPoints = leaderboard.find(m => m.user_id === user.id)?.points || 0;
   const userMemberInfo = leaderboard.find(m => m.user_id === user.id);
   const levelInfo = calculateLevel(userPoints);
-
-  // Welcome modal for first-time users
-  const { isOpen: isWelcomeOpen, closeModal: closeWelcome } = useWelcomeModal();
 
   // Check if profile is complete
   const hasProfile = Boolean(profile?.full_name || profile?.username);

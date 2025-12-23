@@ -288,7 +288,7 @@ export function LandingPage() {
               {
                 icon: <Target className="h-7 w-7" />,
                 title: "Smart Recommendations",
-                description: "Get personalized task suggestions based on your schedule and preferences.",
+                description: "Get personalized task suggestions based on workload balance and category diversity.",
                 color: "bg-orange-500/10 text-orange-500",
                 borderColor: "hover:border-orange-500/30"
               },

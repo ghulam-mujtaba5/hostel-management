@@ -4,10 +4,6 @@ interface UserTaskHistory {
   userId: string;
   recentTasks: Task[];
   stats: FairnessStats;
-  preferences?: {
-    preferred_categories: TaskCategory[];
-    avoided_categories: TaskCategory[];
-  };
 }
 
 /**
@@ -17,8 +13,7 @@ interface UserTaskHistory {
  * 1. Workload Balance: Users with fewer points get priority
  * 2. Category Diversity: Avoid assigning same category repeatedly
  * 3. Difficulty Balance: Ensure fair distribution of hard/easy tasks
- * 4. Preference Match: Boost score for preferred categories
- * 5. Recency: Avoid assigning to users who just completed a task
+ * 4. Recency: Avoid assigning to users who just completed a task
  */
 export function calculateTaskRecommendations(
   availableTasks: Task[],
@@ -72,18 +67,6 @@ export function calculateTaskRecommendations(
     } else if (taskIsEasy && userHistory.stats.easy_tasks > userHistory.stats.hard_tasks * 2) {
       score -= 15;
       reasons.push("You've been taking mostly easy tasks");
-    }
-    
-    // 4. Preference Match (±10 points)
-    if (userHistory.preferences) {
-      if (userHistory.preferences.preferred_categories.includes(task.category)) {
-        score += 10;
-        reasons.push("Matches your preferences");
-      }
-      if (userHistory.preferences.avoided_categories.includes(task.category)) {
-        score -= 20;
-        reasons.push("You've marked this as avoided");
-      }
     }
     
     // 5. Due Date Urgency (+10 points for urgent)
