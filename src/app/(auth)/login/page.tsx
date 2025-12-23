@@ -91,7 +91,27 @@ function LoginContent() {
       if (!password) throw new Error("Password is required");
 
       if (isLogin) {
-        const { error } = await signIn(email, password);
+        let loginEmail = email;
+        
+        // If not an email format, try to resolve username
+        if (!email.includes('@')) {
+          try {
+            const res = await fetch('/api/auth/lookup-email', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ username: email }),
+            });
+            
+            const data = await res.json();
+            if (!res.ok) throw new Error(data.error || 'Username not found');
+            
+            loginEmail = data.email;
+          } catch (err: any) {
+            throw new Error(err.message || "Username not found. Please check or use email.");
+          }
+        }
+
+        const { error } = await signIn(loginEmail, password);
         if (error) {
           if (error.message?.includes('Invalid login credentials')) {
             setError("Invalid email or password.");
@@ -344,13 +364,13 @@ function LoginContent() {
             </AnimatePresence>
 
             <div className="space-y-2">
-              <Label htmlFor="email" required>Email</Label>
+              <Label htmlFor="email" required>{isLogin ? "Email or Username" : "Email"}</Label>
               <div className="relative group">
                 <Mail className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground group-focus-within:text-primary transition-colors" />
                 <Input
                   id="email"
-                  type="email"
-                  placeholder="name@example.com"
+                  type={isLogin ? "text" : "email"}
+                  placeholder={isLogin ? "username or name@example.com" : "name@example.com"}
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   className="pl-11 h-12 rounded-xl"
