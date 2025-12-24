@@ -9,6 +9,7 @@ import { NotificationProvider } from "@/contexts/NotificationContext";
 
 import { HelpTooltipProvider } from "@/components/HelpTooltip";
 import { NetworkStatus } from "@/components/NetworkStatus";
+import { ErrorBoundary } from "@/components/ErrorBoundary";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -65,17 +66,19 @@ export default function RootLayout({
         >
           Skip to main content
         </a>
-        <ThemeProvider>
-          <AuthProvider>
-            <NotificationProvider>
-              <HelpTooltipProvider>
-                <NetworkStatus />
-                <ToastProvider />
-                {children}
-              </HelpTooltipProvider>
-            </NotificationProvider>
-          </AuthProvider>
-        </ThemeProvider>
+        <ErrorBoundary>
+          <ThemeProvider>
+            <AuthProvider>
+              <NotificationProvider>
+                <HelpTooltipProvider>
+                  <NetworkStatus />
+                  <ToastProvider />
+                  {children}
+                </HelpTooltipProvider>
+              </NotificationProvider>
+            </AuthProvider>
+          </ThemeProvider>
+        </ErrorBoundary>
       </body>
     </html>
   );

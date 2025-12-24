@@ -3,6 +3,7 @@
 import { motion } from "framer-motion";
 import { Logo } from "./Logo";
 import { cn } from "@/lib/utils";
+import { useState, useEffect } from "react";
 
 interface AdvancedLoadingProps {
   fullPage?: boolean;
@@ -15,6 +16,12 @@ export function AdvancedLoading({
   text = "Loading your experience...", 
   className 
 }: AdvancedLoadingProps) {
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
   return (
     <div className={cn(
       "flex flex-col items-center justify-center bg-background overflow-hidden",
@@ -22,7 +29,7 @@ export function AdvancedLoading({
       className
     )}>
       {/* Animated Background Particles */}
-      {fullPage && (
+      {fullPage && mounted && (
         <div className="absolute inset-0 pointer-events-none">
           {[...Array(6)].map((_, i) => (
             <motion.div

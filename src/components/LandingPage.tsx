@@ -15,7 +15,7 @@ import { cn } from "@/lib/utils";
 import { toast } from "@/components/Toast";
 import { Footer } from "@/components/Footer";
 import { Logo } from "@/components/Logo";
-import { useRef } from "react";
+import { useRef, useState, useEffect } from "react";
 
 const fadeInUp = {
   initial: { opacity: 0, y: 30 },
@@ -32,7 +32,13 @@ const stagger = {
 };
 
 export function LandingPage() {
+  const [mounted, setMounted] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
   const { scrollYProgress } = useScroll({
     target: containerRef,
     offset: ["start start", "end start"]

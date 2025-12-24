@@ -20,19 +20,16 @@ export default function MainLayout({
       
       <Navbar />
       
-      <motion.main 
+      <main 
         id="main-content"
         role="main"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 0.3 }}
         className="container mx-auto px-4 sm:px-6 lg:px-8 pb-32 md:pb-16 pt-24 md:pt-28 max-w-7xl flex-1"
         tabIndex={-1}
       >
         <div className="max-w-6xl mx-auto">
           {children}
         </div>
-      </motion.main>
+      </main>
       
       <Footer />
     </div>

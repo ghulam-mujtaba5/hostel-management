@@ -13,8 +13,8 @@ test('check live url on mobile', async ({ page }) => {
     console.log(`BROWSER LOG [${msg.type()}]: ${msg.text()}`);
   });
 
-  console.log('Navigating to local URL...');
-  const response = await page.goto('http://localhost:3000/');
+  console.log('Navigating to live URL...');
+  const response = await page.goto('https://hostel-management-topaz-ten.vercel.app/');
   
   console.log('Response status:', response?.status());
   
@@ -34,6 +34,27 @@ test('check live url on mobile', async ({ page }) => {
     return h1 ? window.getComputedStyle(h1).opacity : 'not found';
   });
   console.log('H1 opacity:', h1Opacity);
+
+  const bodyOpacity = await page.evaluate(() => window.getComputedStyle(document.body).opacity);
+  console.log('Body opacity:', bodyOpacity);
+
+  const mainOpacity = await page.evaluate(() => {
+    const main = document.querySelector('main');
+    return main ? window.getComputedStyle(main).opacity : 'not found';
+  });
+  console.log('Main opacity:', mainOpacity);
+
+  const mainVisibility = await page.evaluate(() => {
+    const main = document.querySelector('main');
+    return main ? window.getComputedStyle(main).visibility : 'not found';
+  });
+  console.log('Main visibility:', mainVisibility);
+
+  const mainDisplay = await page.evaluate(() => {
+    const main = document.querySelector('main');
+    return main ? window.getComputedStyle(main).display : 'not found';
+  });
+  console.log('Main display:', mainDisplay);
 
   const mainContent = await page.innerHTML('body');
   console.log('Full body HTML:', mainContent);
