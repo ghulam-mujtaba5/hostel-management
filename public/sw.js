@@ -1,8 +1,9 @@
-const CACHE_NAME = 'hostelmate-v1';
+const CACHE_NAME = 'hostelmate-v2';
 const urlsToCache = [
   '/',
   '/manifest.json',
-  '/icon.svg'
+  '/icon.svg',
+  '/offline.html'
 ];
 
 self.addEventListener('install', (event) => {
@@ -21,7 +22,13 @@ self.addEventListener('fetch', (event) => {
         if (response) {
           return response;
         }
-        return fetch(event.request);
+        return fetch(event.request)
+          .catch(() => {
+            // If fetch fails and it's a navigation request, return offline page
+            if (event.request.mode === 'navigate') {
+              return caches.match('/offline.html');
+            }
+          });
       })
   );
 });

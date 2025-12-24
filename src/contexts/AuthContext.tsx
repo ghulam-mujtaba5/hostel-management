@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
+import { createContext, useContext, useEffect, useState, ReactNode, useCallback } from 'react';
 import { supabase } from '@/lib/supabase';
 import { User, Session } from '@supabase/supabase-js';
 import { Profile, Space, SpaceMember } from '@/types';
@@ -32,7 +32,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [userSpaces, setUserSpaces] = useState<Space[]>([]);
   const [loading, setLoading] = useState(true);
 
-  const refreshProfile = async () => {
+  const refreshProfile = useCallback(async () => {
     if (!user) return;
     
     const { data, error } = await supabase
@@ -63,9 +63,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         console.error('Failed to create profile in refreshProfile:', upsertError);
       }
     }
-  };
+  }, [user]);
 
-  const refreshSpaces = async () => {
+  const refreshSpaces = useCallback(async () => {
     if (!user) return;
     
     const { data } = await supabase
@@ -89,7 +89,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         setCurrentSpaceState(spaces[0]);
       }
     }
-  };
+  }, [user, currentSpace]);
 
   const setCurrentSpace = async (space: Space) => {
     setCurrentSpaceState(space);
@@ -169,7 +169,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           });
       }
     }
-  }, [user]);
+  }, [user, refreshProfile, refreshSpaces]);
 
   const signIn = async (email: string, password: string) => {
     const { error } = await supabase.auth.signInWithPassword({ email, password });
