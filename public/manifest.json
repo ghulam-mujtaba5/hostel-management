@@ -1,11 +1,12 @@
 {
   "name": "HostelMate",
   "short_name": "HostelMate",
-  "description": "Manage your hostel duties efficiently with fairness and gamification",
+  "id": "hostelmate",
+  "description": "Intelligent hostel duty management with AI-powered fair task distribution",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#ffffff",
-  "theme_color": "#3b82f6",
+  "theme_color": "#6366f1",
   "orientation": "portrait",
   "icons": [
     {
@@ -21,7 +22,7 @@
       "purpose": "maskable"
     }
   ],
-  "categories": ["productivity", "lifestyle"],
+  "categories": ["productivity", "lifestyle", "utilities"],
   "shortcuts": [
     {
       "name": "Tasks",
