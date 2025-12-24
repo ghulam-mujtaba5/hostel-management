@@ -9,6 +9,7 @@ import { NotificationProvider } from "@/contexts/NotificationContext";
 
 import { HelpTooltipProvider } from "@/components/HelpTooltip";
 import { NetworkStatus } from "@/components/NetworkStatus";
+import { ServiceWorkerRegister } from "@/components/ServiceWorkerRegister";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 
 const inter = Inter({ subsets: ["latin"] });
@@ -72,6 +73,7 @@ export default function RootLayout({
               <NotificationProvider>
                 <HelpTooltipProvider>
                   <NetworkStatus />
+                  <ServiceWorkerRegister />
                   <ToastProvider />
                   {children}
                 </HelpTooltipProvider>

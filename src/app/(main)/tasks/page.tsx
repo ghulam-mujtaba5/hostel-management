@@ -52,7 +52,8 @@ export default function TasksPage() {
       .from('tasks')
       .select(`
         *,
-        assignee:profiles!tasks_assigned_to_fkey(*)
+        assignee:profiles!tasks_assigned_to_fkey(*),
+        creator:profiles!tasks_created_by_fkey(*)
       `)
       .eq('space_id', currentSpace.id);
 
@@ -203,23 +204,23 @@ export default function TasksPage() {
               <ListTodo className="h-3 w-3" />
               Task Management
             </motion.div>
-            <h1 className="text-4xl md:text-5xl font-bold tracking-tight">
+            <h1 className="text-3xl md:text-5xl font-bold tracking-tight">
               Hostel <br />
               <span className="text-primary">Operations</span>
             </h1>
-            <p className="text-muted-foreground font-medium">
+            <p className="text-muted-foreground font-medium text-sm md:text-base">
               Keep your shared space clean and organized with ease.
             </p>
           </div>
 
-          <div className="flex gap-3">
-            <Button asChild size="lg" variant="outline" className="h-12 px-6 rounded-xl font-bold border-orange-500/30 hover:bg-orange-500/10 hover:text-orange-600 hover:border-orange-500/50 transition-all">
+          <div className="flex gap-3 w-full md:w-auto">
+            <Button asChild size="lg" variant="outline" className="flex-1 md:flex-none h-12 px-6 rounded-xl font-bold border-orange-500/30 hover:bg-orange-500/10 hover:text-orange-600 hover:border-orange-500/50 transition-all">
               <Link href="/tasks/request">
                 <Hand className="mr-2 h-5 w-5" />
                 Request Help
               </Link>
             </Button>
-            <Button asChild size="lg" className="h-12 px-8 rounded-xl font-bold shadow-lg shadow-primary/20 bg-primary hover:bg-primary/90 transition-all group">
+            <Button asChild size="lg" className="flex-1 md:flex-none h-12 px-8 rounded-xl font-bold shadow-lg shadow-primary/20 bg-primary hover:bg-primary/90 transition-all group">
               <Link href="/tasks/create">
                 <Plus className="mr-2 h-5 w-5 group-hover:rotate-90 transition-transform duration-300" />
                 Create Task

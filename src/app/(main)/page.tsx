@@ -14,10 +14,11 @@ import { Task, SpaceMember } from "@/types";
 import { TaskCard } from "@/components/TaskCard";
 import { DashboardSkeleton } from "@/components/Skeleton";
 import { motion } from "framer-motion";
-import { LandingPage } from "@/components/LandingPage";
 import WellnessWidget from "@/components/WellnessWidget";
+import { useRouter } from "next/navigation";
 
 export default function Dashboard() {
+  const router = useRouter();
   const { user, profile, currentSpace, loading: authLoading } = useAuth();
   const [tasks, setTasks] = useState<Task[]>([]);
   const [stats, setStats] = useState({
@@ -28,17 +29,17 @@ export default function Dashboard() {
   });
   const [loading, setLoading] = useState(true);
 
-  console.log('Dashboard render:', { authLoading, loading, hasUser: !!user, hasSpace: !!currentSpace });
-
   useEffect(() => {
-    console.log('Dashboard useEffect:', { authLoading, hasSpace: !!currentSpace });
+    if (!authLoading && !user) {
+      router.push('/login');
+      return;
+    }
     if (currentSpace) {
       fetchData();
     } else if (!authLoading) {
-      console.log('Dashboard: No space and auth done, setting loading to false');
       setLoading(false);
     }
-  }, [currentSpace, authLoading]);
+  }, [currentSpace, authLoading, user, router]);
 
   const fetchData = async () => {
     if (!currentSpace || !user) return;
@@ -47,7 +48,11 @@ export default function Dashboard() {
     // Fetch tasks
     const { data: tasksData } = await supabase
       .from('tasks')
-      .select('*')
+      .select(`
+        *,
+        assignee:profiles!tasks_assigned_to_fkey(*),
+        creator:profiles!tasks_created_by_fkey(*)
+      `)
       .eq('space_id', currentSpace.id)
       .eq('assigned_to', user.id)
       .in('status', ['todo', 'in_progress'])
@@ -96,7 +101,6 @@ export default function Dashboard() {
   };
 
   if (authLoading || loading) return <DashboardSkeleton />;
-  if (!user) return <LandingPage />;
 
   if (!currentSpace) {
     return (

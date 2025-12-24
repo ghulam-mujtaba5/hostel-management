@@ -33,7 +33,11 @@ export function RecommendedTasks({ spaceId, userId, onTaskTaken }: RecommendedTa
     // Fetch available tasks
     const { data: tasks } = await supabase
       .from('tasks')
-      .select('*')
+      .select(`
+        *,
+        assignee:profiles!tasks_assigned_to_fkey(*),
+        creator:profiles!tasks_created_by_fkey(*)
+      `)
       .eq('space_id', spaceId)
       .is('assigned_to', null)
       .eq('status', 'todo')
@@ -228,6 +232,12 @@ export function RecommendedTasks({ spaceId, userId, onTaskTaken }: RecommendedTa
                       <h3 className="font-bold text-base truncate mb-1 group-hover:text-primary transition-colors">
                         {rec.task.title}
                       </h3>
+                      
+                      {rec.task.creator && (
+                        <p className="text-xs text-muted-foreground mb-1">
+                          By {rec.task.creator.username || rec.task.creator.full_name}
+                        </p>
+                      )}
                       
                       <p className="text-xs text-muted-foreground font-medium flex items-center gap-1.5">
                         <Zap className="h-3 w-3 text-primary" />

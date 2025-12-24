@@ -387,13 +387,13 @@ export default function ProfilePage() {
             <Link 
               key={i}
               href={item.href} 
-              className="group p-6 rounded-[2rem] bg-white dark:bg-slate-900 border border-border/50 shadow-sm hover:border-primary/30 transition-all"
+              className="group p-4 md:p-6 rounded-[2rem] bg-white dark:bg-slate-900 border border-border/50 shadow-sm hover:border-primary/30 transition-all"
             >
-              <div className={`h-12 w-12 rounded-xl bg-muted/50 flex items-center justify-center mb-4 group-hover:scale-105 transition-transform`}>
-                <item.icon className={`h-6 w-6 text-primary`} />
+              <div className={`h-10 w-10 md:h-12 md:w-12 rounded-xl bg-muted/50 flex items-center justify-center mb-4 group-hover:scale-105 transition-transform`}>
+                <item.icon className={`h-5 w-5 md:h-6 md:w-6 text-primary`} />
               </div>
-              <h4 className="text-lg font-bold mb-1">{item.title}</h4>
-              <p className="text-xs text-muted-foreground font-medium">{item.desc}</p>
+              <h4 className="text-base md:text-lg font-bold mb-1">{item.title}</h4>
+              <p className="text-[10px] md:text-xs text-muted-foreground font-medium">{item.desc}</p>
             </Link>
           ))}
         </div>

@@ -175,6 +175,7 @@ export interface Task {
   updated_at?: string;
   category: TaskCategory;
   assignee?: Profile;
+  creator?: Profile;
 }
 
 export type TaskCategory = 

@@ -163,6 +163,15 @@ export function TaskCard({ task, showAssignee = false, onUpdate, recommended = f
                       </span>
                     </div>
                   )}
+
+                  {task.creator && (
+                    <div className="flex items-center gap-1" title={`Created by ${task.creator.full_name || task.creator.username}`}>
+                      <span className="text-muted-foreground/70">By</span>
+                      <span className="truncate max-w-[100px]">
+                        {task.creator.username || task.creator.full_name}
+                      </span>
+                    </div>
+                  )}
                 </div>
               </div>
             </div>

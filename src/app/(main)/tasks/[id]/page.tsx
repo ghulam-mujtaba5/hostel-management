@@ -37,7 +37,8 @@ export default function TaskDetailPage({ params }: { params: Promise<{ id: strin
       .from('tasks')
       .select(`
         *,
-        assignee:profiles!tasks_assigned_to_fkey(*)
+        assignee:profiles!tasks_assigned_to_fkey(*),
+        creator:profiles!tasks_created_by_fkey(*)
       `)
       .eq('id', id)
       .single();
@@ -191,7 +192,7 @@ export default function TaskDetailPage({ params }: { params: Promise<{ id: strin
               {task.title}
             </h1>
             <p className="text-sm text-muted-foreground">
-              Created {formatDistanceToNow(new Date(task.created_at), { addSuffix: true })}
+              Created by {task.creator?.full_name || task.creator?.username || 'Unknown'} • {formatDistanceToNow(new Date(task.created_at), { addSuffix: true })}
             </p>
           </div>
         </div>

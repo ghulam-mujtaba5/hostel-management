@@ -12,7 +12,8 @@ import {
   Bell,
   Menu,
   X,
-  History
+  History,
+  BarChart3
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/AuthContext";
@@ -37,8 +38,8 @@ export function Navbar() {
   const navItems = [
     { href: "/", label: "Dashboard", icon: LayoutDashboard },
     { href: "/tasks", label: "Tasks", icon: CheckSquare },
+    { href: "/insights", label: "Insights", icon: BarChart3 },
     { href: "/leaderboard", label: "Leaderboard", icon: Trophy },
-    { href: "/history", label: "History", icon: History },
     { href: "/profile", label: "Profile", icon: User },
   ];
 

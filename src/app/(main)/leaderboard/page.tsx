@@ -141,17 +141,17 @@ export default function LeaderboardPage() {
               <Trophy className="h-3 w-3" />
               Hall of Fame
             </motion.div>
-            <h1 className="text-4xl md:text-5xl font-bold tracking-tight">
+            <h1 className="text-3xl md:text-5xl font-bold tracking-tight">
               Community <br />
               <span className="text-primary">Leaderboard</span>
             </h1>
-            <p className="text-muted-foreground font-medium flex items-center gap-2">
+            <p className="text-muted-foreground font-medium flex items-center gap-2 text-sm md:text-base">
               <Star className="h-4 w-4 text-yellow-500 fill-yellow-500" />
               Ranking for {currentSpace.name}
             </p>
           </div>
 
-          <div className="flex p-1 bg-muted/30 border border-border/50 rounded-xl">
+          <div className="flex p-1 bg-muted/30 border border-border/50 rounded-xl overflow-x-auto">
             {[
               { key: 'all' as const, label: 'All Time' },
               { key: 'month' as const, label: 'Monthly' },
@@ -160,7 +160,7 @@ export default function LeaderboardPage() {
               <button
                 key={p.key}
                 onClick={() => setPeriod(p.key)}
-                className={`px-6 py-2 text-sm font-bold rounded-lg transition-all ${
+                className={`px-4 md:px-6 py-2 text-xs md:text-sm font-bold rounded-lg transition-all whitespace-nowrap ${
                   period === p.key 
                     ? 'bg-white dark:bg-slate-800 text-primary shadow-sm' 
                     : 'text-muted-foreground hover:text-foreground'
