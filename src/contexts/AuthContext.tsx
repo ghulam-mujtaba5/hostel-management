@@ -131,6 +131,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         console.log('Auth state changed:', event);
         setSession(session);
         setUser(session?.user ?? null);
+        setLoading(false);
 
         // Clean up URL hash after successful sign in from email link or OAuth
         if ((event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') && typeof window !== 'undefined') {

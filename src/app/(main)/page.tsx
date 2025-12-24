@@ -28,11 +28,17 @@ export default function Dashboard() {
   });
   const [loading, setLoading] = useState(true);
 
+  console.log('Dashboard render:', { authLoading, loading, hasUser: !!user, hasSpace: !!currentSpace });
+
   useEffect(() => {
+    console.log('Dashboard useEffect:', { authLoading, hasSpace: !!currentSpace });
     if (currentSpace) {
       fetchData();
+    } else if (!authLoading) {
+      console.log('Dashboard: No space and auth done, setting loading to false');
+      setLoading(false);
     }
-  }, [currentSpace]);
+  }, [currentSpace, authLoading]);
 
   const fetchData = async () => {
     if (!currentSpace || !user) return;
