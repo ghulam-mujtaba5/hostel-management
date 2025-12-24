@@ -166,7 +166,8 @@ async function uploadTaskProof(page: Page, taskTitle: string, imagePath: string)
   
   // Find and click upload button
   const uploadButton = page.locator('button:has-text("Upload"), button:has-text("Proof"), input[type="file"]').first();
-  if (uploadButton.evaluate((el) => el.tagName) === 'INPUT') {
+  const tagName = await uploadButton.evaluate((el) => el.tagName);
+  if (tagName === 'INPUT') {
     await uploadButton.setInputFiles(imagePath);
   } else {
     await uploadButton.click();
@@ -249,7 +250,7 @@ test.describe('SCENARIO 1: Multi-User Space Creation & Onboarding', () => {
   test('Admin creates space and users join via invite code', async ({ browser }) => {
     // Step 1: Admin signs up
     const adminContext = await browser.newContext();
-    const adminPage = adminContext.addPage();
+    const adminPage = await adminContext.newPage();
     
     await signUp(adminPage, testUsers.admin);
     expect(adminPage.url()).toContain('/dashboard');
@@ -263,7 +264,7 @@ test.describe('SCENARIO 1: Multi-User Space Creation & Onboarding', () => {
     
     // Step 3: User 1 signs up and joins space
     const user1Context = await browser.newContext();
-    const user1Page = user1Context.addPage();
+    const user1Page = await user1Context.newPage();
     
     await signUp(user1Page, testUsers.user1);
     await user1Page.click('a:has-text("Spaces"), button:has-text("Spaces")');
@@ -273,7 +274,7 @@ test.describe('SCENARIO 1: Multi-User Space Creation & Onboarding', () => {
     
     // Step 4: User 2 signs up and joins space
     const user2Context = await browser.newContext();
-    const user2Page = user2Context.addPage();
+    const user2Page = await user2Context.newPage();
     
     await signUp(user2Page, testUsers.user2);
     await user2Page.click('a:has-text("Spaces"), button:has-text("Spaces")');
@@ -295,9 +296,9 @@ test.describe('SCENARIO 2: Task Lifecycle - Create, Pick, Execute, Verify', () =
     
     // Setup: Create admin and 2 users
     const adminContext = await browser.newContext();
-    const adminPage = adminContext.addPage();
+    const adminPage = await adminContext.newPage();
     const user1Context = await browser.newContext();
-    const user1Page = user1Context.addPage();
+    const user1Page = await user1Context.newPage();
     
     // Sign up
     await signUp(adminPage, testUsers.admin);
@@ -348,11 +349,11 @@ test.describe('SCENARIO 3: Gamification & Fair Task Distribution', () => {
     
     // Setup: Create space with 3 users
     const adminContext = await browser.newContext();
-    const adminPage = adminContext.addPage();
+    const adminPage = await adminContext.newPage();
     const user1Context = await browser.newContext();
-    const user1Page = user1Context.addPage();
+    const user1Page = await user1Context.newPage();
     const user2Context = await browser.newContext();
-    const user2Page = user2Context.addPage();
+    const user2Page = await user2Context.newPage();
     
     // Sign up all users
     await signUp(adminPage, testUsers.admin);
@@ -402,7 +403,7 @@ test.describe('SCENARIO 4: Mobile Responsiveness', () => {
     const mobileContext = await browser.newContext({
       viewport: { width: 375, height: 667 }
     });
-    const mobilePage = mobileContext.addPage();
+    const mobilePage = await mobileContext.newPage();
     
     // Sign up on mobile
     await signUp(mobilePage, testUsers.admin);
@@ -448,13 +449,12 @@ test.describe('SCENARIO 5: Performance & Load Testing', () => {
     
     page.on('response', (response) => {
       const request = response.request();
-      const startTime = Date.now();
-      const duration = Date.now() - startTime;
       
       if (request.url().includes('/api/')) {
+        const timing = request.timing();
         responses.push({
           url: request.url(),
-          duration: response.timing().responseEnd - response.timing().responseStart
+          duration: timing.responseEnd - timing.responseStart
         });
       }
     });
@@ -488,7 +488,7 @@ test.describe('SCENARIO 6: Authentication & Security', () => {
 
   test('Protected routes redirect to login when not authenticated', async ({ browser }) => {
     const context = await browser.newContext();
-    const page = context.addPage();
+    const page = await context.newPage();
     
     // Try to access protected route without logging in
     await page.goto(`${BASE_URL}/dashboard`);
@@ -545,9 +545,9 @@ test.describe('SCENARIO 8: User Collaboration & Real-time Updates', () => {
     
     // Setup: Create space with 2 users
     const user1Context = await browser.newContext();
-    const user1Page = user1Context.addPage();
+    const user1Page = await user1Context.newPage();
     const user2Context = await browser.newContext();
-    const user2Page = user2Context.addPage();
+    const user2Page = await user2Context.newPage();
     
     // Sign up users
     await signUp(user1Page, testUsers.admin);
@@ -585,7 +585,7 @@ test.describe('SCENARIO 9: Complete User Journey - New User to Active Member', (
     
     // Step 1: Admin sets up space and initial tasks
     const adminContext = await browser.newContext();
-    const adminPage = adminContext.addPage();
+    const adminPage = await adminContext.newPage();
     await signUp(adminPage, testUsers.admin);
     
     await adminPage.click('a:has-text("Spaces")');
@@ -600,7 +600,7 @@ test.describe('SCENARIO 9: Complete User Journey - New User to Active Member', (
     
     // Step 2: New user signs up and joins space
     const newUserContext = await browser.newContext();
-    const newUserPage = newUserContext.addPage();
+    const newUserPage = await newUserContext.newPage();
     await signUp(newUserPage, testUsers.user1);
     
     await newUserPage.click('a:has-text("Spaces")');
@@ -633,7 +633,7 @@ test.describe('SCENARIO 10: Admin Features & Space Management', () => {
     await page.click('button:has-text("Settings"), a:has-text("Settings"), button[aria-label*="Settings"]');
     
     // Verify admin can see space settings
-    expect(page.url()).toContain('/settings') || expect(page.url()).toContain('/spaces');
+    expect(page.url()).toMatch(/\/settings|\/spaces/);
   });
 });
 
@@ -697,7 +697,7 @@ test.describe('Accessibility Compliance', () => {
     for (let i = 0; i < Math.min(count, 10); i++) {
       const button = buttons.nth(i);
       const hasLabel = await button.evaluate((el) => {
-        return el.getAttribute('aria-label') || el.textContent?.trim() || el.title;
+        return el.getAttribute('aria-label') || el.textContent?.trim() || el.getAttribute('title');
       });
       
       expect(hasLabel).toBeTruthy();

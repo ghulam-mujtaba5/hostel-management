@@ -89,8 +89,9 @@ async function captureNetworkMetrics(page: Page): Promise<{ url: string; duratio
   
   page.on('response', async (response) => {
     const request = response.request();
-    const size = (await response.buffer()).length;
-    const timing = response.timing();
+    const body = await response.body().catch(() => Buffer.from(''));
+    const size = body.length;
+    const timing = request.timing();
     
     metrics.push({
       url: request.url(),
@@ -419,7 +420,7 @@ test.describe('REAL USER: Performance Metrics', () => {
     
     page.on('response', async (response) => {
       if (response.url().includes('/api/')) {
-        const timing = response.timing();
+        const timing = response.request().timing();
         apiCalls.push({
           url: response.url().split('/api/')[1]?.split('?')[0] || response.url(),
           duration: timing.responseEnd - timing.responseStart
@@ -450,7 +451,7 @@ test.describe('REAL USER: Mobile Experience', () => {
       viewport: { width: 375, height: 667 }
     });
     
-    const page = context.addPage();
+    const page = await context.newPage();
     const user: TestUser = {
       email: generateEmail(),
       password: 'TestPassword123!@',
@@ -479,7 +480,7 @@ test.describe('REAL USER: Mobile Experience', () => {
       viewport: { width: 768, height: 1024 }
     });
     
-    const page = context.addPage();
+    const page = await context.newPage();
     const user: TestUser = {
       email: generateEmail(),
       password: 'TestPassword123!@',

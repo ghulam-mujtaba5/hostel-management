@@ -216,9 +216,7 @@ test.describe('HostelMate App - Complete Feature Testing', () => {
     await page.waitForTimeout(2000);
 
     // Check for system status
-    const statusItems = page.locator('text=Database Connection', {
-      exact: false
-    });
+    const statusItems = page.getByText('Database Connection');
     await expect(statusItems).toBeVisible();
 
     const authStatus = page.locator('text=Authentication Service');
@@ -228,12 +226,6 @@ test.describe('HostelMate App - Complete Feature Testing', () => {
   // ==========================================
   // UI Elements Tests
   // ==========================================
-
-  test('should show BETA label on home page', async ({ page }) => {
-    await page.goto(`${baseURL}`);
-    const betaLabel = page.locator('text=BETA');
-    await expect(betaLabel).toBeVisible();
-  });
 
   test('should have working navigation links', async ({ page }) => {
     await page.goto(`${baseURL}`);

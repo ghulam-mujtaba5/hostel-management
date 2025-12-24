@@ -22,7 +22,7 @@ import {
 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/lib/supabase";
-import { ServiceQueue, QueueStatus, TASK_CATEGORIES } from "@/types";
+import { ServiceQueue, QueueStatus, TASK_CATEGORIES, Service } from "@/types";
 import { toast } from "sonner";
 import { motion, AnimatePresence } from "framer-motion";
 import { SlideInCard } from "@/components/Animations";
@@ -34,9 +34,10 @@ export default function QueuePage() {
   const [queueStatus, setQueueStatus] = useState<QueueStatus | null>(null);
   const [myEntry, setMyEntry] = useState<ServiceQueue | null>(null);
   const [showJoinForm, setShowJoinForm] = useState(false);
+  const [availableServices, setAvailableServices] = useState<Service[]>([]);
   
   // Form state
-  const [serviceType, setServiceType] = useState('washroom');
+  const [serviceType, setServiceType] = useState('');
   const [description, setDescription] = useState('');
   const [urgency, setUrgency] = useState<'low' | 'normal' | 'high' | 'urgent'>('normal');
   const [submitting, setSubmitting] = useState(false);
@@ -44,10 +45,25 @@ export default function QueuePage() {
   useEffect(() => {
     if (currentSpace && user) {
       fetchQueue();
+      fetchServices();
       const interval = setInterval(fetchQueue, 10000); // Refresh every 10s
       return () => clearInterval(interval);
     }
   }, [currentSpace, user]);
+
+  const fetchServices = async () => {
+    if (!currentSpace) return;
+    const { data, error } = await supabase
+      .from('services')
+      .select('*')
+      .eq('space_id', currentSpace.id)
+      .eq('is_active', true);
+    
+    if (data) {
+      setAvailableServices(data);
+      if (data.length > 0) setServiceType(data[0].name);
+    }
+  };
 
   const fetchQueue = async () => {
     if (!currentSpace || !user) return;
@@ -148,6 +164,12 @@ export default function QueuePage() {
       console.error('Error cancelling queue:', error);
       toast.error(error.message || 'Failed to cancel');
     }
+  };
+
+  const getServiceDisplay = (name: string) => {
+    const key = Object.keys(TASK_CATEGORIES).find(k => k.toLowerCase() === name.toLowerCase());
+    if (key) return TASK_CATEGORIES[key as keyof typeof TASK_CATEGORIES];
+    return { label: name, emoji: '📋' };
   };
 
   const getUrgencyColor = (urg: string) => {
@@ -274,21 +296,33 @@ export default function QueuePage() {
                     <div className="space-y-2">
                       <Label className="font-bold">Service Type</Label>
                       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-                        {Object.entries(TASK_CATEGORIES).map(([key, cat]) => (
-                          <button
-                            key={key}
-                            type="button"
-                            onClick={() => setServiceType(key)}
-                            className={`p-4 rounded-xl text-left transition-all ${
-                              serviceType === key
-                                ? 'bg-primary/10 ring-2 ring-primary'
-                                : 'bg-muted/50 hover:bg-muted'
-                            }`}
-                          >
-                            <span className="text-2xl mb-2 block">{cat.emoji}</span>
-                            <p className="font-bold text-sm">{cat.label}</p>
-                          </button>
-                        ))}
+                        {availableServices.length > 0 ? (
+                          availableServices.map((service) => {
+                            const display = getServiceDisplay(service.name);
+                            return (
+                              <button
+                                key={service.id}
+                                type="button"
+                                onClick={() => setServiceType(service.name)}
+                                className={`p-4 rounded-xl text-left transition-all ${
+                                  serviceType === service.name
+                                    ? 'bg-primary/10 ring-2 ring-primary'
+                                    : 'bg-muted/50 hover:bg-muted'
+                                }`}
+                              >
+                                <span className="text-2xl mb-2 block">{display.emoji}</span>
+                                <p className="font-bold text-sm">{service.name}</p>
+                                {service.points_reward > 0 && (
+                                  <p className="text-xs text-muted-foreground">+{service.points_reward} pts</p>
+                                )}
+                              </button>
+                            );
+                          })
+                        ) : (
+                          <div className="col-span-4 text-center py-4 text-muted-foreground">
+                            No services available. Please contact admin.
+                          </div>
+                        )}
                       </div>
                     </div>
 

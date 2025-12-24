@@ -1,4 +1,4 @@
-\"use client\";
+"use client";
 
 import { Button, ButtonProps } from '@/components/ui/button';
 import { Loader2, Check, AlertCircle } from 'lucide-react';
@@ -22,11 +22,11 @@ export function LoadingButton({
   return (
     <Button
       disabled={disabled || loading}
-      className={cn(\"relative\", className)}
+      className={cn("relative", className)}
       {...props}
     >
       {loading && (
-        <Loader2 className=\"mr-2 h-4 w-4 animate-spin\" />
+        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
       )}
       {loading ? (loadingText || children) : children}
     </Button>

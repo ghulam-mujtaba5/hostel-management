@@ -20,11 +20,13 @@ const buttonVariants = cva(
         // Modern variants
         subtle: "bg-primary/10 text-primary hover:bg-primary/20",
         glass: "glass hover:bg-white/20 dark:hover:bg-white/10 text-foreground",
+        glow: "bg-primary text-primary-foreground shadow-[0_0_20px_rgba(var(--primary),0.3)] hover:shadow-[0_0_25px_rgba(var(--primary),0.5)] hover:bg-primary/90",
       },
       size: {
         default: "h-11 px-5 py-2",
         sm: "h-9 rounded-lg px-3",
         lg: "h-12 rounded-xl px-8 text-base",
+        xl: "h-14 rounded-2xl px-10 text-lg font-bold",
         icon: "h-11 w-11",
       },
     },

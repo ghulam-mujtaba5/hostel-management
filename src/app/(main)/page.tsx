@@ -15,7 +15,6 @@ import { TaskCard } from "@/components/TaskCard";
 import { DashboardSkeleton } from "@/components/Skeleton";
 import { motion } from "framer-motion";
 import { LandingPage } from "@/components/LandingPage";
-import { SmartAssistant } from "@/components/SmartAssistant";
 import WellnessWidget from "@/components/WellnessWidget";
 
 export default function Dashboard() {
@@ -190,8 +189,6 @@ export default function Dashboard() {
           </CardContent>
         </Card>
       </div>
-
-      <SmartAssistant />
 
       <div className="grid lg:grid-cols-3 gap-8">
         {/* Main Content */}

@@ -6,6 +6,7 @@ export interface Profile {
   avatar_url: string | null;
   email?: string | null;
   created_at: string;
+  notification_preferences?: NotificationPreferences;
 }
 
 export interface Space {
@@ -171,6 +172,7 @@ export interface Task {
   proof_image_url: string | null;
   created_by: string | null;
   created_at: string;
+  updated_at?: string;
   category: TaskCategory;
   assignee?: Profile;
 }
@@ -305,6 +307,8 @@ export interface Service {
   space_id: string;
   name: string;
   description: string | null;
+  category: string;
+  points_reward: number;
   default_duration_minutes: number;
   is_active: boolean;
   created_by: string | null;
@@ -347,8 +351,9 @@ export interface DailyInspiration {
 }
 
 export interface NotificationPreferences {
-  email: boolean;
-  push: boolean;
-  marketing: boolean;
+  email_notifications: boolean;
+  push_notifications: boolean;
+  task_reminders: boolean;
+  marketing_emails: boolean;
 }
 

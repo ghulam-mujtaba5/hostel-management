@@ -1,125 +1,103 @@
-'use client';
+"use client";
 
-import { useEffect, useState } from 'react';
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
-import { getSpaceInsights, IntelligenceInsight } from '@/lib/intelligence';
-import { useAuth } from '@/contexts/AuthContext';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Lightbulb, Bell, CheckCircle, XCircle, Clock } from 'lucide-react';
-import { toast } from 'sonner';
+import { useState } from "react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Sparkles, MessageSquare, X, Send, Bot, BrainCircuit } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import { cn } from "@/lib/utils";
 
 export function SmartAssistant() {
-  const { currentSpace, user } = useAuth();
-  const [insights, setInsights] = useState<IntelligenceInsight[]>([]);
-  const [loading, setLoading] = useState(true);
-  const supabase = createClientComponentClient();
-
-  useEffect(() => {
-    if (currentSpace && user) {
-      loadInsights();
-    }
-  }, [currentSpace, user]);
-
-  async function loadInsights() {
-    if (!currentSpace || !user) return;
-    try {
-      setLoading(true);
-      const data = await getSpaceInsights(supabase, currentSpace.id, user.id);
-      setInsights(data);
-    } catch (error) {
-      console.error('Failed to load insights:', error);
-    } finally {
-      setLoading(false);
-    }
-  }
-
-  async function handleAction(insight: IntelligenceInsight, action: 'accept' | 'reject' | 'snooze') {
-    if (!insight.id) return; // Can't update if not saved yet (should be saved by getSpaceInsights)
-
-    try {
-      const status = action === 'accept' ? 'accepted' : action === 'reject' ? 'rejected' : 'snoozed';
-      
-      const { error } = await supabase
-        .from('task_suggestions')
-        .update({ status })
-        .eq('id', insight.id);
-
-      if (error) throw error;
-
-      // Remove from UI
-      setInsights(prev => prev.filter(i => i.id !== insight.id));
-
-      if (action === 'accept') {
-        if (insight.action === 'create_task') {
-          // Redirect to create task or open modal (simplified here)
-          toast.success('Suggestion accepted! Go to Tasks to create it.');
-        } else if (insight.action === 'remind_user') {
-          // Send notification (simplified)
-          toast.success('Reminder sent to member!');
-        }
-      } else if (action === 'snooze') {
-        toast.info('Snoozed for later.');
-      }
-    } catch (error) {
-      toast.error('Failed to update suggestion');
-    }
-  }
-
-  if (loading) return <div className="animate-pulse h-24 bg-gray-100 rounded-lg"></div>;
-  if (insights.length === 0) return null;
+  const [isOpen, setIsOpen] = useState(false);
+  const [message, setMessage] = useState("");
 
   return (
-    <Card className="border-indigo-100 bg-indigo-50/50">
-      <CardHeader className="pb-2">
-        <CardTitle className="text-lg flex items-center gap-2 text-indigo-900">
-          <Lightbulb className="w-5 h-5 text-yellow-500" />
-          Smart Assistant
-        </CardTitle>
-      </CardHeader>
-      <CardContent className="space-y-3">
-        {insights.map((insight, idx) => (
-          <div key={insight.id || idx} className="bg-white p-3 rounded-md shadow-sm border border-indigo-100 flex flex-col gap-2">
-            <div className="flex items-start gap-3">
-              {insight.type === 'prediction' ? (
-                <Clock className="w-5 h-5 text-blue-500 mt-1" />
-              ) : (
-                <Bell className="w-5 h-5 text-orange-500 mt-1" />
-              )}
-              <div>
-                <h4 className="font-medium text-gray-900">{insight.title}</h4>
-                <p className="text-sm text-gray-600">{insight.description}</p>
+    <div className="relative">
+      <Card className="overflow-hidden border-primary/20 bg-linear-to-br from-primary/5 to-purple-500/5">
+        <CardContent className="p-6">
+          <div className="flex items-start gap-4">
+            <div className="p-3 bg-primary rounded-2xl shadow-lg shadow-primary/20">
+              <Sparkles className="h-6 w-6 text-primary-foreground" />
+            </div>
+            <div className="flex-1 space-y-1">
+              <h3 className="font-bold text-lg">Smart Assistant</h3>
+              <p className="text-sm text-muted-foreground leading-relaxed">
+                Need help with task distribution or have questions about hostel rules? I'm here to help!
+              </p>
+              <div className="pt-3 flex flex-wrap gap-2">
+                <Button size="sm" variant="secondary" className="rounded-full text-xs">
+                  Suggest tasks
+                </Button>
+                <Button size="sm" variant="secondary" className="rounded-full text-xs">
+                  Check fairness
+                </Button>
+                <Button size="sm" onClick={() => setIsOpen(true)} className="rounded-full text-xs gap-2">
+                  <MessageSquare className="h-3 w-3" /> Chat now
+                </Button>
               </div>
             </div>
-            
-            <div className="flex gap-2 justify-end mt-1">
-              <Button 
-                variant="ghost" 
-                size="sm" 
-                className="text-gray-500 hover:text-gray-700 h-8"
-                onClick={() => handleAction(insight, 'reject')}
-              >
-                No need
-              </Button>
-              <Button 
-                variant="ghost" 
-                size="sm" 
-                className="text-indigo-600 hover:text-indigo-700 h-8"
-                onClick={() => handleAction(insight, 'snooze')}
-              >
-                Wait more
-              </Button>
-              <Button 
-                size="sm" 
-                className="bg-indigo-600 hover:bg-indigo-700 h-8"
-                onClick={() => handleAction(insight, 'accept')}
-              >
-                {insight.action === 'create_task' ? 'Create Task' : 'Send Reminder'}
-              </Button>
-            </div>
           </div>
-        ))}
-      </CardContent>
-    </Card>
+        </CardContent>
+      </Card>
+
+      <AnimatePresence>
+        {isOpen && (
+          <motion.div
+            initial={{ opacity: 0, y: 20, scale: 0.95 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: 20, scale: 0.95 }}
+            className="fixed bottom-24 right-4 md:right-8 z-50 w-[calc(100vw-32px)] md:w-96"
+          >
+            <Card className="shadow-2xl border-primary/20 overflow-hidden">
+              <CardHeader className="bg-primary p-4 flex flex-row items-center justify-between space-y-0">
+                <div className="flex items-center gap-2 text-primary-foreground">
+                  <Bot className="h-5 w-5" />
+                  <CardTitle className="text-base font-bold">HostelMate AI</CardTitle>
+                </div>
+                <Button 
+                  variant="ghost" 
+                  size="icon" 
+                  onClick={() => setIsOpen(false)}
+                  className="h-8 w-8 text-primary-foreground hover:bg-primary-foreground/10"
+                >
+                  <X className="h-4 w-4" />
+                </Button>
+              </CardHeader>
+              <CardContent className="p-0">
+                <div className="h-80 overflow-y-auto p-4 space-y-4 bg-muted/30">
+                  <div className="flex gap-3">
+                    <div className="h-8 w-8 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
+                      <Bot className="h-4 w-4 text-primary" />
+                    </div>
+                    <div className="bg-background p-3 rounded-2xl rounded-tl-none text-sm shadow-sm border border-border/50">
+                      Hello! How can I help you manage your hostel duties today?
+                    </div>
+                  </div>
+                </div>
+                <div className="p-4 border-t bg-background">
+                  <form 
+                    onSubmit={(e) => {
+                      e.preventDefault();
+                      setMessage("");
+                    }}
+                    className="flex gap-2"
+                  >
+                    <input
+                      value={message}
+                      onChange={(e) => setMessage(e.target.value)}
+                      placeholder="Ask me anything..."
+                      className="flex-1 bg-muted border-none rounded-full px-4 py-2 text-sm focus:ring-2 focus:ring-primary outline-none"
+                    />
+                    <Button type="submit" size="icon" className="rounded-full h-9 w-9">
+                      <Send className="h-4 w-4" />
+                    </Button>
+                  </form>
+                </div>
+              </CardContent>
+            </Card>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
   );
 }

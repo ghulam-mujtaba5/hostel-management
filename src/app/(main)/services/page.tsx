@@ -17,7 +17,13 @@ export default function ServicesPage() {
   const [services, setServices] = useState<Service[]>([]);
   const [loading, setLoading] = useState(true);
   const [isCreating, setIsCreating] = useState(false);
-  const [newService, setNewService] = useState({ name: '', description: '', default_duration_minutes: 30 });
+  const [newService, setNewService] = useState({ 
+    name: '', 
+    description: '', 
+    default_duration_minutes: 30,
+    category: 'other',
+    points_reward: 0
+  });
 
   useEffect(() => {
     if (currentSpace) {
@@ -55,13 +61,21 @@ export default function ServicesPage() {
           name: newService.name,
           description: newService.description,
           default_duration_minutes: newService.default_duration_minutes,
+          category: newService.category,
+          points_reward: newService.points_reward
         });
 
       if (error) throw error;
 
       toast.success('Service created successfully');
       setIsCreating(false);
-      setNewService({ name: '', description: '', default_duration_minutes: 30 });
+      setNewService({ 
+        name: '', 
+        description: '', 
+        default_duration_minutes: 30,
+        category: 'other',
+        points_reward: 0
+      });
       fetchServices();
     } catch (error) {
       console.error('Error creating service:', error);
@@ -92,16 +106,32 @@ export default function ServicesPage() {
           </CardHeader>
           <CardContent>
             <form onSubmit={handleCreateService} className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="name">Service Name</Label>
-                <Input
-                  id="name"
-                  value={newService.name}
-                  onChange={(e) => setNewService({ ...newService, name: e.target.value })}
-                  required
-                  placeholder="e.g., Laundry, Ironing"
-                />
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="name">Service Name</Label>
+                  <Input
+                    id="name"
+                    value={newService.name}
+                    onChange={(e) => setNewService({ ...newService, name: e.target.value })}
+                    required
+                    placeholder="e.g., Laundry, Ironing"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="category">Category</Label>
+                  <select 
+                    id="category"
+                    className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                    value={newService.category}
+                    onChange={(e) => setNewService({ ...newService, category: e.target.value })}
+                  >
+                    <option value="cleaning">Cleaning</option>
+                    <option value="maintenance">Maintenance</option>
+                    <option value="other">Other</option>
+                  </select>
+                </div>
               </div>
+              
               <div className="space-y-2">
                 <Label htmlFor="description">Description</Label>
                 <Textarea
@@ -111,16 +141,30 @@ export default function ServicesPage() {
                   placeholder="Describe what this service entails..."
                 />
               </div>
-              <div className="space-y-2">
-                <Label htmlFor="duration">Default Duration (minutes)</Label>
-                <Input
-                  id="duration"
-                  type="number"
-                  value={newService.default_duration_minutes}
-                  onChange={(e) => setNewService({ ...newService, default_duration_minutes: parseInt(e.target.value) })}
-                  required
-                />
+              
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="duration">Default Duration (minutes)</Label>
+                  <Input
+                    id="duration"
+                    type="number"
+                    value={newService.default_duration_minutes}
+                    onChange={(e) => setNewService({ ...newService, default_duration_minutes: parseInt(e.target.value) })}
+                    required
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="points">Points Reward</Label>
+                  <Input
+                    id="points"
+                    type="number"
+                    value={newService.points_reward}
+                    onChange={(e) => setNewService({ ...newService, points_reward: parseInt(e.target.value) })}
+                    required
+                  />
+                </div>
               </div>
+              
               <Button type="submit">Create Service</Button>
             </form>
           </CardContent>
@@ -136,11 +180,17 @@ export default function ServicesPage() {
           services.map((service) => (
             <Card key={service.id}>
               <CardHeader>
-                <CardTitle>{service.name}</CardTitle>
+                <CardTitle className="flex justify-between items-center">
+                  {service.name}
+                  <span className="text-xs px-2 py-1 bg-primary/10 rounded-full text-primary capitalize">{service.category}</span>
+                </CardTitle>
               </CardHeader>
               <CardContent>
                 <p className="text-sm text-muted-foreground mb-4">{service.description || 'No description'}</p>
-                <div className="text-sm font-medium">Duration: {service.default_duration_minutes} mins</div>
+                <div className="flex justify-between text-sm font-medium">
+                  <span>Duration: {service.default_duration_minutes} mins</span>
+                  <span>Points: {service.points_reward}</span>
+                </div>
               </CardContent>
             </Card>
           ))
