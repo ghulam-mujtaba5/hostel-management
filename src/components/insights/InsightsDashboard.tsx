@@ -166,7 +166,7 @@ export function InsightsDashboard() {
             transition={{ delay: index * 0.05 }}
             onClick={() => setActiveTab(tab.key)}
             className={cn(
-              "flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-medium transition-all flex-shrink-0",
+              "flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-medium transition-all shrink-0",
               activeTab === tab.key
                 ? "bg-white dark:bg-slate-800 text-primary shadow-sm"
                 : "text-muted-foreground hover:text-foreground hover:bg-muted/50"

@@ -131,7 +131,7 @@ export function TaskCard({ task, showAssignee = false, onUpdate, recommended = f
               <div className="flex items-center gap-3">
                 {/* Category Icon */}
                 <div className={cn(
-                  "h-10 w-10 rounded-xl flex items-center justify-center text-lg flex-shrink-0",
+                  "h-10 w-10 rounded-xl flex items-center justify-center text-lg shrink-0",
                   dueDateInfo?.urgent ? "bg-red-500/10" : "bg-muted"
                 )}>
                   {category.emoji}
@@ -144,7 +144,7 @@ export function TaskCard({ task, showAssignee = false, onUpdate, recommended = f
                       {task.title}
                     </h3>
                     {recommended && (
-                      <Sparkles className="h-3 w-3 text-primary flex-shrink-0" />
+                      <Sparkles className="h-3 w-3 text-primary shrink-0" />
                     )}
                   </div>
                   <div className="flex items-center gap-2 mt-0.5">
@@ -217,7 +217,7 @@ export function TaskCard({ task, showAssignee = false, onUpdate, recommended = f
         <Link href={`/tasks/${task.id}`}>
           <CardContent className={cn("p-5", compact && "p-4")}>
             <div className="flex items-start gap-4">
-              <div className="h-10 w-10 rounded-xl bg-muted flex items-center justify-center text-xl flex-shrink-0">
+              <div className="h-10 w-10 rounded-xl bg-muted flex items-center justify-center text-xl shrink-0">
                 {category.emoji}
               </div>
               
@@ -234,7 +234,7 @@ export function TaskCard({ task, showAssignee = false, onUpdate, recommended = f
                       </div>
                     )}
                   </div>
-                  <div className="flex-shrink-0 text-xs font-bold px-2 py-1 rounded-lg bg-muted text-muted-foreground">
+                  <div className="shrink-0 text-xs font-bold px-2 py-1 rounded-lg bg-muted text-muted-foreground">
                     +{task.difficulty} pts
                   </div>
                 </div>
@@ -253,7 +253,7 @@ export function TaskCard({ task, showAssignee = false, onUpdate, recommended = f
                   {showAssignee && task.assignee && (
                     <div className="flex items-center gap-1">
                       <User className="h-3.5 w-3.5" />
-                      <span className="truncate max-w-[100px]">
+                      <span className="truncate max-w-25">
                         {task.assignee.username || task.assignee.full_name}
                       </span>
                     </div>
@@ -262,7 +262,7 @@ export function TaskCard({ task, showAssignee = false, onUpdate, recommended = f
                   {task.creator && (
                     <div className="flex items-center gap-1" title={`Created by ${task.creator.full_name || task.creator.username}`}>
                       <span className="text-muted-foreground/70">By</span>
-                      <span className="truncate max-w-[100px]">
+                      <span className="truncate max-w-25">
                         {task.creator.username || task.creator.full_name}
                       </span>
                     </div>

@@ -182,13 +182,13 @@ export default function TaskDetailPage({ params }: { params: Promise<{ id: strin
       
       <SlideInCard direction="down" delay={0}>
         <div className="flex items-center gap-4">
-          <Button variant="ghost" size="icon" asChild className="h-11 w-11 min-h-[44px] min-w-[44px] rounded-xl">
+          <Button variant="ghost" size="icon" asChild className="h-11 w-11 min-h-11 min-w-11 rounded-xl">
             <Link href="/tasks">
               <ArrowLeft className="h-5 w-5" />
             </Link>
           </Button>
           <div className="flex-1">
-            <h1 className="text-xl font-bold bg-gradient-to-r from-primary to-purple-600 bg-clip-text text-transparent">
+            <h1 className="text-xl font-bold bg-linear-to-r from-primary to-purple-600 bg-clip-text text-transparent">
               {task.title}
             </h1>
             <p className="text-sm text-muted-foreground">
@@ -202,10 +202,10 @@ export default function TaskDetailPage({ params }: { params: Promise<{ id: strin
       <SlideInCard direction="up" delay={0.1}>
         <Card className="overflow-hidden">
           <div className={`h-2 ${
-            task.status === 'done' ? 'bg-gradient-to-r from-green-400 to-emerald-500' :
-            task.status === 'pending_verification' ? 'bg-gradient-to-r from-blue-400 to-indigo-500' :
-            task.status === 'in_progress' ? 'bg-gradient-to-r from-yellow-400 to-orange-500' :
-            'bg-gradient-to-r from-gray-300 to-gray-400'
+            task.status === 'done' ? 'bg-linear-to-r from-green-400 to-emerald-500' :
+            task.status === 'pending_verification' ? 'bg-linear-to-r from-blue-400 to-indigo-500' :
+            task.status === 'in_progress' ? 'bg-linear-to-r from-yellow-400 to-orange-500' :
+            'bg-linear-to-r from-gray-300 to-gray-400'
           }`} />
           <CardContent className="pt-6">
             <div className="flex items-center justify-between mb-4">
@@ -311,7 +311,7 @@ export default function TaskDetailPage({ params }: { params: Promise<{ id: strin
                     className="w-full rounded-xl shadow-lg"
                   />
                   {task.status === 'pending_verification' && (
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent flex items-end">
+                    <div className="absolute inset-0 bg-linear-to-t from-black/60 to-transparent flex items-end">
                       <p className="text-white p-4 text-sm font-medium">
                         ⏳ Waiting for someone to verify this...
                       </p>
@@ -331,7 +331,7 @@ export default function TaskDetailPage({ params }: { params: Promise<{ id: strin
           {!task.assigned_to && task.status === 'todo' && (
             <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
               <LoadingButton 
-                className="w-full h-14 bg-gradient-to-r from-primary to-purple-600 hover:from-primary/90 hover:to-purple-600/90 text-base min-h-[56px]" 
+                className="w-full h-14 bg-linear-to-r from-primary to-purple-600 hover:from-primary/90 hover:to-purple-600/90 text-base min-h-14" 
                 size="lg" 
                 onClick={handleTakeTask}
                 loading={taking}
@@ -358,7 +358,7 @@ export default function TaskDetailPage({ params }: { params: Promise<{ id: strin
               />
               <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
                 <Button 
-                  className="w-full h-14 bg-gradient-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-base" 
+                  className="w-full h-14 bg-linear-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-base" 
                   size="lg" 
                   asChild
                   disabled={uploading}
@@ -413,7 +413,7 @@ export default function TaskDetailPage({ params }: { params: Promise<{ id: strin
                   <LoadingButton 
                     variant="outline" 
                     size="lg"
-                    className="w-full h-12 min-h-[48px] border-red-300 hover:bg-red-50 hover:border-red-500 dark:border-red-800 dark:hover:bg-red-900/30"
+                    className="w-full h-12 min-h-12 border-red-300 hover:bg-red-50 hover:border-red-500 dark:border-red-800 dark:hover:bg-red-900/30"
                     onClick={() => handleVerify(false)}
                     loading={verifying}
                     loadingText="..."
@@ -426,7 +426,7 @@ export default function TaskDetailPage({ params }: { params: Promise<{ id: strin
                 <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
                   <LoadingButton 
                     size="lg"
-                    className="w-full h-12 min-h-[48px] bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700"
+                    className="w-full h-12 min-h-12 bg-linear-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700"
                     onClick={() => handleVerify(true)}
                     loading={verifying}
                     loadingText="Verifying..."
@@ -444,7 +444,7 @@ export default function TaskDetailPage({ params }: { params: Promise<{ id: strin
             <motion.div 
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
-              className="text-center py-6 bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 rounded-xl border border-green-200 dark:border-green-800"
+              className="text-center py-6 bg-linear-to-br from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 rounded-xl border border-green-200 dark:border-green-800"
             >
               <motion.div
                 initial={{ scale: 0 }}

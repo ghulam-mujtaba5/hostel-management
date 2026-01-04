@@ -158,7 +158,7 @@ export default function AdminDashboard() {
       </div>
 
       <div className="grid gap-6 md:grid-cols-2">
-        <Card className="border border-border/50 shadow-sm rounded-[2rem] bg-white dark:bg-slate-900 overflow-hidden">
+        <Card className="border border-border/50 shadow-sm rounded-4xl bg-white dark:bg-slate-900 overflow-hidden">
           <CardHeader className="p-8 pb-0">
             <CardTitle className="text-xl font-bold">Platform Management</CardTitle>
           </CardHeader>
@@ -188,7 +188,7 @@ export default function AdminDashboard() {
           </CardContent>
         </Card>
 
-        <Card className="border border-border/50 shadow-sm rounded-[2rem] bg-white dark:bg-slate-900 overflow-hidden">
+        <Card className="border border-border/50 shadow-sm rounded-4xl bg-white dark:bg-slate-900 overflow-hidden">
           <CardHeader className="p-8 pb-0">
             <CardTitle className="text-xl font-bold">System Status</CardTitle>
           </CardHeader>
@@ -217,7 +217,7 @@ export default function AdminDashboard() {
               </div>
               
               <div className="mt-6 p-4 bg-amber-500/5 border border-amber-500/20 rounded-2xl flex items-start gap-4">
-                <div className="h-10 w-10 rounded-xl bg-amber-500/10 flex items-center justify-center flex-shrink-0">
+                <div className="h-10 w-10 rounded-xl bg-amber-500/10 flex items-center justify-center shrink-0">
                   <AlertCircle className="h-5 w-5 text-amber-600" />
                 </div>
                 <div className="space-y-1">

@@ -182,7 +182,7 @@ export default function CreateTaskPage() {
                   Description (optional)
                 </label>
                 <textarea
-                  className={`flex min-h-[100px] w-full rounded-xl border border-input bg-background px-4 py-3 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 resize-none transition-all ${errors.description ? 'border-destructive focus:ring-destructive/20' : ''}`}
+                  className={`flex min-h-25 w-full rounded-xl border border-input bg-background px-4 py-3 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 resize-none transition-all ${errors.description ? 'border-destructive focus:ring-destructive/20' : ''}`}
                   placeholder="Add any details about this task..."
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}

@@ -212,7 +212,7 @@ export default function HistoryPage() {
         transition={{ delay: 0.1 }}
         className="grid grid-cols-2 md:grid-cols-4 gap-4"
       >
-        <Card className="border-border/50 bg-gradient-to-br from-green-500/10 to-green-600/5">
+        <Card className="border-border/50 bg-linear-to-br from-green-500/10 to-green-600/5">
           <CardContent className="p-4">
             <div className="flex items-center gap-3">
               <div className="h-10 w-10 rounded-xl bg-green-500/20 flex items-center justify-center">
@@ -226,7 +226,7 @@ export default function HistoryPage() {
           </CardContent>
         </Card>
 
-        <Card className="border-border/50 bg-gradient-to-br from-orange-500/10 to-orange-600/5">
+        <Card className="border-border/50 bg-linear-to-br from-orange-500/10 to-orange-600/5">
           <CardContent className="p-4">
             <div className="flex items-center gap-3">
               <div className="h-10 w-10 rounded-xl bg-orange-500/20 flex items-center justify-center">
@@ -240,7 +240,7 @@ export default function HistoryPage() {
           </CardContent>
         </Card>
 
-        <Card className="border-border/50 bg-gradient-to-br from-purple-500/10 to-purple-600/5">
+        <Card className="border-border/50 bg-linear-to-br from-purple-500/10 to-purple-600/5">
           <CardContent className="p-4">
             <div className="flex items-center gap-3">
               <div className="h-10 w-10 rounded-xl bg-purple-500/20 flex items-center justify-center">
@@ -254,7 +254,7 @@ export default function HistoryPage() {
           </CardContent>
         </Card>
 
-        <Card className="border-border/50 bg-gradient-to-br from-blue-500/10 to-blue-600/5">
+        <Card className="border-border/50 bg-linear-to-br from-blue-500/10 to-blue-600/5">
           <CardContent className="p-4">
             <div className="flex items-center gap-3">
               <div className="h-10 w-10 rounded-xl bg-blue-500/20 flex items-center justify-center">
@@ -317,7 +317,7 @@ export default function HistoryPage() {
                         transition={{ delay: index * 0.03 }}
                         className="relative pl-8"
                       >
-                        <span className="absolute -left-[9px] top-1 h-4 w-4 rounded-full bg-primary ring-4 ring-background flex items-center justify-center">
+                        <span className="absolute -left-2.25 top-1 h-4 w-4 rounded-full bg-primary ring-4 ring-background flex items-center justify-center">
                           <span className="h-2 w-2 rounded-full bg-white" />
                         </span>
                         <div className="bg-muted/30 rounded-xl p-4 border border-border/50">
@@ -377,7 +377,7 @@ export default function HistoryPage() {
                     >
                       <Card className="overflow-hidden border-border/50 hover:shadow-md transition-all">
                         <div className="flex items-center p-4 gap-4">
-                          <div className="h-12 w-12 rounded-xl bg-green-100 dark:bg-green-900/30 flex items-center justify-center flex-shrink-0 text-2xl">
+                          <div className="h-12 w-12 rounded-xl bg-green-100 dark:bg-green-900/30 flex items-center justify-center shrink-0 text-2xl">
                             {category.emoji}
                           </div>
                           <div className="flex-1 min-w-0">
@@ -405,7 +405,7 @@ export default function HistoryPage() {
                             </div>
                           </div>
                           {task.proof_image_url && (
-                            <div className="h-14 w-14 rounded-xl overflow-hidden bg-muted flex-shrink-0 border-2 border-green-200 dark:border-green-800">
+                            <div className="h-14 w-14 rounded-xl overflow-hidden bg-muted shrink-0 border-2 border-green-200 dark:border-green-800">
                               <img src={task.proof_image_url} alt="Proof" className="h-full w-full object-cover" />
                             </div>
                           )}
@@ -552,7 +552,7 @@ export default function HistoryPage() {
             <Card className="border-primary/30 bg-primary/5">
               <CardContent className="p-4">
                 <div className="flex items-start gap-3">
-                  <div className="h-10 w-10 rounded-xl bg-primary/20 flex items-center justify-center flex-shrink-0">
+                  <div className="h-10 w-10 rounded-xl bg-primary/20 flex items-center justify-center shrink-0">
                     <Scale className="h-5 w-5 text-primary" />
                   </div>
                   <div>
@@ -597,7 +597,7 @@ export default function HistoryPage() {
                     <Card className="border-border/50">
                       <div className="flex items-center p-4 gap-4">
                         <div className={cn(
-                          "h-12 w-12 rounded-xl flex items-center justify-center flex-shrink-0",
+                          "h-12 w-12 rounded-xl flex items-center justify-center shrink-0",
                           service.status === 'completed' 
                             ? "bg-blue-100 dark:bg-blue-900/30" 
                             : "bg-red-100 dark:bg-red-900/30"

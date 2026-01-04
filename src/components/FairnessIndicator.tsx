@@ -132,7 +132,7 @@ export function FairnessIndicator({ compact = false, showDetails = true }: Fairn
         <CardContent className="p-4">
           <div className="flex items-start gap-3">
             <div className={cn(
-              "h-10 w-10 rounded-xl flex items-center justify-center flex-shrink-0",
+              "h-10 w-10 rounded-xl flex items-center justify-center shrink-0",
               isAtLimit 
                 ? "bg-red-500/20" 
                 : isNearLimit 

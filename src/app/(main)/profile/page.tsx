@@ -155,10 +155,10 @@ export default function ProfilePage() {
   if (authLoading || !user) {
     return (
       <div className="space-y-10 pb-24">
-        <div className="h-64 rounded-[2rem] bg-muted/20 animate-pulse" />
+        <div className="h-64 rounded-4xl bg-muted/20 animate-pulse" />
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div className="md:col-span-2 h-48 rounded-[2rem] bg-muted/20 animate-pulse" />
-          <div className="h-48 rounded-[2rem] bg-muted/20 animate-pulse" />
+          <div className="md:col-span-2 h-48 rounded-4xl bg-muted/20 animate-pulse" />
+          <div className="h-48 rounded-4xl bg-muted/20 animate-pulse" />
         </div>
       </div>
     );
@@ -299,7 +299,7 @@ export default function ProfilePage() {
       {/* Stats Grid */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <SlideInCard direction="up" delay={0.1} className="md:col-span-2">
-          <Card className="h-full rounded-[2rem] border border-border/50 shadow-sm bg-white dark:bg-slate-900 overflow-hidden group">
+          <Card className="h-full rounded-4xl border border-border/50 shadow-sm bg-white dark:bg-slate-900 overflow-hidden group">
             <CardContent className="p-8">
               <div className="flex flex-col md:flex-row items-center gap-8">
                 <div className="relative">
@@ -350,7 +350,7 @@ export default function ProfilePage() {
         </SlideInCard>
 
         <SlideInCard direction="up" delay={0.15}>
-          <Card className="h-full rounded-[2rem] border border-border/50 shadow-sm bg-white dark:bg-slate-900 overflow-hidden relative group">
+          <Card className="h-full rounded-4xl border border-border/50 shadow-sm bg-white dark:bg-slate-900 overflow-hidden relative group">
             <div className="absolute top-0 right-0 p-6 opacity-5 group-hover:scale-110 transition-transform duration-700">
               <Home size={100} />
             </div>
@@ -387,7 +387,7 @@ export default function ProfilePage() {
             <Link 
               key={i}
               href={item.href} 
-              className="group p-4 md:p-6 rounded-[2rem] bg-white dark:bg-slate-900 border border-border/50 shadow-sm hover:border-primary/30 transition-all"
+              className="group p-4 md:p-6 rounded-4xl bg-white dark:bg-slate-900 border border-border/50 shadow-sm hover:border-primary/30 transition-all"
             >
               <div className={`h-10 w-10 md:h-12 md:w-12 rounded-xl bg-muted/50 flex items-center justify-center mb-4 group-hover:scale-105 transition-transform`}>
                 <item.icon className={`h-5 w-5 md:h-6 md:w-6 text-primary`} />
@@ -401,7 +401,7 @@ export default function ProfilePage() {
 
       {/* Notification Settings */}
       <SlideInCard direction="up" delay={0.25}>
-        <Card className="border border-border/50 shadow-sm bg-white dark:bg-slate-900 rounded-[2rem] overflow-hidden">
+        <Card className="border border-border/50 shadow-sm bg-white dark:bg-slate-900 rounded-4xl overflow-hidden">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Bell className="h-5 w-5 text-primary" />
@@ -458,13 +458,13 @@ export default function ProfilePage() {
                   {earnedBadges.length} Unlocked
                 </span>
               </div>
-              <Card className="border border-border/50 shadow-sm bg-white dark:bg-slate-900 rounded-[2rem] p-8">
+              <Card className="border border-border/50 shadow-sm bg-white dark:bg-slate-900 rounded-4xl p-8">
                 <div className="flex flex-wrap gap-6 justify-center md:justify-start">
                   {earnedBadges.map((badgeType) => (
                     <motion.div
                       key={badgeType}
                       whileHover={{ scale: 1.05, y: -5 }}
-                      className="flex-shrink-0"
+                      className="shrink-0"
                     >
                       <BadgeDisplay type={badgeType} size="md" />
                     </motion.div>
@@ -484,7 +484,7 @@ export default function ProfilePage() {
         <div className="space-y-8">
           {/* Appearance & Info */}
           <SlideInCard direction="up" delay={0.35}>
-            <Card className="border border-border/50 shadow-sm bg-white dark:bg-slate-900 rounded-[2rem] overflow-hidden">
+            <Card className="border border-border/50 shadow-sm bg-white dark:bg-slate-900 rounded-4xl overflow-hidden">
               <CardContent className="p-2">
                 <div className="grid gap-1">
                   {mounted && (

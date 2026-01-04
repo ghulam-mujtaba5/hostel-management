@@ -197,7 +197,7 @@ export function WorkloadBalanceChart() {
             transition={{ delay: index * 0.05 }}
             onClick={() => setSelectedMember(member.userId)}
             className={cn(
-              "flex items-center gap-2 px-4 py-2 rounded-xl border transition-all flex-shrink-0",
+              "flex items-center gap-2 px-4 py-2 rounded-xl border transition-all shrink-0",
               selectedMember === member.userId
                 ? "bg-primary/10 border-primary text-primary"
                 : "bg-muted/30 border-border/50 hover:border-primary/50"
@@ -338,7 +338,7 @@ export function WorkloadBalanceChart() {
               <Card className="border-yellow-500/30 bg-yellow-500/5">
                 <CardContent className="p-4">
                   <div className="flex items-start gap-3">
-                    <AlertCircle className="h-5 w-5 text-yellow-500 flex-shrink-0 mt-0.5" />
+                    <AlertCircle className="h-5 w-5 text-yellow-500 shrink-0 mt-0.5" />
                     <div>
                       <h4 className="font-semibold text-yellow-700 dark:text-yellow-400">
                         Weekly Limit Approaching

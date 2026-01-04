@@ -220,7 +220,7 @@ export function TaskStatsChart() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1 }}
         >
-          <Card className="border-border/50 bg-gradient-to-br from-purple-500/10 to-purple-600/5">
+          <Card className="border-border/50 bg-linear-to-br from-purple-500/10 to-purple-600/5">
             <CardContent className="p-4">
               <div className="flex items-center gap-3">
                 <div className="h-10 w-10 rounded-xl bg-purple-500/20 flex items-center justify-center">
@@ -240,7 +240,7 @@ export function TaskStatsChart() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.15 }}
         >
-          <Card className="border-border/50 bg-gradient-to-br from-blue-500/10 to-blue-600/5">
+          <Card className="border-border/50 bg-linear-to-br from-blue-500/10 to-blue-600/5">
             <CardContent className="p-4">
               <div className="flex items-center gap-3">
                 <div className="h-10 w-10 rounded-xl bg-blue-500/20 flex items-center justify-center">
@@ -263,8 +263,8 @@ export function TaskStatsChart() {
           <Card className={cn(
             "border-border/50",
             overallFairness >= 70 
-              ? "bg-gradient-to-br from-green-500/10 to-green-600/5" 
-              : "bg-gradient-to-br from-yellow-500/10 to-yellow-600/5"
+              ? "bg-linear-to-br from-green-500/10 to-green-600/5" 
+              : "bg-linear-to-br from-yellow-500/10 to-yellow-600/5"
           )}>
             <CardContent className="p-4">
               <div className="flex items-center gap-3">
@@ -291,7 +291,7 @@ export function TaskStatsChart() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.25 }}
         >
-          <Card className="border-border/50 bg-gradient-to-br from-orange-500/10 to-orange-600/5">
+          <Card className="border-border/50 bg-linear-to-br from-orange-500/10 to-orange-600/5">
             <CardContent className="p-4">
               <div className="flex items-center gap-3">
                 <div className="h-10 w-10 rounded-xl bg-orange-500/20 flex items-center justify-center">
@@ -612,7 +612,7 @@ export function TaskStatsChart() {
           <Card className="border-yellow-500/30 bg-yellow-500/5">
             <CardContent className="p-4">
               <div className="flex items-start gap-3">
-                <div className="h-10 w-10 rounded-xl bg-yellow-500/20 flex items-center justify-center flex-shrink-0">
+                <div className="h-10 w-10 rounded-xl bg-yellow-500/20 flex items-center justify-center shrink-0">
                   <AlertTriangle className="h-5 w-5 text-yellow-500" />
                 </div>
                 <div>
