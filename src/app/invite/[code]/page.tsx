@@ -155,7 +155,7 @@ export default function PublicInvitePage({ params }: { params: Promise<{ code: s
 
   if (loading || authLoading) {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-background via-background to-primary/5">
+      <div className="min-h-screen flex flex-col items-center justify-center bg-linear-to-br from-background via-background to-primary/5">
         <Loader2 className="h-8 w-8 animate-spin text-primary" />
         <p className="mt-4 text-muted-foreground">Loading invite...</p>
       </div>
@@ -163,7 +163,7 @@ export default function PublicInvitePage({ params }: { params: Promise<{ code: s
   }
 
   return (
-    <div className="min-h-screen flex flex-col bg-gradient-to-br from-background via-background to-primary/5">
+    <div className="min-h-screen flex flex-col bg-linear-to-br from-background via-background to-primary/5">
       {showConfetti && <Confetti />}
       
       {/* Header */}
@@ -182,9 +182,9 @@ export default function PublicInvitePage({ params }: { params: Promise<{ code: s
           className="w-full max-w-md"
         >
           {error ? (
-            <Card className="border-0 shadow-2xl rounded-[2rem] bg-card/80 backdrop-blur-xl">
+            <Card className="border-0 shadow-2xl rounded-4xl bg-card/80 backdrop-blur-xl">
               <CardContent className="p-10 text-center space-y-6">
-                <div className="mx-auto h-20 w-20 rounded-[2rem] bg-destructive/10 flex items-center justify-center">
+                <div className="mx-auto h-20 w-20 rounded-4xl bg-destructive/10 flex items-center justify-center">
                   <Shield className="h-10 w-10 text-destructive" />
                 </div>
                 <div className="space-y-2">
@@ -202,11 +202,11 @@ export default function PublicInvitePage({ params }: { params: Promise<{ code: s
               </CardContent>
             </Card>
           ) : (
-            <Card className="border-0 shadow-2xl rounded-[2rem] bg-card/80 backdrop-blur-xl overflow-hidden">
+            <Card className="border-0 shadow-2xl rounded-4xl bg-card/80 backdrop-blur-xl overflow-hidden">
               {/* Invite Header */}
-              <div className="bg-gradient-to-r from-primary/10 to-purple-600/10 p-8 border-b">
+              <div className="bg-linear-to-r from-primary/10 to-purple-600/10 p-8 border-b">
                 <div className="text-center space-y-4">
-                  <div className="mx-auto h-20 w-20 rounded-[2rem] bg-white/80 dark:bg-background/80 shadow-lg flex items-center justify-center">
+                  <div className="mx-auto h-20 w-20 rounded-4xl bg-white/80 dark:bg-background/80 shadow-lg flex items-center justify-center">
                     <Home className="h-10 w-10 text-primary" />
                   </div>
                   <div>
@@ -234,7 +234,7 @@ export default function PublicInvitePage({ params }: { params: Promise<{ code: s
                             setCurrentSpace(space);
                             router.push('/');
                           }}
-                          className="w-full h-14 text-lg font-black rounded-xl bg-gradient-to-r from-primary to-purple-600 shadow-lg"
+                          className="w-full h-14 text-lg font-black rounded-xl bg-linear-to-r from-primary to-purple-600 shadow-lg"
                         >
                           Go to Dashboard
                           <ArrowRight className="ml-2 h-5 w-5" />
@@ -250,7 +250,7 @@ export default function PublicInvitePage({ params }: { params: Promise<{ code: s
                         <Button 
                           onClick={handleJoinNow}
                           disabled={joining}
-                          className="w-full h-14 text-lg font-black rounded-xl bg-gradient-to-r from-primary to-purple-600 shadow-lg hover:scale-[1.02] transition-transform"
+                          className="w-full h-14 text-lg font-black rounded-xl bg-linear-to-r from-primary to-purple-600 shadow-lg hover:scale-[1.02] transition-transform"
                         >
                           {joining ? (
                             <>
@@ -306,7 +306,7 @@ export default function PublicInvitePage({ params }: { params: Promise<{ code: s
                     <div className="space-y-3">
                       <Button 
                         onClick={handleSignUpToJoin}
-                        className="w-full h-14 text-lg font-black rounded-xl bg-gradient-to-r from-primary to-purple-600 shadow-lg hover:scale-[1.02] transition-transform"
+                        className="w-full h-14 text-lg font-black rounded-xl bg-linear-to-r from-primary to-purple-600 shadow-lg hover:scale-[1.02] transition-transform"
                       >
                         <Mail className="h-5 w-5 mr-2" />
                         Create Account & Join

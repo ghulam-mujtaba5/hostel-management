@@ -14,6 +14,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { toast } from "@/components/Toast";
 import { LoadingButton } from "@/components/LoadingButton";
 import { SlideInCard } from "@/components/Animations";
+import { sanitizeString } from "@/lib/validation";
 
 const DIFFICULTY_LABELS = [
   { range: [1, 3], label: "Easy", color: "text-green-600 dark:text-green-400", bg: "bg-green-100 dark:bg-green-900/30" },

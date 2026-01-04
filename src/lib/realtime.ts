@@ -216,6 +216,9 @@ export function useRealtimeRecord<T>(
     return () => {
       unsubscribe();
     };
+  // Note: callback is intentionally excluded to prevent unnecessary re-subscriptions
+  // The callback should be stable or use useCallback in the component
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [tableName, id]);
 }
 
@@ -229,5 +232,8 @@ export function useRealtimeSpace(
     return () => {
       unsubscribe();
     };
+  // Note: callback is intentionally excluded to prevent unnecessary re-subscriptions
+  // The callback should be stable or use useCallback in the component
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [spaceId]);
 }

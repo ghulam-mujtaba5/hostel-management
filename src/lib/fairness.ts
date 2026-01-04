@@ -68,7 +68,27 @@ export function calculateTaskRecommendations(
       score -= 15;
       reasons.push("You've been taking mostly easy tasks");
     }
+
+    // 4. User Preferences (±10 points)
+    // If user has preferred categories stored, boost those
+    const preferredCategories = userHistory.recentTasks
+      .filter(t => t.status === 'done')
+      .slice(0, 10)
+      .reduce((acc, t) => {
+        acc[t.category] = (acc[t.category] || 0) + 1;
+        return acc;
+      }, {} as Record<string, number>);
     
+    const topCategories = Object.entries(preferredCategories)
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, 2)
+      .map(([cat]) => cat);
+    
+    if (topCategories.includes(task.category)) {
+      score += 10;
+      reasons.push(`This matches your expertise in ${task.category}`);
+    }
+
     // 5. Due Date Urgency (+10 points for urgent)
     if (task.due_date) {
       const hoursUntilDue = (new Date(task.due_date).getTime() - Date.now()) / (1000 * 60 * 60);

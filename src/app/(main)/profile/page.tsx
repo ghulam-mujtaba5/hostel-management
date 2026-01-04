@@ -174,7 +174,7 @@ export default function ProfilePage() {
           transition={{ duration: 0.3 }}
           className="space-y-6 max-w-md"
         >
-          <div className="h-24 w-24 rounded-3xl bg-gradient-to-br from-primary/20 to-purple-500/20 flex items-center justify-center mx-auto">
+          <div className="h-24 w-24 rounded-3xl bg-linear-to-br from-primary/20 to-purple-500/20 flex items-center justify-center mx-auto">
             <User className="h-12 w-12 text-primary" />
           </div>
           <div className="space-y-2">

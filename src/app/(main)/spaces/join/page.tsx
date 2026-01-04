@@ -89,7 +89,7 @@ export default function JoinSpacePage() {
   if (!user) {
     return (
       <div className="min-h-[60vh] flex flex-col items-center justify-center text-center p-6">
-        <div className="h-20 w-20 rounded-[2rem] bg-muted flex items-center justify-center mb-6">
+        <div className="h-20 w-20 rounded-4xl bg-muted flex items-center justify-center mb-6">
           <Users className="h-10 w-10 text-muted-foreground" />
         </div>
         <h2 className="text-2xl font-black mb-2">Authentication Required</h2>
@@ -122,7 +122,7 @@ export default function JoinSpacePage() {
       <SlideInCard direction="up" delay={0.1}>
         <Card className="border-0 shadow-2xl rounded-[3rem] bg-card/50 backdrop-blur-xl overflow-hidden">
           <CardHeader className="pt-10 pb-6 text-center">
-            <div className="mx-auto h-20 w-20 rounded-[2rem] bg-primary/10 flex items-center justify-center mb-6">
+            <div className="mx-auto h-20 w-20 rounded-4xl bg-primary/10 flex items-center justify-center mb-6">
               <Users className="h-10 w-10 text-primary" />
             </div>
             <CardTitle className="text-3xl font-black">Enter Code</CardTitle>
@@ -156,7 +156,7 @@ export default function JoinSpacePage() {
 
               <Button 
                 type="submit" 
-                className="w-full h-16 text-xl font-black rounded-[1.5rem] bg-gradient-to-r from-primary to-purple-600 shadow-xl shadow-primary/20 hover:scale-[1.02] active:scale-[0.98] transition-all" 
+                className="w-full h-16 text-xl font-black rounded-3xl bg-linear-to-r from-primary to-purple-600 shadow-xl shadow-primary/20 hover:scale-[1.02] active:scale-[0.98] transition-all" 
                 disabled={loading}
               >
                 {loading ? (
@@ -177,7 +177,7 @@ export default function JoinSpacePage() {
       </SlideInCard>
 
       <SlideInCard direction="up" delay={0.2}>
-        <div className="p-8 rounded-[2.5rem] bg-gradient-to-br from-primary/5 to-purple-600/5 border border-primary/10">
+        <div className="p-8 rounded-[2.5rem] bg-linear-to-br from-primary/5 to-purple-600/5 border border-primary/10">
           <div className="flex gap-4">
             <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center shrink-0">
               <Sparkles className="h-5 w-5 text-primary" />

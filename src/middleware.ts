@@ -20,6 +20,16 @@ function checkRateLimit(ip: string): boolean {
   const now = Date.now();
   const record = rateLimitStore.get(ip);
   
+  // Clean up old entries inline (avoid setInterval memory leak in serverless)
+  if (rateLimitStore.size > 10000) {
+    // Bulk cleanup when map gets too large
+    for (const [key, value] of rateLimitStore.entries()) {
+      if (now > value.resetTime) {
+        rateLimitStore.delete(key);
+      }
+    }
+  }
+  
   if (!record || now > record.resetTime) {
     rateLimitStore.set(ip, { count: 1, resetTime: now + RATE_LIMIT_WINDOW });
     return true;
@@ -32,16 +42,6 @@ function checkRateLimit(ip: string): boolean {
   record.count++;
   return true;
 }
-
-// Clean up old rate limit entries periodically
-setInterval(() => {
-  const now = Date.now();
-  for (const [ip, record] of rateLimitStore.entries()) {
-    if (now > record.resetTime) {
-      rateLimitStore.delete(ip);
-    }
-  }
-}, RATE_LIMIT_WINDOW);
 
 export async function middleware(request: NextRequest) {
   // Get client IP for rate limiting

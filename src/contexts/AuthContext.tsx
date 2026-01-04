@@ -214,7 +214,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setSpaceMembership(null);
       setUserSpaces([]);
     }
-  }, [user?.id, initialized]); // Only depend on user.id to avoid infinite loops
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user?.id, initialized]); // refreshProfile and refreshSpaces are stable callbacks
 
   const signIn = async (email: string, password: string) => {
     try {

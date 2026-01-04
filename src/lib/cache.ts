@@ -219,21 +219,21 @@ export const staticCache = new Cache({ ttl: 24 * 60 * 60 * 1000, maxSize: 100 })
 /**
  * Memoization with cache
  */
-export function memoizeAsync<T extends (...args: unknown[]) => Promise<unknown>>(
-  fn: T,
+export function memoizeAsync<TArgs extends unknown[], TResult>(
+  fn: (...args: TArgs) => Promise<TResult>,
   options?: {
-    keyFn?: (...args: Parameters<T>) => string;
+    keyFn?: (...args: TArgs) => string;
     ttl?: number;
-    cache?: Cache;
+    cache?: Cache<TResult>;
   }
-): T {
-  const cache = options?.cache ?? new Cache({ ttl: options?.ttl ?? 60000 });
-  const keyFn = options?.keyFn ?? ((...args: unknown[]) => JSON.stringify(args));
+): (...args: TArgs) => Promise<TResult> {
+  const cache = options?.cache ?? new Cache<TResult>({ ttl: options?.ttl ?? 60000 });
+  const keyFn = options?.keyFn ?? ((...args: TArgs) => JSON.stringify(args));
 
-  return (async (...args: Parameters<T>) => {
+  return async (...args: TArgs): Promise<TResult> => {
     const key = keyFn(...args);
-    return cache.getOrSet(key, () => fn(...args) as Promise<unknown>, options?.ttl);
-  }) as T;
+    return cache.getOrSet(key, () => fn(...args), options?.ttl);
+  };
 }
 
 /**
