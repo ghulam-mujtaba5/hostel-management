@@ -306,8 +306,8 @@ export default function Dashboard() {
           </Link>
         </Button>
         <Button variant="outline" className="h-12 rounded-xl justify-start px-3 font-medium text-sm" asChild>
-          <Link href="/spaces">
-            <Users className="mr-2 h-4 w-4 text-blue-500" /> Members
+          <Link href="/team">
+            <Users className="mr-2 h-4 w-4 text-blue-500" /> Team
           </Link>
         </Button>
       </div>

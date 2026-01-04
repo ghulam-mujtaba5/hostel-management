@@ -58,8 +58,8 @@ export function Navbar() {
   const navItems = [
     { href: "/", label: "Home", icon: Home, mobileLabel: "Home" },
     { href: "/tasks", label: "Tasks", icon: ListTodo, mobileLabel: "Tasks" },
+    { href: "/team", label: "Team", icon: Users, mobileLabel: "Team" },
     { href: "/leaderboard", label: "Rank", icon: Trophy, mobileLabel: "Rank" },
-    { href: "/insights", label: "Stats", icon: BarChart3, mobileLabel: "Stats" },
     { href: "/profile", label: "Me", icon: User, mobileLabel: "Me" },
   ];
 
