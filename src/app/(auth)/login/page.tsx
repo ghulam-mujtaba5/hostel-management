@@ -241,60 +241,86 @@ function LoginContent() {
   return (
     <div className="min-h-screen w-full flex">
       {/* Left Side - Visual */}
-      <div className="hidden lg:flex w-1/2 bg-gradient-to-br from-emerald-50 to-teal-50 dark:from-emerald-950/20 dark:to-teal-950/20 relative overflow-hidden items-center justify-center p-12">
-        <div className="absolute inset-0 bg-emerald-500/5" />
+      <div className="hidden lg:flex w-1/2 bg-gradient-to-br from-emerald-50 via-teal-50 to-cyan-50 dark:from-emerald-950/30 dark:via-teal-950/20 dark:to-cyan-950/10 relative overflow-hidden items-center justify-center p-12">
+        {/* Premium gradient orbs */}
+        <div className="absolute top-20 left-20 w-72 h-72 bg-emerald-400/20 rounded-full blur-3xl" />
+        <div className="absolute bottom-20 right-20 w-96 h-96 bg-teal-400/20 rounded-full blur-3xl" />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-cyan-400/10 rounded-full blur-3xl" />
         
-        {/* Islamic geometric pattern decoration */}
-        <div className="absolute top-0 right-0 w-64 h-64 opacity-10">
-          <svg viewBox="0 0 100 100" className="w-full h-full text-emerald-600">
-            <pattern id="islamic-pattern" patternUnits="userSpaceOnUse" width="20" height="20">
-              <path d="M10 0L20 10L10 20L0 10Z" fill="currentColor" />
-            </pattern>
-            <rect width="100" height="100" fill="url(#islamic-pattern)" />
-          </svg>
-        </div>
+        {/* Subtle grid pattern */}
+        <div className="absolute inset-0 opacity-[0.03]" style={{
+          backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23000000' fill-opacity='1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`
+        }} />
         
         <div className="relative z-10 max-w-lg space-y-8">
-          {/* Bismillah */}
-          <div className="text-center mb-6">
-            <p className="text-2xl text-emerald-600 dark:text-emerald-400 font-medium">
-              بِسْمِ اللهِ الرَّحْمٰنِ الرَّحِيْمِ
-            </p>
-          </div>
+          {/* Trust badges */}
+          <motion.div 
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="flex items-center gap-2 text-xs"
+          >
+            <span className="px-3 py-1 rounded-full bg-emerald-500/10 text-emerald-700 dark:text-emerald-300 font-semibold">
+              ✨ AI-Powered
+            </span>
+            <span className="px-3 py-1 rounded-full bg-teal-500/10 text-teal-700 dark:text-teal-300 font-semibold">
+              🎯 Fair Distribution
+            </span>
+          </motion.div>
           
           <div className="space-y-4">
-            <h1 className="text-4xl font-bold tracking-tight text-foreground">
-              Manage your hostel life with{" "}
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-500 to-teal-600">barakah</span>.
+            <h1 className="text-4xl font-black tracking-tight text-foreground leading-tight">
+              Transform Your{" "}
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-600 via-teal-600 to-cyan-600">
+                Shared Living
+              </span>{" "}
+              Experience
             </h1>
             <p className="text-lg text-muted-foreground">
-              Join hostelites who use HostelMate to maintain harmony, fairness, and cleanliness in shared spaces.
+              Join students worldwide who use HostelMate to create harmony, fairness, and community in their shared spaces.
             </p>
           </div>
           
           <div className="grid gap-4">
             {[
-              { text: "Fair & just task distribution", icon: "⚖️" },
-              { text: "Excellence (Ihsan) in every task", icon: "✨" },
-              { text: "Teamwork & mutual support", icon: "🤝" },
-              { text: "Gamified rewards & motivation", icon: "🏆" }
+              { text: "Smart AI-powered task distribution", icon: "🤖" },
+              { text: "Gamified points & achievements", icon: "🏆" },
+              { text: "Real-time team collaboration", icon: "⚡" },
+              { text: "Fair workload balancing", icon: "⚖️" }
             ].map((feature, i) => (
-              <div key={i} className="flex items-center gap-3 text-foreground/80">
+              <motion.div 
+                key={i} 
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 0.1 + i * 0.1 }}
+                className="flex items-center gap-3 text-foreground/80"
+              >
                 <span className="text-xl">{feature.icon}</span>
-                <span>{feature.text}</span>
-              </div>
+                <span className="font-medium">{feature.text}</span>
+              </motion.div>
             ))}
           </div>
           
-          {/* Islamic quote */}
-          <div className="mt-8 p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/20">
-            <p className="text-sm text-emerald-700 dark:text-emerald-300 italic">
-              "The best among you are those who are most beneficial to others"
-            </p>
-            <p className="text-xs text-emerald-600/70 dark:text-emerald-400/70 mt-1">
-              — Prophet Muhammad ﷺ
-            </p>
-          </div>
+          {/* Social proof */}
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.5 }}
+            className="mt-8 p-4 rounded-2xl bg-white/50 dark:bg-white/5 backdrop-blur-sm border border-white/20"
+          >
+            <div className="flex items-center gap-3">
+              <div className="flex -space-x-2">
+                {['🧑‍🎓', '👩‍🎓', '👨‍🎓', '🧑‍💼'].map((emoji, i) => (
+                  <div key={i} className="h-8 w-8 rounded-full bg-gradient-to-br from-emerald-400 to-teal-500 flex items-center justify-center text-sm border-2 border-white dark:border-gray-800">
+                    {emoji}
+                  </div>
+                ))}
+              </div>
+              <div>
+                <p className="text-sm font-semibold text-foreground">Trusted by students</p>
+                <p className="text-xs text-muted-foreground">Building better communities</p>
+              </div>
+            </div>
+          </motion.div>
         </div>
       </div>
 

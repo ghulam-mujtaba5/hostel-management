@@ -131,63 +131,80 @@ export default function Dashboard() {
     return (
       <div className="min-h-[80vh] flex flex-col">
         {/* Hero Section */}
-        <div className="flex-1 flex flex-col items-center justify-center px-4 py-12">
+        <div className="flex-1 flex flex-col items-center justify-center px-4 py-12 relative overflow-hidden">
+          {/* Premium gradient orbs */}
+          <div className="absolute top-10 left-10 w-72 h-72 bg-emerald-400/10 rounded-full blur-3xl" />
+          <div className="absolute bottom-10 right-10 w-96 h-96 bg-teal-400/10 rounded-full blur-3xl" />
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-cyan-400/5 rounded-full blur-3xl" />
+          
           <motion.div 
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
-            className="text-center space-y-8 max-w-3xl"
+            className="text-center space-y-8 max-w-3xl relative z-10"
           >
-            {/* Bismillah Header */}
+            {/* Trust badge */}
             <motion.div
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
-              className="text-center"
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r from-emerald-500/10 via-teal-500/10 to-cyan-500/10 border border-emerald-500/20 text-sm font-semibold"
             >
-              <p className="text-xl md:text-2xl text-emerald-600 dark:text-emerald-400 font-medium mb-2">
-                بِسْمِ اللهِ الرَّحْمٰنِ الرَّحِيْمِ
-              </p>
-              <p className="text-xs text-muted-foreground">
-                In the name of Allah, the Most Gracious, the Most Merciful
-              </p>
+              <Sparkles className="h-4 w-4 text-emerald-500" />
+              <span className="text-emerald-700 dark:text-emerald-300">AI-Powered Fair Task Management</span>
             </motion.div>
 
             <div className="space-y-4">
-              <motion.div
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ delay: 0.1 }}
-                className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 text-sm font-bold"
-              >
-                <Sparkles className="h-4 w-4" />
-                Smart & Fair Hostel Management
-              </motion.div>
-              <h1 className="text-4xl md:text-6xl font-black tracking-tight">
-                Manage Your Hostel Life with{" "}
-                <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-500 to-teal-600">Barakah</span>
+              <h1 className="text-4xl md:text-6xl font-black tracking-tight leading-tight">
+                Live Better,{" "}
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-500 via-teal-500 to-cyan-500">
+                  Together
+                </span>
               </h1>
               <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto">
-                HostelMate helps you organize tasks with fairness & justice. 
-                <span className="block mt-1 text-emerald-600 dark:text-emerald-400 font-medium">
-                  "The best among you are those most beneficial to others"
-                </span>
+                HostelMate transforms shared living with intelligent task distribution, 
+                gamification, and real-time collaboration. No more conflicts—just harmony.
               </p>
             </div>
 
+            {/* CTA Buttons */}
             <div className="flex flex-col sm:flex-row gap-4 justify-center pt-4">
-              <Button asChild size="lg" className="h-14 px-8 rounded-xl font-bold text-lg gap-2 shadow-lg shadow-emerald-500/20 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700">
+              <Button asChild size="lg" className="h-14 px-8 rounded-2xl font-bold text-lg gap-2 shadow-xl shadow-emerald-500/20 bg-gradient-to-r from-emerald-500 via-teal-500 to-teal-600 hover:from-emerald-600 hover:via-teal-600 hover:to-teal-700 transition-all duration-300">
                 <Link href="/login?mode=signup">
                   <UserPlus className="h-5 w-5" />
-                  Start Your Journey
+                  Get Started Free
                 </Link>
               </Button>
-              <Button asChild variant="outline" size="lg" className="h-14 px-8 rounded-xl font-bold text-lg gap-2 border-emerald-500/30 hover:bg-emerald-500/5">
+              <Button asChild variant="outline" size="lg" className="h-14 px-8 rounded-2xl font-bold text-lg gap-2 border-2 border-emerald-500/30 hover:bg-emerald-500/5 hover:border-emerald-500/50 transition-all duration-300">
                 <Link href="/login">
                   <LogIn className="h-5 w-5" />
-                  Welcome Back
+                  Sign In
                 </Link>
               </Button>
             </div>
+
+            {/* Social proof */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.3 }}
+              className="flex items-center justify-center gap-6 pt-4"
+            >
+              <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                <div className="flex -space-x-2">
+                  {['🧑‍🎓', '👩‍🎓', '👨‍🎓'].map((emoji, i) => (
+                    <div key={i} className="h-7 w-7 rounded-full bg-gradient-to-br from-emerald-400 to-teal-500 flex items-center justify-center text-xs border-2 border-background">
+                      {emoji}
+                    </div>
+                  ))}
+                </div>
+                <span>Trusted by students</span>
+              </div>
+              <span className="h-4 w-px bg-border" />
+              <div className="flex items-center gap-1.5 text-sm text-muted-foreground">
+                <Zap className="h-4 w-4 text-yellow-500" />
+                <span>Free to use</span>
+              </div>
+            </motion.div>
           </motion.div>
         </div>
 
@@ -201,44 +218,58 @@ export default function Dashboard() {
           {[
             {
               icon: Shield,
-              title: "Fair & Just Distribution",
-              description: "Our algorithm ensures everyone contributes equally. Justice is a core value we uphold.",
-              gradient: "from-emerald-500/20 to-teal-500/10"
+              title: "Fair Distribution",
+              description: "Our AI ensures everyone contributes equally. Smart algorithms balance workloads automatically.",
+              gradient: "from-emerald-500/20 to-teal-500/10",
+              iconColor: "text-emerald-600 dark:text-emerald-400"
             },
             {
               icon: Award,
-              title: "Excellence (Ihsan)",
-              description: "Earn points for quality work. 'Allah loves when you do something, you do it with excellence.'",
-              gradient: "from-yellow-500/20 to-orange-500/10"
+              title: "Gamified Experience",
+              description: "Earn points, unlock achievements, and compete on leaderboards. Make chores actually fun.",
+              gradient: "from-yellow-500/20 to-orange-500/10",
+              iconColor: "text-yellow-600 dark:text-yellow-400"
             },
             {
               icon: Zap,
-              title: "Harmony & Teamwork",
-              description: "Stay in sync with your flatmates. Together, create a peaceful living environment.",
-              gradient: "from-blue-500/20 to-cyan-500/10"
+              title: "Real-Time Sync",
+              description: "Instant updates across all devices. Know what's happening in your space at all times.",
+              gradient: "from-blue-500/20 to-cyan-500/10",
+              iconColor: "text-blue-600 dark:text-blue-400"
             }
           ].map((feature, i) => (
-            <Card key={i} className="border-border/50 rounded-2xl bg-gradient-to-br backdrop-blur-sm overflow-hidden">
-              <CardContent className="p-6 text-center space-y-4">
-                <div className={`h-14 w-14 rounded-xl bg-gradient-to-br ${feature.gradient} flex items-center justify-center mx-auto`}>
-                  <feature.icon className="h-7 w-7 text-emerald-600 dark:text-emerald-400" />
-                </div>
-                <h3 className="text-lg font-bold">{feature.title}</h3>
-                <p className="text-sm text-muted-foreground">{feature.description}</p>
-              </CardContent>
-            </Card>
+            <motion.div
+              key={i}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.4 + i * 0.1 }}
+            >
+              <Card className="border-border/50 rounded-2xl bg-gradient-to-br from-card to-muted/20 hover:shadow-lg hover:shadow-emerald-500/5 transition-all duration-300 overflow-hidden group">
+                <CardContent className="p-6 text-center space-y-4">
+                  <div className={`h-14 w-14 rounded-2xl bg-gradient-to-br ${feature.gradient} flex items-center justify-center mx-auto group-hover:scale-110 transition-transform duration-300`}>
+                    <feature.icon className={`h-7 w-7 ${feature.iconColor}`} />
+                  </div>
+                  <h3 className="text-lg font-bold">{feature.title}</h3>
+                  <p className="text-sm text-muted-foreground">{feature.description}</p>
+                </CardContent>
+              </Card>
+            </motion.div>
           ))}
         </motion.div>
 
-        {/* Social Proof / Trust */}
+        {/* Bottom tagline */}
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={{ delay: 0.5 }}
+          transition={{ delay: 0.7 }}
           className="text-center pb-8"
         >
-          <p className="text-xs text-muted-foreground">
-            🕌 Built with Islamic values in mind • 🏠 Perfect for hostel students • ⚡ Free to use
+          <p className="text-xs text-muted-foreground flex items-center justify-center gap-3">
+            <span>🏠 Perfect for students</span>
+            <span className="h-1 w-1 rounded-full bg-border" />
+            <span>⚡ Free forever</span>
+            <span className="h-1 w-1 rounded-full bg-border" />
+            <span>🔒 Secure & private</span>
           </p>
         </motion.div>
       </div>

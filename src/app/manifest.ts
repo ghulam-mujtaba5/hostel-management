@@ -2,13 +2,13 @@ import { MetadataRoute } from 'next';
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: 'HostelMate - Smart Hostel Management',
+    name: 'HostelMate – Live Better, Together',
     short_name: 'HostelMate',
-    description: 'Manage your hostel life with barakah. Fair task distribution, gamification, and team collaboration for hostelites. Built with Islamic values.',
+    description: 'The smart way to manage shared living. AI-powered fair task distribution, gamification, and seamless team collaboration. Trusted by students worldwide.',
     start_url: '/',
     display: 'standalone',
     background_color: '#0f172a',
-    theme_color: '#10b981', // Emerald green for Islamic theme
+    theme_color: '#10b981', // Emerald - trust, growth, harmony
     orientation: 'portrait-primary',
     scope: '/',
     lang: 'en',

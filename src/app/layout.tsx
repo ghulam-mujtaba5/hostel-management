@@ -15,8 +15,8 @@ import { ErrorBoundary } from "@/components/ErrorBoundary";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "HostelMate - Smart Hostel Duty Management",
-  description: "Manage your hostel life with barakah. AI-powered fair task distribution, gamification, and team collaboration for hostelites. Built with Islamic values.",
+  title: "HostelMate – Live Better, Together | Smart Shared Living",
+  description: "Transform your shared living experience. AI-powered fair task distribution, gamification, and seamless team collaboration trusted by students worldwide.",
   manifest: "/manifest.webmanifest",
   appleWebApp: {
     capable: true,
@@ -30,12 +30,18 @@ export const metadata: Metadata = {
     ],
     apple: "/icon.svg",
   },
-  keywords: ["hostel", "duties", "task management", "flatmates", "roommates", "chores", "Islamic", "halal", "Muslim students", "fair distribution"],
-  authors: [{ name: "HostelMate Team" }],
+  keywords: ["hostel management", "shared living", "task management", "flatmates", "roommates", "chores app", "fair distribution", "student life", "coliving", "dorm management"],
+  authors: [{ name: "HostelMate" }],
   openGraph: {
-    title: "HostelMate - Smart Hostel Duty Management",
-    description: "Fair and blessed way to manage hostel duties. Built with Islamic values and excellence (Ihsan) in mind.",
+    title: "HostelMate – Live Better, Together",
+    description: "The smart way to manage shared living. Fair task distribution powered by AI. Join thousands of students living harmoniously.",
     type: "website",
+    siteName: "HostelMate",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "HostelMate – Live Better, Together",
+    description: "Transform your shared living with AI-powered fair task distribution.",
   },
 };
 
@@ -45,8 +51,8 @@ export const viewport: Viewport = {
   maximumScale: 5,
   userScalable: true,
   themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "#6366f1" },
-    { media: "(prefers-color-scheme: dark)", color: "#0f172a" },
+    { media: "(prefers-color-scheme: light)", color: "#10b981" }, // Emerald 500
+    { media: "(prefers-color-scheme: dark)", color: "#020817" },  // Slate 950
   ],
 };
 

@@ -1,8 +1,8 @@
 "use client";
 
 import { motion, AnimatePresence } from "framer-motion";
-import { Sparkles } from "lucide-react";
 import { useEffect, useState } from "react";
+import { LogoMark } from "@/components/Logo";
 
 interface PWASplashScreenProps {
   onComplete?: () => void;
@@ -11,12 +11,21 @@ interface PWASplashScreenProps {
 
 export function PWASplashScreen({ 
   onComplete, 
-  minimumDisplay = 1500 
+  minimumDisplay = 1800 
 }: PWASplashScreenProps) {
   const [isVisible, setIsVisible] = useState(true);
   const [progress, setProgress] = useState(0);
+  const [loadingText, setLoadingText] = useState("Initializing...");
 
   useEffect(() => {
+    // Loading text progression
+    const texts = ["Initializing...", "Loading experience...", "Almost ready...", "Welcome!"];
+    let textIndex = 0;
+    const textInterval = setInterval(() => {
+      textIndex = Math.min(textIndex + 1, texts.length - 1);
+      setLoadingText(texts[textIndex]);
+    }, minimumDisplay / 4);
+
     // Simulate loading progress
     const progressInterval = setInterval(() => {
       setProgress(prev => {
@@ -24,9 +33,9 @@ export function PWASplashScreen({
           clearInterval(progressInterval);
           return 100;
         }
-        return prev + Math.random() * 15;
+        return prev + Math.random() * 12;
       });
-    }, 100);
+    }, 80);
 
     // Hide splash after minimum display time
     const timer = setTimeout(() => {
@@ -35,6 +44,7 @@ export function PWASplashScreen({
     }, minimumDisplay);
 
     return () => {
+      clearInterval(textInterval);
       clearInterval(progressInterval);
       clearTimeout(timer);
     };
@@ -46,78 +56,123 @@ export function PWASplashScreen({
         <motion.div
           initial={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          transition={{ duration: 0.3 }}
-          className="fixed inset-0 z-[9999] bg-gradient-to-br from-primary via-purple-600 to-primary flex flex-col items-center justify-center"
+          transition={{ duration: 0.4, ease: "easeInOut" }}
+          className="fixed inset-0 z-9999 flex flex-col items-center justify-center overflow-hidden"
+          style={{
+            background: "linear-gradient(135deg, #10B981 0%, #0D9488 50%, #0891B2 100%)"
+          }}
         >
-          {/* Logo Animation */}
-          <motion.div
-            initial={{ scale: 0.5, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            transition={{ 
-              type: "spring", 
-              stiffness: 200, 
-              damping: 15,
-              delay: 0.1 
-            }}
-            className="relative"
-          >
+          {/* Animated background pattern */}
+          <div className="absolute inset-0 opacity-10">
             <motion.div
-              animate={{ 
-                rotate: [0, 360],
-                scale: [1, 1.1, 1]
+              animate={{ rotate: 360 }}
+              transition={{ duration: 60, repeat: Infinity, ease: "linear" }}
+              className="absolute -top-1/2 -left-1/2 w-[200%] h-[200%]"
+              style={{
+                backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.4'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`
               }}
-              transition={{ 
-                rotate: { duration: 2, repeat: Infinity, ease: "linear" },
-                scale: { duration: 1, repeat: Infinity, ease: "easeInOut" }
-              }}
-              className="absolute inset-0 rounded-3xl bg-white/20 blur-xl"
             />
-            <div className="relative h-24 w-24 rounded-3xl bg-white/20 backdrop-blur-lg flex items-center justify-center border border-white/30 shadow-2xl">
-              <Sparkles className="h-12 w-12 text-white" />
-            </div>
-          </motion.div>
+          </div>
 
-          {/* App Name */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.3 }}
-            className="mt-8 text-center"
-          >
-            <h1 className="text-3xl font-black text-white tracking-tight">
-              HostelMate
-            </h1>
-            <p className="text-sm text-white/70 mt-1 font-medium">
-              Smart Duty Management
-            </p>
-          </motion.div>
-
-          {/* Loading Bar */}
-          <motion.div
-            initial={{ opacity: 0, width: 0 }}
-            animate={{ opacity: 1, width: "50%" }}
-            transition={{ delay: 0.5 }}
-            className="mt-12 max-w-[200px] w-full"
-          >
-            <div className="h-1 w-full bg-white/20 rounded-full overflow-hidden">
+          {/* Main content */}
+          <div className="relative z-10 flex flex-col items-center">
+            {/* Logo Animation */}
+            <motion.div
+              initial={{ scale: 0.5, opacity: 0, y: 20 }}
+              animate={{ scale: 1, opacity: 1, y: 0 }}
+              transition={{ 
+                type: "spring", 
+                stiffness: 200, 
+                damping: 15,
+                delay: 0.1 
+              }}
+              className="relative"
+            >
+              {/* Glow effect */}
               <motion.div
-                className="h-full bg-white rounded-full"
-                initial={{ width: "0%" }}
-                animate={{ width: `${Math.min(progress, 100)}%` }}
-                transition={{ ease: "easeOut" }}
+                animate={{ 
+                  scale: [1, 1.2, 1],
+                  opacity: [0.3, 0.5, 0.3]
+                }}
+                transition={{ 
+                  duration: 2, 
+                  repeat: Infinity, 
+                  ease: "easeInOut" 
+                }}
+                className="absolute inset-0 rounded-3xl bg-white/30 blur-2xl"
               />
-            </div>
-          </motion.div>
+              
+              {/* Logo container */}
+              <motion.div
+                animate={{ y: [0, -4, 0] }}
+                transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+                className="relative h-28 w-28 rounded-3xl bg-white/20 backdrop-blur-xl flex items-center justify-center border border-white/30 shadow-2xl"
+              >
+                <LogoMark className="h-20 w-20" variant="dark" />
+              </motion.div>
+            </motion.div>
 
-          {/* Tagline */}
-          <motion.p
+            {/* App Name */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.4 }}
+              className="mt-8 text-center"
+            >
+              <h1 className="text-4xl font-black text-white tracking-tight">
+                <span className="text-white/90">Hostel</span>
+                <span className="text-white">Mate</span>
+              </h1>
+              <motion.p 
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.6 }}
+                className="text-sm text-white/70 mt-2 font-medium tracking-wide"
+              >
+                Live Better, Together
+              </motion.p>
+            </motion.div>
+
+            {/* Loading Bar */}
+            <motion.div
+              initial={{ opacity: 0, scaleX: 0 }}
+              animate={{ opacity: 1, scaleX: 1 }}
+              transition={{ delay: 0.5, duration: 0.3 }}
+              className="mt-12 w-48"
+            >
+              <div className="h-1 w-full bg-white/20 rounded-full overflow-hidden backdrop-blur-sm">
+                <motion.div
+                  className="h-full rounded-full"
+                  style={{ background: "linear-gradient(90deg, white, rgba(255,255,255,0.8))" }}
+                  initial={{ width: "0%" }}
+                  animate={{ width: `${Math.min(progress, 100)}%` }}
+                  transition={{ ease: "easeOut" }}
+                />
+              </div>
+              <motion.p
+                key={loadingText}
+                initial={{ opacity: 0, y: 5 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="text-xs text-white/50 text-center mt-3 font-medium"
+              >
+                {loadingText}
+              </motion.p>
+            </motion.div>
+          </div>
+
+          {/* Bottom tagline */}
+          <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            transition={{ delay: 0.7 }}
-            className="absolute bottom-12 text-xs text-white/50 font-medium"
+            transition={{ delay: 0.8 }}
+            className="absolute bottom-8 flex flex-col items-center gap-2"
           >
-            Made with ❤️ for students
-          </motion.p>
+            <div className="flex items-center gap-2 text-white/40 text-xs font-medium">
+              <span className="h-px w-8 bg-white/20" />
+              <span>Smart Shared Living</span>
+              <span className="h-px w-8 bg-white/20" />
+            </div>
+          </motion.div>
         </motion.div>
       )}
     </AnimatePresence>

@@ -69,9 +69,9 @@ export function Navbar() {
       )}>
         <div className="container mx-auto px-4 flex items-center justify-between max-w-6xl">
           <Link href="/" className="hover:opacity-90 transition-opacity flex items-center gap-2">
-            <Logo size="sm" />
+            <Logo size="sm" animated />
             {user && currentSpace && (
-              <span className="hidden sm:inline-flex items-center text-xs font-medium text-muted-foreground bg-muted/50 px-2 py-1 rounded-lg">
+              <span className="hidden sm:inline-flex items-center text-xs font-medium text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 px-2.5 py-1 rounded-lg">
                 {currentSpace.name.length > 15 ? currentSpace.name.slice(0, 15) + '...' : currentSpace.name}
               </span>
             )}
