@@ -1,13 +1,10 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { useState, useEffect, useCallback } from "react";
+import { motion } from "framer-motion";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { 
-  AlertTriangle, CheckCircle, Scale, TrendingUp, 
-  Info, Sparkles, Shield
-} from "lucide-react";
+import { AlertTriangle, Scale, Info, Shield } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/lib/supabase";
 import { cn } from "@/lib/utils";
@@ -33,13 +30,7 @@ export function FairnessIndicator({ compact = false, showDetails = true }: Fairn
   const [status, setStatus] = useState<FairnessStatus | null>(null);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    if (user && currentSpace) {
-      fetchFairnessStatus();
-    }
-  }, [user, currentSpace]);
-
-  const fetchFairnessStatus = async () => {
+  const fetchFairnessStatus = useCallback(async () => {
     if (!user || !currentSpace) return;
     setLoading(true);
 
@@ -91,7 +82,13 @@ export function FairnessIndicator({ compact = false, showDetails = true }: Fairn
     } finally {
       setLoading(false);
     }
-  };
+  }, [user, currentSpace]);
+
+  useEffect(() => {
+    if (user && currentSpace) {
+      fetchFairnessStatus();
+    }
+  }, [user, currentSpace, fetchFairnessStatus]);
 
   if (loading || !status) {
     return compact ? null : (

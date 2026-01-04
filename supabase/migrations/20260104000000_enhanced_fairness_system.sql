@@ -3,7 +3,7 @@
 
 -- Configuration table for fairness settings per space
 create table if not exists public.fairness_settings (
-  id uuid default uuid_generate_v4() primary key,
+  id uuid default gen_random_uuid() primary key,
   space_id uuid references public.spaces(id) on delete cascade not null unique,
   max_tasks_per_week int default 10 not null,
   max_easy_task_ratio numeric(3,2) default 0.60 not null, -- 60% max easy tasks

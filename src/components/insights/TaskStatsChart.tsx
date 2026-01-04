@@ -1,23 +1,21 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { 
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
-  PieChart, Pie, Cell, Legend, RadialBarChart, RadialBar
+  PieChart, Pie, Cell, Legend
 } from "recharts";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { 
-  TrendingUp, Users, CheckCircle2, AlertTriangle, 
-  Award, BarChart3, Target, Sparkles, ChevronRight,
-  Clock, Flame, Shield
+  Users, CheckCircle2, AlertTriangle, 
+  Award, BarChart3, Target, Flame, Shield
 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/lib/supabase";
-import { Profile, TaskCategory, TASK_CATEGORIES } from "@/types";
+import { TaskCategory, TASK_CATEGORIES } from "@/types";
 import { cn } from "@/lib/utils";
 
 interface TaskStats {
@@ -40,8 +38,6 @@ interface TaskTypeCount {
   byUser: { userId: string; username: string; count: number }[];
 }
 
-const COLORS = ['#8b5cf6', '#06b6d4', '#10b981', '#f59e0b', '#ef4444', '#ec4899', '#6366f1', '#84cc16'];
-
 const FAIRNESS_THRESHOLDS = {
   excellent: 90,
   good: 70,
@@ -56,13 +52,7 @@ export function TaskStatsChart() {
   const [loading, setLoading] = useState(true);
   const [activeView, setActiveView] = useState<'overview' | 'members' | 'tasks'>('overview');
 
-  useEffect(() => {
-    if (currentSpace) {
-      fetchTaskStats();
-    }
-  }, [currentSpace]);
-
-  const fetchTaskStats = async () => {
+  const fetchTaskStats = useCallback(async () => {
     if (!currentSpace) return;
     setLoading(true);
 
@@ -161,7 +151,13 @@ export function TaskStatsChart() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [currentSpace]);
+
+  useEffect(() => {
+    if (currentSpace) {
+      fetchTaskStats();
+    }
+  }, [currentSpace, fetchTaskStats]);
 
   const getFairnessColor = (score: number) => {
     if (score >= FAIRNESS_THRESHOLDS.excellent) return 'text-green-500 bg-green-100 dark:bg-green-900/30';
@@ -322,7 +318,7 @@ export function TaskStatsChart() {
         ].map(view => (
           <button
             key={view.key}
-            onClick={() => setActiveView(view.key as any)}
+            onClick={() => setActiveView(view.key as 'overview' | 'members' | 'tasks')}
             className={cn(
               "flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium transition-all",
               activeView === view.key

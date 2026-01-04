@@ -1,17 +1,16 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { motion } from "framer-motion";
 import { 
   RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar, 
-  ResponsiveContainer, Tooltip, Legend,
-  LineChart, Line, XAxis, YAxis, CartesianGrid, Area, AreaChart
+  ResponsiveContainer, Tooltip,
+  XAxis, YAxis, CartesianGrid, Area, AreaChart
 } from "recharts";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { 
-  TrendingUp, TrendingDown, Minus, Scale, AlertCircle, 
+  TrendingUp, TrendingDown, Scale, AlertCircle, 
   CheckCircle, Activity, Zap
 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
@@ -36,7 +35,6 @@ interface WorkloadData {
 }
 
 const MAX_TASKS_PER_WEEK = 10; // Fairness limit
-const COLORS = ['#8b5cf6', '#06b6d4', '#10b981', '#f59e0b', '#ef4444', '#ec4899'];
 
 export function WorkloadBalanceChart() {
   const { user, currentSpace } = useAuth();
@@ -44,13 +42,7 @@ export function WorkloadBalanceChart() {
   const [loading, setLoading] = useState(true);
   const [selectedMember, setSelectedMember] = useState<string | null>(null);
 
-  useEffect(() => {
-    if (currentSpace) {
-      fetchWorkloadData();
-    }
-  }, [currentSpace]);
-
-  const fetchWorkloadData = async () => {
+  const fetchWorkloadData = useCallback(async () => {
     if (!currentSpace) return;
     setLoading(true);
 
@@ -156,7 +148,13 @@ export function WorkloadBalanceChart() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [currentSpace, user]);
+
+  useEffect(() => {
+    if (currentSpace) {
+      fetchWorkloadData();
+    }
+  }, [currentSpace, fetchWorkloadData]);
 
   const selectedData = workloadData.find(w => w.userId === selectedMember);
   
