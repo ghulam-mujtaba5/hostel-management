@@ -16,6 +16,18 @@ export default function manifest(): MetadataRoute.Manifest {
     categories: ['productivity', 'lifestyle', 'utilities'],
     icons: [
       {
+        src: '/icon.svg',
+        sizes: 'any',
+        type: 'image/svg+xml',
+        purpose: 'any',
+      },
+      {
+        src: '/icon.svg',
+        sizes: 'any',
+        type: 'image/svg+xml',
+        purpose: 'maskable',
+      },
+      {
         src: '/icon-192.png',
         sizes: '192x192',
         type: 'image/png',
@@ -46,12 +58,14 @@ export default function manifest(): MetadataRoute.Manifest {
         sizes: '1280x720',
         type: 'image/png',
         label: 'Dashboard view showing task overview',
+        form_factor: 'wide',
       },
       {
         src: '/screenshots/mobile.png',
         sizes: '390x844',
         type: 'image/png',
         label: 'Mobile view of the app',
+        form_factor: 'narrow',
       },
     ],
     shortcuts: [
@@ -60,21 +74,21 @@ export default function manifest(): MetadataRoute.Manifest {
         short_name: 'Dashboard',
         description: 'View your task dashboard',
         url: '/dashboard',
-        icons: [{ src: '/icons/dashboard.png', sizes: '96x96' }],
+        icons: [{ src: '/icons/dashboard.png', sizes: '96x96', type: 'image/png' }],
       },
       {
         name: 'My Tasks',
         short_name: 'Tasks',
         description: 'View your assigned tasks',
         url: '/tasks',
-        icons: [{ src: '/icons/tasks.png', sizes: '96x96' }],
+        icons: [{ src: '/icons/tasks.png', sizes: '96x96', type: 'image/png' }],
       },
       {
         name: 'Leaderboard',
         short_name: 'Leaderboard',
         description: 'Check the leaderboard',
         url: '/leaderboard',
-        icons: [{ src: '/icons/leaderboard.png', sizes: '96x96' }],
+        icons: [{ src: '/icons/leaderboard.png', sizes: '96x96', type: 'image/png' }],
       },
     ],
     related_applications: [],

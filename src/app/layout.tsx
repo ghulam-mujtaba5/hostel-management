@@ -17,7 +17,7 @@ const inter = Inter({ subsets: ["latin"] });
 export const metadata: Metadata = {
   title: "HostelMate - Smart Duty Management",
   description: "Intelligent hostel duty management with AI-powered fair task distribution, gamification, and team collaboration",
-  manifest: "/manifest.json",
+  manifest: "/manifest.webmanifest",
   appleWebApp: {
     capable: true,
     statusBarStyle: "default",
@@ -25,7 +25,9 @@ export const metadata: Metadata = {
     startupImage: "/icon.svg",
   },
   icons: {
-    icon: "/icon.svg",
+    icon: [
+      { url: "/icon.svg", type: "image/svg+xml" },
+    ],
     apple: "/icon.svg",
   },
   keywords: ["hostel", "duties", "task management", "flatmates", "roommates", "chores"],
