@@ -276,8 +276,8 @@ export function NoTasksEmptyState({ onCreateTask }: { onCreateTask?: () => void 
   return (
     <EmptyState
       illustration="tasks"
-      title="No tasks yet!"
-      description="Create your first task to start managing your hostel duties with your flatmates."
+      title="Bismillah! Start Your First Task 🌟"
+      description="Every task done well is a form of Ihsan (excellence). Create your first task and begin your journey of contribution!"
       action={{
         label: "Create Task",
         href: onCreateTask ? undefined : "/tasks/create",
@@ -310,8 +310,8 @@ export function NoMembersEmptyState() {
   return (
     <EmptyState
       illustration="members"
-      title="It's quiet here..."
-      description="Invite your flatmates to join your space and start collaborating on tasks."
+      title="Together We're Stronger! 🤝"
+      description="'The believers are like one body.' Invite your flatmates to collaborate and support each other."
       action={{
         label: "Invite Flatmates",
         href: "/spaces"
@@ -324,8 +324,8 @@ export function NoLeaderboardEmptyState() {
   return (
     <EmptyState
       illustration="leaderboard"
-      title="No rankings yet"
-      description="Complete tasks to earn points and appear on the leaderboard!"
+      title="Be the First to Shine! ⭐"
+      description="Complete tasks to earn points and inspire others. 'The best among you are those most beneficial to others.'"
       action={{
         label: "Pick a Task",
         href: "/tasks/pick"
@@ -339,8 +339,8 @@ export function NoFeedbackEmptyState() {
   return (
     <EmptyState
       illustration="feedback"
-      title="No feedback received"
-      description="Complete tasks and help your flatmates to receive feedback and recognition."
+      title="Your Efforts Matter! 🤲"
+      description="Complete tasks and help your flatmates. JazakAllah Khair for being a helpful member of the community."
       action={{
         label: "View Available Tasks",
         href: "/tasks/pick"

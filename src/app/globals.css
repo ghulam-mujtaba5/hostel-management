@@ -182,6 +182,30 @@
   .pt-safe {
     padding-top: max(env(safe-area-inset-top, 0px), 0.5rem);
   }
+  
+  .mb-safe {
+    margin-bottom: env(safe-area-inset-bottom, 0px);
+  }
+  
+  .mt-safe {
+    margin-top: env(safe-area-inset-top, 0px);
+  }
+
+  /* PWA Standalone Mode Optimizations */
+  @media (display-mode: standalone) {
+    .pwa-hide {
+      display: none !important;
+    }
+    
+    .pwa-show {
+      display: block !important;
+    }
+    
+    /* Extra padding for notched devices */
+    .pwa-notch-safe {
+      padding-top: max(env(safe-area-inset-top, 0px), 1rem);
+    }
+  }
 
   /* Touch-optimized buttons */
   .touch-target {
@@ -192,6 +216,35 @@
   .touch-target-sm {
     min-height: 36px;
     min-width: 36px;
+  }
+  
+  .touch-target-lg {
+    min-height: 52px;
+    min-width: 52px;
+  }
+
+  /* Improved touch feedback */
+  .touch-feedback {
+    @apply active:scale-[0.97] active:opacity-80 transition-all duration-100;
+  }
+  
+  .touch-feedback-light {
+    @apply active:scale-[0.99] active:opacity-90 transition-all duration-75;
+  }
+
+  /* Prevent text selection on interactive elements */
+  .no-select {
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    -webkit-touch-callout: none;
+  }
+
+  /* Smooth momentum scrolling */
+  .scroll-smooth-touch {
+    -webkit-overflow-scrolling: touch;
+    scroll-behavior: smooth;
   }
 
   /* Performance Stats Card */
@@ -285,4 +338,46 @@
     -webkit-box-orient: vertical;
     overflow: hidden;
   }
-}
+  
+  /* Skeleton loading animation */
+  @keyframes skeleton-pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+  }
+  
+  .skeleton-pulse {
+    animation: skeleton-pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  }
+
+  /* Bottom navigation safe area for mobile */
+  .bottom-nav-spacer {
+    height: calc(4rem + env(safe-area-inset-bottom, 0px));
+  }
+  
+  @media (min-width: 768px) {
+    .bottom-nav-spacer {
+      height: 0;
+    }
+  }
+
+  /* PWA App-like feel */
+  .app-container {
+    min-height: 100vh;
+    min-height: 100dvh; /* Dynamic viewport height for mobile browsers */
+  }
+  
+  /* Prevent overscroll bounce on iOS */
+  .overscroll-none {
+    overscroll-behavior: none;
+  }
+  
+  /* Swipe gestures support */
+  .swipe-container {
+    touch-action: pan-x pan-y;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+  }
+  
+  .swipe-item {
+    scroll-snap-align: start;
+  }}

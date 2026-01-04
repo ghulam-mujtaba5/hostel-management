@@ -2,6 +2,8 @@
 
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
+import { PWAInstallBanner } from "@/components/PWAInstallBanner";
+import { QuickActionsFAB } from "@/components/QuickActionsFAB";
 
 export default function MainLayout({
   children,
@@ -9,7 +11,7 @@ export default function MainLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="min-h-screen bg-linear-to-b from-background via-background to-muted/20 flex flex-col">
+    <div className="min-h-screen min-h-dvh bg-linear-to-b from-background via-background to-muted/20 flex flex-col app-container">
       {/* Decorative background elements - subtle for app feel */}
       <div className="fixed inset-0 -z-10 overflow-hidden pointer-events-none">
         <div className="absolute top-0 left-1/4 w-72 h-72 bg-primary/3 rounded-full blur-3xl" />
@@ -21,7 +23,7 @@ export default function MainLayout({
       <main 
         id="main-content"
         role="main"
-        className="container mx-auto px-4 sm:px-6 lg:px-8 pb-20 md:pb-8 pt-20 md:pt-24 max-w-7xl flex-1"
+        className="container mx-auto px-4 sm:px-6 lg:px-8 pb-24 md:pb-8 pt-20 md:pt-24 max-w-7xl flex-1 scroll-smooth-touch"
         tabIndex={-1}
       >
         <div className="max-w-6xl mx-auto">
@@ -31,6 +33,10 @@ export default function MainLayout({
       
       {/* Footer only on desktop - mobile has bottom nav */}
       <Footer />
+      
+      {/* PWA Enhancements */}
+      <PWAInstallBanner />
+      <QuickActionsFAB />
     </div>
   );
 }

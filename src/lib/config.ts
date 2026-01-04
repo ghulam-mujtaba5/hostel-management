@@ -30,8 +30,8 @@ export const CONFIG = {
    */
   app: {
     name: 'HostelMate',
-    tagline: 'Smart Duty Management',
-    description: 'AI-powered hostel duty management with fair task distribution, gamification, and team collaboration',
+    tagline: 'Manage Your Hostel Life with Barakah',
+    description: 'Smart hostel duty management with fair task distribution, gamification, and team collaboration. Built with Islamic values and excellence (Ihsan) in mind.',
     url: process.env.NEXT_PUBLIC_APP_URL || 'https://hostel-management.vercel.app',
     version: '1.0.0',
     buildId: process.env.NEXT_PUBLIC_BUILD_ID || 'development',

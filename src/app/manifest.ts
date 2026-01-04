@@ -2,18 +2,19 @@ import { MetadataRoute } from 'next';
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: 'HostelMate - Smart Duty Management',
+    name: 'HostelMate - Smart Hostel Management',
     short_name: 'HostelMate',
-    description: 'Intelligent hostel duty management with AI-powered fair task distribution, gamification, and team collaboration',
+    description: 'Manage your hostel life with barakah. Fair task distribution, gamification, and team collaboration for hostelites. Built with Islamic values.',
     start_url: '/',
     display: 'standalone',
     background_color: '#0f172a',
-    theme_color: '#6366f1',
+    theme_color: '#10b981', // Emerald green for Islamic theme
     orientation: 'portrait-primary',
     scope: '/',
     lang: 'en',
     dir: 'ltr',
-    categories: ['productivity', 'lifestyle', 'utilities'],
+    categories: ['productivity', 'lifestyle', 'utilities', 'education'],
+    id: 'com.hostelmate.app',
     icons: [
       {
         src: '/icon.svg',
@@ -71,9 +72,9 @@ export default function manifest(): MetadataRoute.Manifest {
     shortcuts: [
       {
         name: 'Dashboard',
-        short_name: 'Dashboard',
+        short_name: 'Home',
         description: 'View your task dashboard',
-        url: '/dashboard',
+        url: '/',
         icons: [{ src: '/icons/dashboard.png', sizes: '96x96', type: 'image/png' }],
       },
       {
@@ -84,11 +85,25 @@ export default function manifest(): MetadataRoute.Manifest {
         icons: [{ src: '/icons/tasks.png', sizes: '96x96', type: 'image/png' }],
       },
       {
+        name: 'Create Task',
+        short_name: 'New Task',
+        description: 'Create a new task',
+        url: '/tasks/create',
+        icons: [{ src: '/icons/add.png', sizes: '96x96', type: 'image/png' }],
+      },
+      {
         name: 'Leaderboard',
-        short_name: 'Leaderboard',
+        short_name: 'Rank',
         description: 'Check the leaderboard',
         url: '/leaderboard',
         icons: [{ src: '/icons/leaderboard.png', sizes: '96x96', type: 'image/png' }],
+      },
+      {
+        name: 'My Profile',
+        short_name: 'Profile',
+        description: 'View your profile and settings',
+        url: '/profile',
+        icons: [{ src: '/icons/profile.png', sizes: '96x96', type: 'image/png' }],
       },
     ],
     related_applications: [],

@@ -241,30 +241,59 @@ function LoginContent() {
   return (
     <div className="min-h-screen w-full flex">
       {/* Left Side - Visual */}
-      <div className="hidden lg:flex w-1/2 bg-muted relative overflow-hidden items-center justify-center p-12">
-        <div className="absolute inset-0 bg-primary/5" />
+      <div className="hidden lg:flex w-1/2 bg-gradient-to-br from-emerald-50 to-teal-50 dark:from-emerald-950/20 dark:to-teal-950/20 relative overflow-hidden items-center justify-center p-12">
+        <div className="absolute inset-0 bg-emerald-500/5" />
+        
+        {/* Islamic geometric pattern decoration */}
+        <div className="absolute top-0 right-0 w-64 h-64 opacity-10">
+          <svg viewBox="0 0 100 100" className="w-full h-full text-emerald-600">
+            <pattern id="islamic-pattern" patternUnits="userSpaceOnUse" width="20" height="20">
+              <path d="M10 0L20 10L10 20L0 10Z" fill="currentColor" />
+            </pattern>
+            <rect width="100" height="100" fill="url(#islamic-pattern)" />
+          </svg>
+        </div>
+        
         <div className="relative z-10 max-w-lg space-y-8">
+          {/* Bismillah */}
+          <div className="text-center mb-6">
+            <p className="text-2xl text-emerald-600 dark:text-emerald-400 font-medium">
+              بِسْمِ اللهِ الرَّحْمٰنِ الرَّحِيْمِ
+            </p>
+          </div>
+          
           <div className="space-y-4">
             <h1 className="text-4xl font-bold tracking-tight text-foreground">
-              Manage your hostel life with <span className="text-primary">elegance</span>.
+              Manage your hostel life with{" "}
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-500 to-teal-600">barakah</span>.
             </h1>
             <p className="text-lg text-muted-foreground">
-              Join thousands of students who use HostelMate to keep their shared spaces organized, fair, and fun.
+              Join hostelites who use HostelMate to maintain harmony, fairness, and cleanliness in shared spaces.
             </p>
           </div>
           
           <div className="grid gap-4">
             {[
-              "Smart task distribution algorithms",
-              "Real-time notifications & updates",
-              "Gamified points & rewards system",
-              "Transparent duty tracking"
+              { text: "Fair & just task distribution", icon: "⚖️" },
+              { text: "Excellence (Ihsan) in every task", icon: "✨" },
+              { text: "Teamwork & mutual support", icon: "🤝" },
+              { text: "Gamified rewards & motivation", icon: "🏆" }
             ].map((feature, i) => (
               <div key={i} className="flex items-center gap-3 text-foreground/80">
-                <CheckCircle2 className="h-5 w-5 text-primary" />
-                <span>{feature}</span>
+                <span className="text-xl">{feature.icon}</span>
+                <span>{feature.text}</span>
               </div>
             ))}
+          </div>
+          
+          {/* Islamic quote */}
+          <div className="mt-8 p-4 rounded-xl bg-emerald-500/10 border border-emerald-500/20">
+            <p className="text-sm text-emerald-700 dark:text-emerald-300 italic">
+              "The best among you are those who are most beneficial to others"
+            </p>
+            <p className="text-xs text-emerald-600/70 dark:text-emerald-400/70 mt-1">
+              — Prophet Muhammad ﷺ
+            </p>
           </div>
         </div>
       </div>

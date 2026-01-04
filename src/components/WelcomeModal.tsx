@@ -27,40 +27,40 @@ const steps = [
   {
     id: 1,
     icon: <Home className="h-10 w-10" />,
-    title: "Welcome to HostelMate!",
-    description: "Your all-in-one solution for managing shared living spaces. Let's show you how to get the most out of it.",
-    color: "from-primary to-purple-600",
-    bgColor: "bg-primary/10"
+    title: "Assalamu Alaikum! 🌟",
+    description: "Welcome to HostelMate! Your blessed companion for managing shared living spaces with fairness and harmony.",
+    color: "from-emerald-500 to-teal-600",
+    bgColor: "bg-emerald-500/10"
   },
   {
     id: 2,
     icon: <Users className="h-10 w-10" />,
     title: "Create or Join a Space",
-    description: "A Space represents your hostel or flat. Create one and invite your flatmates, or join an existing space with an invite code.",
+    description: "A Space represents your hostel or flat. Create one and invite your flatmates, or join with an invite code. Together you're stronger! 🤝",
     color: "from-blue-500 to-cyan-500",
     bgColor: "bg-blue-500/10"
   },
   {
     id: 3,
     icon: <CheckSquare className="h-10 w-10" />,
-    title: "Manage Tasks Together",
-    description: "Create household tasks, assign them to flatmates, and track completion. No more arguments about who did what!",
+    title: "Collaborate on Tasks",
+    description: "Create household tasks and work together in harmony. 'The best among you are those most beneficial to others.' 🏠",
     color: "from-green-500 to-emerald-500",
     bgColor: "bg-green-500/10"
   },
   {
     id: 4,
     icon: <Scale className="h-10 w-10" />,
-    title: "AI-Powered Fairness",
-    description: "Our smart algorithm tracks everyone's contributions and ensures tasks are distributed fairly among all members.",
+    title: "Fair & Just Distribution",
+    description: "Our smart algorithm ensures fair task distribution. Justice and fairness are core values we uphold! ⚖️",
     color: "from-purple-500 to-pink-500",
     bgColor: "bg-purple-500/10"
   },
   {
     id: 5,
     icon: <Trophy className="h-10 w-10" />,
-    title: "Earn Points & Compete",
-    description: "Complete tasks to earn points, climb the leaderboard, and become the top contributor in your space!",
+    title: "Earn Rewards & Excel",
+    description: "Complete tasks with excellence (Ihsan) to earn points. Strive to be the best version of yourself! 🏆",
     color: "from-yellow-500 to-orange-500",
     bgColor: "bg-yellow-500/10"
   }

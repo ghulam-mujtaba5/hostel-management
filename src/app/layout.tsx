@@ -15,8 +15,8 @@ import { ErrorBoundary } from "@/components/ErrorBoundary";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "HostelMate - Smart Duty Management",
-  description: "Intelligent hostel duty management with AI-powered fair task distribution, gamification, and team collaboration",
+  title: "HostelMate - Smart Hostel Duty Management",
+  description: "Manage your hostel life with barakah. AI-powered fair task distribution, gamification, and team collaboration for hostelites. Built with Islamic values.",
   manifest: "/manifest.webmanifest",
   appleWebApp: {
     capable: true,
@@ -30,11 +30,11 @@ export const metadata: Metadata = {
     ],
     apple: "/icon.svg",
   },
-  keywords: ["hostel", "duties", "task management", "flatmates", "roommates", "chores"],
+  keywords: ["hostel", "duties", "task management", "flatmates", "roommates", "chores", "Islamic", "halal", "Muslim students", "fair distribution"],
   authors: [{ name: "HostelMate Team" }],
   openGraph: {
-    title: "HostelMate - Smart Duty Management",
-    description: "Fair and fun way to manage hostel duties",
+    title: "HostelMate - Smart Hostel Duty Management",
+    description: "Fair and blessed way to manage hostel duties. Built with Islamic values and excellence (Ihsan) in mind.",
     type: "website",
   },
 };

@@ -25,14 +25,17 @@ interface MotivationData {
 }
 
 const MOTIVATIONAL_MESSAGES = [
-  { message: "Every task completed is a step towards a cleaner home! 🏠", condition: 'default' },
-  { message: "You're on fire! Keep that streak going! 🔥", condition: 'streak' },
-  { message: "Almost there! Just a few more points to level up! ⭐", condition: 'close-to-milestone' },
-  { message: "Great start today! You've got this! 💪", condition: 'morning' },
-  { message: "You're a top contributor! Your flatmates appreciate you! 🙏", condition: 'top-performer' },
-  { message: "Time to shine! Pick a task and show what you've got! ✨", condition: 'no-tasks-today' },
-  { message: "Consistency is key! You're doing amazing! 🎯", condition: 'consistent' },
-  { message: "Your efforts make everyone's life better! 🌟", condition: 'default' },
+  // Islamic-inspired messages
+  { message: "Every task done well is a form of Ihsan (excellence)! ✨", condition: 'default' },
+  { message: "MashaAllah! You're on fire! Keep that streak going! 🔥", condition: 'streak' },
+  { message: "Almost there! Barakah awaits at the next level! ⭐", condition: 'close-to-milestone' },
+  { message: "Bismillah! Great start today! You've got this! 💪", condition: 'morning' },
+  { message: "JazakAllah! You're a top contributor! 🙏", condition: 'top-performer' },
+  { message: "Time to shine! The best of people benefit others! ✨", condition: 'no-tasks-today' },
+  { message: "Consistency is beloved to Allah! You're doing amazing! 🎯", condition: 'consistent' },
+  { message: "SubhanAllah! Your efforts make everyone's life better! 🌟", condition: 'default' },
+  { message: "Cleanliness is half of faith! Keep it up! 🏠", condition: 'default' },
+  { message: "Alhamdulillah for the energy to serve! 🤲", condition: 'default' },
 ];
 
 export function MotivationWidget() {

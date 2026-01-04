@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
@@ -16,18 +16,29 @@ import {
   BarChart3,
   Home,
   ListTodo,
-  Users
+  Users,
+  Shield
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/AuthContext";
 import { Logo } from "@/components/Logo";
 import { NotificationBell } from "@/components/NotificationBell";
 import { motion } from "framer-motion";
+import { useIsPWA } from "./PWAInstallBanner";
 
 export function Navbar() {
   const pathname = usePathname();
   const { user, loading, currentSpace, spaceMembership } = useAuth();
   const [isScrolled, setIsScrolled] = useState(false);
+  const isPWA = useIsPWA();
+
+  // Haptic feedback utility
+  const triggerHaptic = useCallback((intensity: 'light' | 'medium' | 'heavy' = 'light') => {
+    if ("vibrate" in navigator) {
+      const duration = intensity === 'light' ? 5 : intensity === 'medium' ? 10 : 20;
+      navigator.vibrate(duration);
+    }
+  }, []);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -108,9 +119,13 @@ export function Navbar() {
         </div>
       </header>
 
-      {/* Mobile Bottom Navbar - Optimized for small screens */}
-      <nav className="fixed bottom-0 left-0 right-0 z-50 bg-background/95 backdrop-blur-lg border-t border-border/50 md:hidden safe-area-inset">
-        <div className="flex items-center justify-around px-1 py-1.5">
+      {/* Mobile Bottom Navbar - Optimized for PWA */}
+      <nav className={cn(
+        "fixed bottom-0 left-0 right-0 z-50 md:hidden",
+        "bg-background/95 backdrop-blur-xl border-t border-border/50",
+        isPWA && "pb-safe"
+      )}>
+        <div className="flex items-center justify-around px-2 py-2">
           {navItems.map((item) => {
             const Icon = item.icon;
             const isActive = pathname === item.href || 
@@ -119,8 +134,10 @@ export function Navbar() {
               <Link
                 key={item.href}
                 href={item.href}
+                onClick={() => triggerHaptic(isActive ? 'light' : 'medium')}
                 className={cn(
-                  "relative flex flex-col items-center justify-center py-1.5 px-3 rounded-xl transition-all duration-200 touch-target-sm",
+                  "relative flex flex-col items-center justify-center py-2 px-4 rounded-2xl transition-all duration-200",
+                  "touch-target-sm active:scale-95",
                   isActive 
                     ? "text-primary" 
                     : "text-muted-foreground active:text-foreground"
@@ -128,27 +145,69 @@ export function Navbar() {
               >
                 {isActive && (
                   <motion.div 
-                    layoutId="activeTab"
-                    className="absolute inset-0 bg-primary/10 rounded-xl"
-                    transition={{ type: "spring", duration: 0.5 }}
+                    layoutId="mobileActiveTab"
+                    className="absolute inset-0 bg-primary/10 rounded-2xl"
+                    transition={{ type: "spring", duration: 0.4 }}
                   />
                 )}
-                <Icon className={cn(
-                  "h-5 w-5 relative z-10 transition-transform",
-                  isActive && "scale-110"
-                )} 
-                strokeWidth={isActive ? 2.5 : 2}
-                />
-                <span className={cn(
-                  "text-[9px] font-semibold mt-0.5 relative z-10",
-                  isActive ? "text-primary" : "text-muted-foreground"
-                )}>
+                <motion.div
+                  animate={isActive ? { scale: 1.1, y: -2 } : { scale: 1, y: 0 }}
+                  transition={{ type: "spring", stiffness: 400, damping: 17 }}
+                  className="relative z-10"
+                >
+                  <Icon 
+                    className={cn(
+                      "h-6 w-6 transition-all",
+                      isActive && "drop-shadow-sm"
+                    )} 
+                    strokeWidth={isActive ? 2.5 : 2}
+                  />
+                </motion.div>
+                <motion.span 
+                  animate={isActive ? { opacity: 1, y: 0 } : { opacity: 0.7, y: 0 }}
+                  className={cn(
+                    "text-[10px] font-bold mt-1 relative z-10 tracking-tight",
+                    isActive ? "text-primary" : "text-muted-foreground"
+                  )}
+                >
                   {item.mobileLabel}
-                </span>
+                </motion.span>
+                
+                {/* Active indicator dot */}
+                {isActive && (
+                  <motion.div
+                    layoutId="activeDot"
+                    className="absolute -bottom-0.5 w-1 h-1 rounded-full bg-primary"
+                    initial={{ scale: 0 }}
+                    animate={{ scale: 1 }}
+                  />
+                )}
               </Link>
             );
           })}
         </div>
+        
+        {/* Admin badge if applicable */}
+        {isAdmin && (
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="absolute -top-3 right-4"
+          >
+            <Link
+              href="/admin"
+              onClick={() => triggerHaptic('medium')}
+              className={cn(
+                "flex items-center gap-1 px-3 py-1 rounded-full text-xs font-bold",
+                "bg-orange-500 text-white shadow-lg shadow-orange-500/30",
+                "active:scale-95 transition-transform"
+              )}
+            >
+              <Shield className="h-3 w-3" />
+              Admin
+            </Link>
+          </motion.div>
+        )}
       </nav>
     </>
   );

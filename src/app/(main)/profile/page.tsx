@@ -8,7 +8,7 @@ import { Switch } from "@/components/ui/switch";
 import { 
   LogOut, Settings, User, ChevronRight, Shield, Bell, Moon, Sun, 
   Camera, Award, Palette, Info, Home, Mail, MapPin, Star, Sparkles,
-  ClipboardList, StickyNote, AlertTriangle, Heart
+  ClipboardList, StickyNote, AlertTriangle, Heart, Smartphone
 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/lib/supabase";
@@ -21,6 +21,8 @@ import { BadgeDisplay, BADGES, BadgeType, LevelProgress, calculateLevel, StreakB
 import { toast } from "sonner";
 import { useSignOutConfirm } from "@/components/ConfirmDialog";
 import { NotificationPreferences } from "@/types";
+import { AppInfoCard } from "@/components/AppInfoCard";
+import { useIsPWA } from "@/components/PWAInstallBanner";
 
 export default function ProfilePage() {
   const { user, profile, currentSpace, spaceMembership, signOut, refreshProfile, loading: authLoading } = useAuth();
@@ -34,6 +36,7 @@ export default function ProfilePage() {
   const [uploadingPhoto, setUploadingPhoto] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { confirmSignOut, DialogComponent: SignOutDialog } = useSignOutConfirm();
+  const isPWA = useIsPWA();
   
   const [notificationPrefs, setNotificationPrefs] = useState<NotificationPreferences>({
     email_notifications: true,
@@ -624,16 +627,24 @@ export default function ProfilePage() {
                 Sign Out
               </Button>
               
-              <div className="text-center space-y-2">
-                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-muted/50 text-[10px] font-bold uppercase tracking-wider text-muted-foreground/60">
-                  <Sparkles className="h-3 w-3" />
-                  HostelMate v2.0.0
+              {/* PWA Status Badge */}
+              {isPWA && (
+                <div className="flex items-center justify-center gap-2 py-2">
+                  <div className="px-3 py-1.5 rounded-full bg-green-500/10 text-green-600 dark:text-green-400 text-xs font-bold flex items-center gap-1.5">
+                    <Smartphone className="h-3.5 w-3.5" />
+                    Running as App
+                  </div>
                 </div>
-              </div>
+              )}
             </div>
           </SlideInCard>
         </div>
       </div>
+
+      {/* App Info Section - Mobile Friendly */}
+      <SlideInCard direction="up" delay={0.45}>
+        <AppInfoCard />
+      </SlideInCard>
     </div>
   );
 }

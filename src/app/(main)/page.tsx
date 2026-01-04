@@ -18,6 +18,8 @@ import { DashboardSkeleton } from "@/components/Skeleton";
 import { motion } from "framer-motion";
 import { MotivationWidget } from "@/components/MotivationWidget";
 import { MemberAccountability } from "@/components/MemberAccountability";
+import { IslamicQuoteCard } from "@/components/IslamicQuote";
+import { getTimeBasedGreeting, getDaySpecificMotivation } from "@/lib/quotes";
 import { useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { Logo } from "@/components/Logo";
@@ -136,36 +138,53 @@ export default function Dashboard() {
             transition={{ duration: 0.5 }}
             className="text-center space-y-8 max-w-3xl"
           >
+            {/* Bismillah Header */}
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              className="text-center"
+            >
+              <p className="text-xl md:text-2xl text-emerald-600 dark:text-emerald-400 font-medium mb-2">
+                بِسْمِ اللهِ الرَّحْمٰنِ الرَّحِيْمِ
+              </p>
+              <p className="text-xs text-muted-foreground">
+                In the name of Allah, the Most Gracious, the Most Merciful
+              </p>
+            </motion.div>
+
             <div className="space-y-4">
               <motion.div
                 initial={{ opacity: 0, scale: 0.9 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ delay: 0.1 }}
-                className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 text-primary text-sm font-bold"
+                className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 text-sm font-bold"
               >
                 <Sparkles className="h-4 w-4" />
-                Smart Hostel Management
+                Smart & Fair Hostel Management
               </motion.div>
               <h1 className="text-4xl md:text-6xl font-black tracking-tight">
                 Manage Your Hostel Life with{" "}
-                <span className="text-primary">Ease</span>
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-500 to-teal-600">Barakah</span>
               </h1>
               <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto">
-                HostelMate helps you organize tasks, track responsibilities, and maintain harmony with your flatmates using smart, fair algorithms.
+                HostelMate helps you organize tasks with fairness & justice. 
+                <span className="block mt-1 text-emerald-600 dark:text-emerald-400 font-medium">
+                  "The best among you are those most beneficial to others"
+                </span>
               </p>
             </div>
 
             <div className="flex flex-col sm:flex-row gap-4 justify-center pt-4">
-              <Button asChild size="lg" className="h-14 px-8 rounded-xl font-bold text-lg gap-2 shadow-lg shadow-primary/20">
+              <Button asChild size="lg" className="h-14 px-8 rounded-xl font-bold text-lg gap-2 shadow-lg shadow-emerald-500/20 bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700">
                 <Link href="/login?mode=signup">
                   <UserPlus className="h-5 w-5" />
-                  Get Started Free
+                  Start Your Journey
                 </Link>
               </Button>
-              <Button asChild variant="outline" size="lg" className="h-14 px-8 rounded-xl font-bold text-lg gap-2">
+              <Button asChild variant="outline" size="lg" className="h-14 px-8 rounded-xl font-bold text-lg gap-2 border-emerald-500/30 hover:bg-emerald-500/5">
                 <Link href="/login">
                   <LogIn className="h-5 w-5" />
-                  Sign In
+                  Welcome Back
                 </Link>
               </Button>
             </div>
@@ -182,30 +201,45 @@ export default function Dashboard() {
           {[
             {
               icon: Shield,
-              title: "Fair Task Distribution",
-              description: "Our smart algorithm ensures everyone contributes equally to keeping your space clean."
+              title: "Fair & Just Distribution",
+              description: "Our algorithm ensures everyone contributes equally. Justice is a core value we uphold.",
+              gradient: "from-emerald-500/20 to-teal-500/10"
             },
             {
               icon: Award,
-              title: "Gamification & Points",
-              description: "Earn points, climb leaderboards, and unlock achievements as you complete tasks."
+              title: "Excellence (Ihsan)",
+              description: "Earn points for quality work. 'Allah loves when you do something, you do it with excellence.'",
+              gradient: "from-yellow-500/20 to-orange-500/10"
             },
             {
               icon: Zap,
-              title: "Real-time Updates",
-              description: "Stay in sync with your flatmates with instant notifications and live task tracking."
+              title: "Harmony & Teamwork",
+              description: "Stay in sync with your flatmates. Together, create a peaceful living environment.",
+              gradient: "from-blue-500/20 to-cyan-500/10"
             }
           ].map((feature, i) => (
-            <Card key={i} className="border-border/50 rounded-2xl bg-white/50 dark:bg-slate-900/50 backdrop-blur-sm">
+            <Card key={i} className="border-border/50 rounded-2xl bg-gradient-to-br backdrop-blur-sm overflow-hidden">
               <CardContent className="p-6 text-center space-y-4">
-                <div className="h-14 w-14 rounded-xl bg-primary/10 flex items-center justify-center mx-auto">
-                  <feature.icon className="h-7 w-7 text-primary" />
+                <div className={`h-14 w-14 rounded-xl bg-gradient-to-br ${feature.gradient} flex items-center justify-center mx-auto`}>
+                  <feature.icon className="h-7 w-7 text-emerald-600 dark:text-emerald-400" />
                 </div>
                 <h3 className="text-lg font-bold">{feature.title}</h3>
                 <p className="text-sm text-muted-foreground">{feature.description}</p>
               </CardContent>
             </Card>
           ))}
+        </motion.div>
+
+        {/* Social Proof / Trust */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.5 }}
+          className="text-center pb-8"
+        >
+          <p className="text-xs text-muted-foreground">
+            🕌 Built with Islamic values in mind • 🏠 Perfect for hostel students • ⚡ Free to use
+          </p>
         </motion.div>
       </div>
     );
@@ -249,7 +283,7 @@ export default function Dashboard() {
 
   return (
     <div className="space-y-6 pb-24">
-      {/* Mobile-optimized Header */}
+      {/* Mobile-optimized Header with Islamic Greeting */}
       <div className="flex flex-col gap-4">
         <div className="flex items-start justify-between">
           <div>
@@ -261,8 +295,11 @@ export default function Dashboard() {
               {new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' })}
             </motion.p>
             <h1 className="text-2xl font-bold tracking-tight mt-0.5">
-              Hi, {profile?.username || profile?.full_name?.split(' ')[0] || 'there'}! 👋
+              {getTimeBasedGreeting()}
             </h1>
+            <p className="text-sm text-primary font-medium mt-0.5">
+              {profile?.username || profile?.full_name?.split(' ')[0] || 'Friend'}! {getDaySpecificMotivation()}
+            </p>
           </div>
           <Button asChild size="sm" className="h-9 rounded-xl font-bold gap-1.5 shadow-sm">
             <Link href="/tasks/create">
@@ -330,6 +367,9 @@ export default function Dashboard() {
 
       {/* Motivation Widget */}
       <MotivationWidget />
+
+      {/* Daily Islamic Quote */}
+      <IslamicQuoteCard variant="banner" showRefresh={true} />
 
       {/* Your Tasks Section */}
       <div className="space-y-3">
