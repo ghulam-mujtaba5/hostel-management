@@ -26,9 +26,15 @@ export const metadata: Metadata = {
   },
   icons: {
     icon: [
-      { url: "/icon.svg", type: "image/svg+xml" },
+      { url: "/icon.svg?v2", type: "image/svg+xml" },
+      { url: "/icon-192.png?v2", type: "image/png", sizes: "192x192" },
+      { url: "/icon-512.png?v2", type: "image/png", sizes: "512x512" },
     ],
-    apple: "/icon.svg",
+    apple: [
+      { url: "/icon-192.png?v2", sizes: "192x192" },
+      { url: "/icon-512.png?v2", sizes: "512x512" },
+    ],
+    shortcut: "/icon-192.png?v2",
   },
   keywords: ["hostel management", "shared living", "task management", "flatmates", "roommates", "chores app", "fair distribution", "student life", "coliving", "dorm management"],
   authors: [{ name: "HostelMate" }],

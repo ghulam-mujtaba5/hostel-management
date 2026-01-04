@@ -1,12 +1,14 @@
 // Cache version - increment this to force all clients to update
-const CACHE_VERSION = '20260104-001'; // Date-based versioning
+const CACHE_VERSION = '20260104-v2'; // Updated with new branding
 const CACHE_NAME = `hostelmate-${CACHE_VERSION}`;
 const RUNTIME_CACHE = `hostelmate-runtime-${CACHE_VERSION}`;
 
 const urlsToCache = [
   '/',
-  '/manifest.json',
+  '/manifest.webmanifest',
   '/icon.svg',
+  '/icon-192.png',
+  '/icon-512.png',
   '/offline.html'
 ];
 
