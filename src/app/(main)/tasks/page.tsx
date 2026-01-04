@@ -99,7 +99,7 @@ export default function TasksPage() {
           transition={{ duration: 0.3 }}
           className="space-y-6 max-w-md"
         >
-          <div className="h-24 w-24 rounded-[2rem] bg-gradient-to-br from-primary/20 to-purple-500/20 flex items-center justify-center mx-auto">
+          <div className="h-24 w-24 rounded-4xl bg-linear-to-br from-primary/20 to-purple-500/20 flex items-center justify-center mx-auto">
             <ListTodo className="h-12 w-12 text-primary" />
           </div>
           <div className="space-y-2">
@@ -303,7 +303,7 @@ export default function TasksPage() {
           </div>
         ) : filteredTasks.length === 0 ? (
           <SlideInCard direction="up">
-            <Card className="border border-border/50 shadow-sm bg-white dark:bg-slate-900 rounded-[2rem] overflow-hidden">
+            <Card className="border border-border/50 shadow-sm bg-white dark:bg-slate-900 rounded-4xl overflow-hidden">
               <CardContent className="py-20 text-center">
                 <div className="h-20 w-20 rounded-2xl bg-muted/50 flex items-center justify-center mx-auto mb-6">
                   <CheckCircle className="h-10 w-10 text-muted-foreground/50" />

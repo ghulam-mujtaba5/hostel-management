@@ -168,4 +168,121 @@
   .glass-card {
     @apply bg-card/50 backdrop-blur-sm border border-border/50 shadow-sm;
   }
+
+  /* Mobile-First PWA Optimizations */
+  .safe-area-inset {
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+    padding-top: env(safe-area-inset-top, 0px);
+  }
+  
+  .pb-safe {
+    padding-bottom: max(env(safe-area-inset-bottom, 0px), 0.5rem);
+  }
+  
+  .pt-safe {
+    padding-top: max(env(safe-area-inset-top, 0px), 0.5rem);
+  }
+
+  /* Touch-optimized buttons */
+  .touch-target {
+    min-height: 44px;
+    min-width: 44px;
+  }
+  
+  .touch-target-sm {
+    min-height: 36px;
+    min-width: 36px;
+  }
+
+  /* Performance Stats Card */
+  .stat-card {
+    @apply relative overflow-hidden rounded-2xl p-4 transition-all duration-300;
+  }
+  
+  .stat-card::after {
+    content: '';
+    @apply absolute inset-0 bg-linear-to-br from-white/10 to-transparent pointer-events-none;
+  }
+
+  /* Accountability Badge */
+  .accountability-badge {
+    @apply inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider;
+  }
+  
+  .badge-active {
+    @apply bg-green-500/10 text-green-600 dark:text-green-400;
+  }
+  
+  .badge-warning {
+    @apply bg-yellow-500/10 text-yellow-600 dark:text-yellow-400;
+  }
+  
+  .badge-danger {
+    @apply bg-red-500/10 text-red-600 dark:text-red-400;
+  }
+  
+  .badge-inactive {
+    @apply bg-gray-500/10 text-gray-500;
+  }
+
+  /* Mobile Card Compact */
+  .card-compact {
+    @apply p-3 rounded-xl;
+  }
+
+  /* Progress ring animation */
+  .progress-ring {
+    transform: rotate(-90deg);
+  }
+  
+  .progress-ring-circle {
+    transition: stroke-dashoffset 0.5s ease-in-out;
+  }
+
+  /* Streak flame animation */
+  @keyframes flame {
+    0%, 100% { transform: scale(1) rotate(-3deg); }
+    50% { transform: scale(1.1) rotate(3deg); }
+  }
+  
+  .animate-flame {
+    animation: flame 1s ease-in-out infinite;
+  }
+
+  /* Motivational pulse */
+  @keyframes motivate-pulse {
+    0%, 100% { transform: scale(1); opacity: 1; }
+    50% { transform: scale(1.05); opacity: 0.9; }
+  }
+  
+  .animate-motivate {
+    animation: motivate-pulse 2s ease-in-out infinite;
+  }
+
+  /* Mobile compact text */
+  .text-compact {
+    @apply text-xs leading-tight;
+  }
+  
+  /* Hide on very small screens */
+  @media (max-width: 359px) {
+    .hide-xs {
+      display: none;
+    }
+  }
+
+  /* Truncate text with ellipsis */
+  .line-clamp-1 {
+    display: -webkit-box;
+    -webkit-line-clamp: 1;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  
+  .line-clamp-2 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
 }

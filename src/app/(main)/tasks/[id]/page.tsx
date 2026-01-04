@@ -349,11 +349,12 @@ export default function TaskDetailPage({ params }: { params: Promise<{ id: strin
               <input
                 type="file"
                 accept="image/*"
-                capture="environment"
                 onChange={handleUploadProof}
                 className="hidden"
                 id="proof-upload"
                 disabled={uploading}
+                aria-label="Upload proof photo"
+                title="Upload proof photo"
               />
               <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
                 <Button 

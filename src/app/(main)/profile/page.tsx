@@ -23,7 +23,7 @@ import { useSignOutConfirm } from "@/components/ConfirmDialog";
 import { NotificationPreferences } from "@/types";
 
 export default function ProfilePage() {
-  const { user, profile, currentSpace, spaceMembership, signOut, refreshProfile } = useAuth();
+  const { user, profile, currentSpace, spaceMembership, signOut, refreshProfile, loading: authLoading } = useAuth();
   const router = useRouter();
   const { theme, setTheme, resolvedTheme } = useTheme();
   const [editing, setEditing] = useState(false);
@@ -151,6 +151,18 @@ export default function ProfilePage() {
     }
   };
 
+  if (authLoading) {
+    return (
+      <div className="space-y-10 pb-24">
+        <div className="h-64 rounded-[2rem] bg-muted/20 animate-pulse" />
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="md:col-span-2 h-48 rounded-[2rem] bg-muted/20 animate-pulse" />
+          <div className="h-48 rounded-[2rem] bg-muted/20 animate-pulse" />
+        </div>
+      </div>
+    );
+  }
+
   if (!user) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[60vh] text-center px-4">
@@ -174,9 +186,9 @@ export default function ProfilePage() {
       {SignOutDialog}
       {/* Profile Header */}
       <SlideInCard direction="down" delay={0}>
-        <Card className="overflow-hidden border border-border/50 shadow-sm rounded-[2rem] bg-white dark:bg-slate-900">
+        <Card className="overflow-hidden border border-border/50 shadow-sm rounded-4xl bg-white dark:bg-slate-900">
           <div className="h-40 bg-primary/5 relative">
-            <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-transparent to-transparent" />
+            <div className="absolute inset-0 bg-linear-to-br from-primary/10 via-transparent to-transparent" />
             
             <div className="absolute -bottom-16 left-1/2 -translate-x-1/2">
               <motion.div 
@@ -202,6 +214,8 @@ export default function ProfilePage() {
                   className="hidden"
                   accept="image/*"
                   onChange={handlePhotoUpload}
+                  aria-label="Upload profile photo"
+                  title="Upload profile photo"
                 />
                 <button 
                   onClick={() => fileInputRef.current?.click()}

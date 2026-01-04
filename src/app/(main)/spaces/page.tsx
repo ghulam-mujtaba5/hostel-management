@@ -14,7 +14,7 @@ import { SlideInCard } from "@/components/Animations";
 import { toast } from "sonner";
 
 export default function SpacesPage() {
-  const { user, userSpaces, currentSpace, setCurrentSpace, refreshSpaces } = useAuth();
+  const { user, userSpaces, currentSpace, setCurrentSpace, refreshSpaces, loading: authLoading } = useAuth();
   const [copied, setCopied] = useState<string | null>(null);
 
   const copyInviteCode = (code: string) => {
@@ -29,6 +29,18 @@ export default function SpacesPage() {
     navigator.clipboard.writeText(link);
     toast.success("Invite link copied!");
   };
+
+  if (authLoading) {
+    return (
+      <div className="space-y-10 pb-32">
+        <div className="h-20 w-full rounded-2xl bg-muted/20 animate-pulse" />
+        <div className="space-y-4">
+          <div className="h-40 w-full rounded-2xl bg-muted/20 animate-pulse" />
+          <div className="h-40 w-full rounded-2xl bg-muted/20 animate-pulse" />
+        </div>
+      </div>
+    );
+  }
 
   if (!user) {
     return (
@@ -71,7 +83,7 @@ export default function SpacesPage() {
       <div className="space-y-6">
         {userSpaces.length === 0 ? (
           <SlideInCard direction="up">
-            <Card className="border-2 border-dashed border-border/50 bg-muted/10 rounded-[2rem]">
+            <Card className="border-2 border-dashed border-border/50 bg-muted/10 rounded-4xl">
               <CardContent className="py-20 text-center">
                 <div className="h-20 w-20 rounded-2xl bg-muted/50 flex items-center justify-center mx-auto mb-6">
                   <Users className="h-10 w-10 text-muted-foreground" />
@@ -198,7 +210,7 @@ export default function SpacesPage() {
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <SlideInCard direction="left" delay={0.2}>
           <Link href="/spaces/create" className="group block">
-            <div className="h-28 rounded-[2rem] border border-border/50 bg-white dark:bg-slate-900 hover:border-primary/30 transition-all flex items-center gap-5 px-6 shadow-sm">
+            <div className="h-28 rounded-4xl border border-border/50 bg-white dark:bg-slate-900 hover:border-primary/30 transition-all flex items-center gap-5 px-6 shadow-sm">
               <div className="h-12 w-12 rounded-xl bg-primary/5 flex items-center justify-center group-hover:bg-primary group-hover:text-white transition-all duration-300">
                 <Plus className="h-6 w-6" />
               </div>
@@ -212,7 +224,7 @@ export default function SpacesPage() {
         
         <SlideInCard direction="right" delay={0.3}>
           <Link href="/spaces/join" className="group block">
-            <div className="h-28 rounded-[2rem] border border-border/50 bg-white dark:bg-slate-900 hover:border-primary/30 transition-all flex items-center gap-5 px-6 shadow-sm">
+            <div className="h-28 rounded-4xl border border-border/50 bg-white dark:bg-slate-900 hover:border-primary/30 transition-all flex items-center gap-5 px-6 shadow-sm">
               <div className="h-12 w-12 rounded-xl bg-primary/5 flex items-center justify-center group-hover:bg-primary group-hover:text-white transition-all duration-300">
                 <Users className="h-6 w-6" />
               </div>

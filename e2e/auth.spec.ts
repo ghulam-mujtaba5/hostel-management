@@ -7,17 +7,19 @@ test.describe('Authentication Flow', () => {
     
     // The logo contains HostelMate text
     await expect(page.getByText('HostelMate')).toBeVisible();
-    await expect(page.getByText('Welcome Back')).toBeVisible();
+    await expect(page.getByText('Welcome back')).toBeVisible();
     await expect(page.getByRole('button', { name: 'Sign In' })).toBeVisible();
   });
 
-  test('should show demo mode button', async ({ page }) => {
+  test.skip('should show demo mode button', async ({ page }) => {
+    // Demo mode button was removed in current version
     await page.goto('/login');
     
     await expect(page.getByRole('button', { name: 'Try Live Demo' })).toBeVisible();
   });
 
-  test('should navigate to demo mode', async ({ page }) => {
+  test.skip('should navigate to demo mode', async ({ page }) => {
+    // Demo mode was removed in current version  
     await page.goto('/login');
     
     await page.getByRole('button', { name: 'Try Live Demo' }).click();
@@ -32,11 +34,11 @@ test.describe('Authentication Flow', () => {
     // Initially on login
     await expect(page.getByRole('button', { name: 'Sign In' })).toBeVisible();
     
-    // Check that signup toggle is available
-    await expect(page.getByText('Create an account')).toBeVisible();
+    // Check that signup toggle is available - looking for the link text
+    await expect(page.getByText('Sign up')).toBeVisible();
     
     // Switch to signup
-    await page.getByText('Create an account').click();
+    await page.getByText('Sign up').click();
     await expect(page.getByRole('button', { name: 'Create Account' })).toBeVisible();
   });
 
@@ -53,8 +55,8 @@ test.describe('Authentication Flow', () => {
   test('should show error for invalid credentials', async ({ page }) => {
     await page.goto('/login');
     
-    await page.getByPlaceholder('Email Address').fill('wrong@example.com');
-    await page.getByPlaceholder('Password').fill('wrongpassword');
+    await page.getByPlaceholder('name@example.com').fill('wrong@example.com');
+    await page.getByPlaceholder('••••••••').fill('wrongpassword');
     
     await page.getByRole('button', { name: 'Sign In' }).click();
     

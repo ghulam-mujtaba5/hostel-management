@@ -5,8 +5,8 @@ import { supabase } from "@/lib/supabase";
 import { Task, TASK_CATEGORIES } from "@/types";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Clock, User, Camera, Check, Sparkles, ArrowUpRight, Timer, CalendarClock } from "lucide-react";
-import { formatDistanceToNow, isToday, isTomorrow, isPast } from "date-fns";
+import { Clock, User, Camera, Check, Sparkles, ArrowUpRight, Timer, CalendarClock, ChevronRight, AlertCircle } from "lucide-react";
+import { formatDistanceToNow, isToday, isTomorrow, isPast, differenceInHours } from "date-fns";
 import { useState, useRef } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { motion, AnimatePresence } from "framer-motion";
@@ -97,14 +97,109 @@ export function TaskCard({ task, showAssignee = false, onUpdate, recommended = f
     if (!task.due_date) return null;
     const date = new Date(task.due_date);
     const isOverdue = isPast(date) && task.status !== "done";
+    const hoursUntilDue = differenceInHours(date, new Date());
     
-    if (isToday(date)) return { text: "Today", urgent: true, icon: Timer };
-    if (isTomorrow(date)) return { text: "Tomorrow", urgent: false, icon: CalendarClock };
-    if (isOverdue) return { text: "Overdue", urgent: true, icon: Clock };
-    return { text: formatDistanceToNow(date, { addSuffix: true }), urgent: false, icon: Clock };
+    if (isOverdue) return { text: "Overdue", urgent: true, icon: AlertCircle, color: "text-red-500" };
+    if (isToday(date)) return { text: hoursUntilDue <= 3 ? `${hoursUntilDue}h left` : "Today", urgent: hoursUntilDue <= 3, icon: Timer, color: hoursUntilDue <= 3 ? "text-red-500" : "text-orange-500" };
+    if (isTomorrow(date)) return { text: "Tomorrow", urgent: false, icon: CalendarClock, color: "text-blue-500" };
+    return { text: formatDistanceToNow(date, { addSuffix: true }), urgent: false, icon: Clock, color: "text-muted-foreground" };
   };
 
   const dueDateInfo = getDueDateInfo();
+  const statusColors: Record<string, string> = {
+    'todo': 'bg-gray-500',
+    'in_progress': 'bg-blue-500',
+    'pending_verification': 'bg-yellow-500',
+    'done': 'bg-green-500'
+  };
+
+  // Compact variant for mobile dashboard
+  if (compact) {
+    return (
+      <motion.div
+        layout
+        whileTap={{ scale: 0.98 }}
+        transition={{ duration: 0.1 }}
+      >
+        <Link href={`/tasks/${task.id}`}>
+          <Card className={cn(
+            "overflow-hidden transition-all border-border/50 active:bg-muted/50",
+            recommended && "border-primary/30 bg-primary/5",
+            dueDateInfo?.urgent && "border-red-500/30"
+          )}>
+            <CardContent className="p-3">
+              <div className="flex items-center gap-3">
+                {/* Category Icon */}
+                <div className={cn(
+                  "h-10 w-10 rounded-xl flex items-center justify-center text-lg flex-shrink-0",
+                  dueDateInfo?.urgent ? "bg-red-500/10" : "bg-muted"
+                )}>
+                  {category.emoji}
+                </div>
+                
+                {/* Content */}
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2">
+                    <h3 className="font-semibold text-sm truncate">
+                      {task.title}
+                    </h3>
+                    {recommended && (
+                      <Sparkles className="h-3 w-3 text-primary flex-shrink-0" />
+                    )}
+                  </div>
+                  <div className="flex items-center gap-2 mt-0.5">
+                    {dueDateInfo && (
+                      <span className={cn("text-[10px] font-medium flex items-center gap-0.5", dueDateInfo.color)}>
+                        <dueDateInfo.icon className="h-3 w-3" />
+                        {dueDateInfo.text}
+                      </span>
+                    )}
+                    <span className="text-[10px] text-muted-foreground">+{task.difficulty}pts</span>
+                  </div>
+                </div>
+
+                {/* Status & Action */}
+                <div className="flex items-center gap-2">
+                  <div className={cn("h-2 w-2 rounded-full", statusColors[task.status])} />
+                  <ChevronRight className="h-4 w-4 text-muted-foreground" />
+                </div>
+              </div>
+
+              {/* Quick Action for assigned tasks */}
+              {isAssignedToMe && (task.status === "in_progress" || task.status === "todo") && (
+                <div className="mt-2 pt-2 border-t border-border/50">
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    accept="image/*"
+                    capture="environment"
+                    onChange={handleUploadProof}
+                    className="hidden"
+                    disabled={uploading}
+                    aria-label="Upload proof image"
+                  />
+                  <Button
+                    variant="secondary"
+                    size="sm"
+                    className="w-full h-8 text-xs rounded-lg gap-1.5"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      fileInputRef.current?.click();
+                    }}
+                    disabled={uploading}
+                  >
+                    <Camera className="h-3.5 w-3.5" />
+                    {uploading ? "Uploading..." : "Complete with Proof"}
+                  </Button>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        </Link>
+      </motion.div>
+    );
+  }
 
   return (
     <motion.div
@@ -211,10 +306,11 @@ export function TaskCard({ task, showAssignee = false, onUpdate, recommended = f
                   ref={fileInputRef}
                   type="file"
                   accept="image/*"
-                  capture="environment"
                   onChange={handleUploadProof}
                   className="hidden"
                   disabled={uploading}
+                  aria-label="Upload proof image"
+                  title="Upload proof image"
                 />
                 <Button
                   variant="secondary"

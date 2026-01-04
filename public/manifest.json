@@ -2,12 +2,16 @@
   "name": "HostelMate",
   "short_name": "HostelMate",
   "id": "hostelmate",
-  "description": "Intelligent hostel duty management with AI-powered fair task distribution",
+  "description": "Smart hostel duty management - Track tasks, compete with flatmates, and keep your space clean",
   "start_url": "/",
   "display": "standalone",
+  "display_override": ["standalone", "minimal-ui"],
   "background_color": "#ffffff",
   "theme_color": "#6366f1",
-  "orientation": "portrait",
+  "orientation": "portrait-primary",
+  "scope": "/",
+  "lang": "en",
+  "prefer_related_applications": false,
   "icons": [
     {
       "src": "/icon.svg",
@@ -22,7 +26,7 @@
       "purpose": "maskable"
     }
   ],
-  "categories": ["productivity", "lifestyle", "utilities"],
+  "categories": ["productivity", "lifestyle", "utilities", "social"],
   "screenshots": [
     {
       "src": "/icon.svg",
@@ -41,14 +45,31 @@
   ],
   "shortcuts": [
     {
-      "name": "Tasks",
+      "name": "My Tasks",
+      "short_name": "Tasks",
       "url": "/tasks",
       "icons": [{ "src": "/icon.svg", "sizes": "any" }]
     },
     {
       "name": "Leaderboard",
+      "short_name": "Rank",
       "url": "/leaderboard",
       "icons": [{ "src": "/icon.svg", "sizes": "any" }]
+    },
+    {
+      "name": "Pick a Task",
+      "short_name": "Pick",
+      "url": "/tasks/pick",
+      "icons": [{ "src": "/icon.svg", "sizes": "any" }]
+    },
+    {
+      "name": "Create Task",
+      "short_name": "New",
+      "url": "/tasks/create",
+      "icons": [{ "src": "/icon.svg", "sizes": "any" }]
     }
-  ]
+  ],
+  "edge_side_panel": {
+    "preferred_width": 400
+  }
 }

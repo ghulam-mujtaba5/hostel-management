@@ -26,7 +26,7 @@ const getDifficultyInfo = (difficulty: number) => {
 };
 
 export default function CreateTaskPage() {
-  const { user, currentSpace } = useAuth();
+  const { user, currentSpace, loading: authLoading } = useAuth();
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState<{ title?: string; description?: string }>({});
@@ -100,6 +100,15 @@ export default function CreateTaskPage() {
     }
   };
 
+  if (authLoading) {
+    return (
+      <div className="space-y-6">
+        <div className="h-12 w-48 rounded-xl bg-muted/20 animate-pulse" />
+        <div className="h-150 rounded-xl bg-muted/20 animate-pulse" />
+      </div>
+    );
+  }
+
   if (!currentSpace) {
     return (
       <div className="text-center py-12">
@@ -115,13 +124,13 @@ export default function CreateTaskPage() {
     <div className="space-y-6">
       <SlideInCard direction="down" delay={0}>
         <div className="flex items-center gap-4">
-          <Button variant="ghost" size="icon" asChild className="h-11 w-11 min-h-[44px] min-w-[44px] rounded-xl">
+          <Button variant="ghost" size="icon" asChild className="h-11 w-11 min-h-11 min-w-11 rounded-xl">
             <Link href="/tasks">
               <ArrowLeft className="h-5 w-5" />
             </Link>
           </Button>
           <div>
-            <h1 className="text-2xl font-bold bg-gradient-to-r from-primary to-purple-600 bg-clip-text text-transparent">
+            <h1 className="text-2xl font-bold bg-linear-to-r from-primary to-purple-600 bg-clip-text text-transparent">
               Create Task
             </h1>
             <p className="text-sm text-muted-foreground">Add a new task for your space</p>
@@ -272,6 +281,8 @@ export default function CreateTaskPage() {
                     value={difficulty}
                     onChange={(e) => setDifficulty(Number(e.target.value))}
                     className="w-full h-2 bg-white/50 dark:bg-black/20 rounded-lg appearance-none cursor-pointer accent-primary"
+                    aria-label="Task difficulty"
+                    title="Task difficulty slider"
                   />
                   <div className="flex justify-between text-xs text-muted-foreground mt-2">
                     <span>Easy (1-3)</span>
@@ -329,7 +340,7 @@ export default function CreateTaskPage() {
               >
                 <Button 
                   type="submit" 
-                  className="w-full h-12 bg-gradient-to-r from-primary to-purple-600 hover:from-primary/90 hover:to-purple-600/90 text-base font-medium" 
+                  className="w-full h-12 bg-linear-to-r from-primary to-purple-600 hover:from-primary/90 hover:to-purple-600/90 text-base font-medium" 
                   disabled={loading || !title.trim()}
                 >
                   <AnimatePresence mode="wait">
