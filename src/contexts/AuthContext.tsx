@@ -194,15 +194,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       // Restore last selected space
       const savedSpaceId = localStorage.getItem('currentSpaceId');
       if (savedSpaceId) {
-        supabase
-          .from('spaces')
-          .select('*')
-          .eq('id', savedSpaceId)
-          .single()
-          .then(({ data }) => {
+        (async () => {
+          try {
+            const { data } = await supabase
+              .from('spaces')
+              .select('*')
+              .eq('id', savedSpaceId)
+              .single();
             if (data) setCurrentSpaceState(data);
-          })
-          .catch(err => console.error('Error restoring space:', err));
+          } catch (err) {
+            console.error('Error restoring space:', err);
+          }
+        })();
       }
     } else {
       // Clear user data when logged out
