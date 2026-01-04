@@ -90,15 +90,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           .filter(Boolean);
         setUserSpaces(spaces);
         
-        // Auto-select first space if none selected
-        if (!currentSpace && spaces.length > 0) {
-          setCurrentSpaceState(spaces[0]);
-        }
+        // Auto-select first space if none selected AND not already set
+        setCurrentSpaceState(prev => {
+          if (!prev && spaces.length > 0) {
+            return spaces[0];
+          }
+          return prev;
+        });
       }
     } catch (err) {
       console.error('Error in refreshSpaces:', err);
     }
-  }, [user, currentSpace]);
+  }, [user]);
 
   const setCurrentSpace = async (space: Space) => {
     setCurrentSpaceState(space);
@@ -128,11 +131,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         const { data: { session } } = await supabase.auth.getSession();
         setSession(session);
         setUser(session?.user ?? null);
+        setInitialized(true);
+        setLoading(false); // Set to false immediately after getting session
       } catch (err) {
         console.error('Error getting session:', err);
-      } finally {
-        setLoading(false);
         setInitialized(true);
+        setLoading(false);
       }
 
       // Clean up URL hash if session is present (from OAuth callbacks)
@@ -151,27 +155,38 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         console.log('Auth state changed:', event);
         setSession(session);
         setUser(session?.user ?? null);
-        
-        // Only set loading false if we've already initialized
-        if (initialized) {
-          setLoading(false);
-        }
-
-        // Clean up URL hash after successful sign in from email link or OAuth
-        if ((event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') && typeof window !== 'undefined') {
-          const hash = window.location.hash;
-          if (hash) {
-            window.history.replaceState(null, '', window.location.pathname + window.location.search);
-          }
-        }
+        setLoading(false); // Always set to false when state changes
       }
     );
 
+    // Listen for service worker cache updates
+    if (typeof window !== 'undefined' && 'serviceWorker' in navigator) {
+      const handleSWMessage = (event: MessageEvent) => {
+        if (event.data?.type === 'CACHE_UPDATED') {
+          console.log('[Auth] Service worker updated - clearing local storage');
+          // Clear all storage to force re-login
+          localStorage.clear();
+          sessionStorage.clear();
+          // Reload page to get fresh version
+          window.location.reload();
+        }
+      };
+
+      navigator.serviceWorker.addEventListener('message', handleSWMessage);
+
+      return () => {
+        subscription.unsubscribe();
+        navigator.serviceWorker.removeEventListener('message', handleSWMessage);
+      };
+    }
+
     return () => subscription.unsubscribe();
-  }, [initialized]);
+  }, []);
 
   // Load user data when user changes
   useEffect(() => {
+    if (user && !initialized) return; // Don't run if just initializing
+    
     if (user) {
       refreshProfile();
       refreshSpaces();
@@ -196,7 +211,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setSpaceMembership(null);
       setUserSpaces([]);
     }
-  }, [user, refreshProfile, refreshSpaces]);
+  }, [user?.id, initialized]); // Only depend on user.id to avoid infinite loops
 
   const signIn = async (email: string, password: string) => {
     try {

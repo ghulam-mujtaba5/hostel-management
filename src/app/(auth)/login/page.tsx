@@ -45,7 +45,7 @@ function LoginContent() {
         const { data } = await supabase
           .from('spaces')
           .select('name')
-          .eq('invite_code', code.toUpperCase())
+          .ilike('invite_code', code)
           .single();
         if (data) {
           setInviteSpaceName(data.name);
@@ -192,7 +192,7 @@ function LoginContent() {
       const { data: space, error: findError } = await supabase
         .from('spaces')
         .select('*')
-        .eq('invite_code', code.toUpperCase())
+        .ilike('invite_code', code)
         .single();
 
       if (findError || !space) {

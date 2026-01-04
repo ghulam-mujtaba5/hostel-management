@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Plus, Filter, CheckCircle, Calendar, ListTodo, Clock, CheckCircle2, Search, Sparkles, LogIn, UserPlus, Hand } from "lucide-react";
@@ -21,32 +21,34 @@ export default function TasksPage() {
   const { user, currentSpace, loading: authLoading } = useAuth();
   const [tasks, setTasks] = useState<Task[]>([]);
   const [loading, setLoading] = useState(true);
+  const [initialLoadDone, setInitialLoadDone] = useState(false);
   const [activeTab, setActiveTab] = useState<TabType>('my');
   const [filterCategory, setFilterCategory] = useState<TaskCategory | 'all'>('all');
   const [searchQuery, setSearchQuery] = useState("");
-
-  // Subscribe to real-time task updates
-  useRealtimeSubscription<Task>(
-    'tasks',
-    (payload) => {
-      // Only refresh if the change is relevant to the current space
-      if (currentSpace && payload.new.space_id === currentSpace.id) {
-        fetchTasks();
-      }
-    },
-    currentSpace ? `space_id=eq.${currentSpace.id}` : undefined
-  );
-
+  
+  // Use ref to track current space/tab for realtime callback
+  const currentSpaceRef = useRef(currentSpace);
+  const activeTabRef = useRef(activeTab);
+  
   useEffect(() => {
-    if (currentSpace) {
-      fetchTasks();
-    }
-  }, [currentSpace, activeTab]);
+    currentSpaceRef.current = currentSpace;
+  }, [currentSpace]);
+  
+  useEffect(() => {
+    activeTabRef.current = activeTab;
+  }, [activeTab]);
 
-  const fetchTasks = async () => {
-    if (!currentSpace || !user) return;
+  // Memoized fetch function that doesn't show loading after initial load
+  const fetchTasks = useCallback(async (showLoading = false) => {
+    const space = currentSpaceRef.current;
+    if (!space || !user) return;
     
-    setLoading(true);
+    // Only show loading spinner on initial load, not on realtime updates
+    if (showLoading && !initialLoadDone) {
+      setLoading(true);
+    }
+    
+    const tab = activeTabRef.current;
     
     let query = supabase
       .from('tasks')
@@ -55,11 +57,11 @@ export default function TasksPage() {
         assignee:profiles!tasks_assigned_to_fkey(*),
         creator:profiles!tasks_created_by_fkey(*)
       `)
-      .eq('space_id', currentSpace.id);
+      .eq('space_id', space.id);
 
-    if (activeTab === 'my') {
+    if (tab === 'my') {
       query = query.eq('assigned_to', user.id).in('status', ['todo', 'in_progress', 'pending_verification']);
-    } else if (activeTab === 'available') {
+    } else if (tab === 'available') {
       query = query.is('assigned_to', null).eq('status', 'todo');
     } else {
       query = query.eq('status', 'done');
@@ -69,7 +71,36 @@ export default function TasksPage() {
     
     if (data) setTasks(data);
     setLoading(false);
-  };
+    setInitialLoadDone(true);
+  }, [user, initialLoadDone]);
+
+  // Subscribe to real-time task updates - use stable callback
+  useRealtimeSubscription<Task>(
+    'tasks',
+    useCallback((payload) => {
+      const space = currentSpaceRef.current;
+      // Only refresh if the change is relevant to the current space
+      if (space && payload.new.space_id === space.id) {
+        fetchTasks(false); // Don't show loading on realtime updates
+      }
+    }, [fetchTasks]),
+    currentSpace ? `space_id=eq.${currentSpace.id}` : undefined
+  );
+
+  useEffect(() => {
+    if (currentSpace) {
+      // Reset initial load flag when space changes
+      setInitialLoadDone(false);
+      fetchTasks(true);
+    }
+  }, [currentSpace?.id]); // Only depend on space ID, not the whole object
+  
+  // Separate effect for tab changes - don't show loading
+  useEffect(() => {
+    if (currentSpace && initialLoadDone) {
+      fetchTasks(false);
+    }
+  }, [activeTab]);
 
   const filteredTasks = tasks.filter(t => {
     const matchesCategory = filterCategory === 'all' || t.category === filterCategory;

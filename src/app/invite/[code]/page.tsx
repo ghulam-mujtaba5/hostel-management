@@ -40,7 +40,7 @@ export default function PublicInvitePage({ params }: { params: Promise<{ code: s
       const { data, error } = await supabase
         .from('spaces')
         .select('id, name, invite_code, created_at')
-        .eq('invite_code', code.toUpperCase())
+        .ilike('invite_code', code)
         .single();
 
       if (error || !data) {

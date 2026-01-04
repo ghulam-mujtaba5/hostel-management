@@ -33,7 +33,7 @@ export default function JoinSpacePage() {
       const { data: space, error: findError } = await supabase
         .from('spaces')
         .select('*')
-        .eq('invite_code', inviteCode.trim().toUpperCase())
+        .ilike('invite_code', inviteCode.trim())
         .single();
 
       if (findError || !space) {

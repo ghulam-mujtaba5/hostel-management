@@ -26,6 +26,7 @@ export default function Dashboard() {
   const router = useRouter();
   const { user, profile, currentSpace, spaceMembership, loading: authLoading } = useAuth();
   const [tasks, setTasks] = useState<Task[]>([]);
+  const [initialLoadDone, setInitialLoadDone] = useState(false);
   const [stats, setStats] = useState({
     pending: 0,
     completed: 0,
@@ -34,13 +35,15 @@ export default function Dashboard() {
     streak: 0,
     weeklyCompleted: 0
   });
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     // If user is logged in and has a space, fetch data
     if (user && currentSpace) {
       fetchData();
-    } else if (!authLoading) {
+    } else if (user || !authLoading) {
+      // Once we have a user OR auth has finished loading, mark as done
+      setInitialLoadDone(true);
       setLoading(false);
     }
   }, [user, currentSpace, authLoading]);
@@ -115,12 +118,14 @@ export default function Dashboard() {
     });
     
     setLoading(false);
+    setInitialLoadDone(true);
   };
 
-  if (authLoading || loading) return <DashboardSkeleton />;
+  // Only show skeleton on very first load with user and space
+  if (user && currentSpace && loading) return <DashboardSkeleton />;
 
   // Show landing page for non-authenticated users
-  if (!user) {
+  if (!user && initialLoadDone) {
     return (
       <div className="min-h-[80vh] flex flex-col">
         {/* Hero Section */}

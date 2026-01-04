@@ -30,7 +30,7 @@ export default function JoinByLinkPage({ params }: { params: Promise<{ code: str
       const { data, error } = await supabase
         .from('spaces')
         .select('*')
-        .eq('invite_code', code.toUpperCase())
+        .ilike('invite_code', code)
         .single();
 
       if (error || !data) {
