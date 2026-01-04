@@ -151,7 +151,8 @@ export default function ProfilePage() {
     }
   };
 
-  if (authLoading) {
+  // Show loading state - middleware handles auth protection
+  if (authLoading || !user) {
     return (
       <div className="space-y-10 pb-24">
         <div className="h-64 rounded-[2rem] bg-muted/20 animate-pulse" />
@@ -159,21 +160,6 @@ export default function ProfilePage() {
           <div className="md:col-span-2 h-48 rounded-[2rem] bg-muted/20 animate-pulse" />
           <div className="h-48 rounded-[2rem] bg-muted/20 animate-pulse" />
         </div>
-      </div>
-    );
-  }
-
-  if (!user) {
-    return (
-      <div className="flex flex-col items-center justify-center min-h-[60vh] text-center px-4">
-        <div className="h-20 w-20 rounded-full bg-primary/10 flex items-center justify-center mb-6">
-          <User className="h-10 w-10 text-primary" />
-        </div>
-        <h2 className="text-2xl font-bold mb-2">Authentication Required</h2>
-        <p className="text-muted-foreground mb-8 max-w-xs">Please sign in to view your profile and manage your hostel stay.</p>
-        <Button asChild size="lg" className="rounded-full px-8">
-          <Link href="/login">Sign In</Link>
-        </Button>
       </div>
     );
   }

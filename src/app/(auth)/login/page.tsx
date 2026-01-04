@@ -23,6 +23,8 @@ function LoginContent() {
   const hostelName = searchParams.get("hostelName");
   const mode = searchParams.get("mode");
   const returnTo = searchParams.get("returnTo");
+  const { user, loading: authLoading, signIn, signUp, refreshSpaces, setCurrentSpace } = useAuth();
+  const router = useRouter();
   
   const [authMode, setAuthMode] = useState<AuthMode>(
     (mode === "signup" || hostelName) ? 'signup' : 'login'
@@ -32,11 +34,30 @@ function LoginContent() {
   const [password, setPassword] = useState("");
   const [username, setUsername] = useState("");
   const [loading, setLoading] = useState(false);
-  const { signIn, signUp, refreshSpaces, setCurrentSpace } = useAuth();
-  const router = useRouter();
+
+  // Redirect if already logged in
+  useEffect(() => {
+    if (!authLoading && user) {
+      router.replace(returnTo || "/");
+    }
+  }, [user, authLoading, router, returnTo]);
 
   const isLogin = authMode === 'login';
   const isSignup = authMode === 'signup';
+
+  // Show loading while checking auth
+  if (authLoading || user) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-background">
+        <div className="text-center space-y-4">
+          <Loader2 className="h-8 w-8 animate-spin text-primary mx-auto" />
+          <p className="text-sm text-muted-foreground">
+            {user ? "Redirecting to dashboard..." : "Checking authentication..."}
+          </p>
+        </div>
+      </div>
+    );
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

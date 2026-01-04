@@ -85,6 +85,15 @@ export const CONFIG = {
     defaultPointsForTask: 10,
     minPointsForTask: 1,
     maxPointsForTask: 1000,
+    // Fairness settings
+    fairness: {
+      maxTasksPerWeek: 10, // Maximum tasks a user can complete per week
+      maxEasyTaskRatio: 0.6, // 60% max easy tasks to enforce variety
+      minDaysBetweenSameTask: 2, // Days before same task type can be taken
+      enforceDifficultyBalance: true, // Force users to take harder tasks
+      allowOvertimeIfNoOthers: true, // Allow exceeding limit if nobody else available
+      weeklyLimitWindow: 7, // Days in the rolling window
+    },
   },
 
   /**

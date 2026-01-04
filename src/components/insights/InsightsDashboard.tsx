@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useAuth } from "@/contexts/AuthContext";
@@ -8,13 +9,22 @@ import { supabase } from "@/lib/supabase";
 import { TaskDistributionChart } from "./TaskDistributionChart";
 import { WeeklyActivityChart } from "./WeeklyActivityChart";
 import { PointsHistoryChart } from "./PointsHistoryChart";
+import { TaskStatsChart } from "./TaskStatsChart";
+import { WorkloadBalanceChart } from "./WorkloadBalanceChart";
 import { TASK_CATEGORIES, TaskCategory } from "@/types";
 import { startOfWeek, endOfWeek, format, subDays, eachDayOfInterval } from "date-fns";
-import { Loader2 } from "lucide-react";
+import { 
+  Loader2, BarChart3, Users, Activity, TrendingUp, 
+  Scale, Target, Sparkles 
+} from "lucide-react";
+import { cn } from "@/lib/utils";
+
+type InsightTab = 'overview' | 'team-stats' | 'workload' | 'personal';
 
 export function InsightsDashboard() {
   const { user, currentSpace } = useAuth();
   const [loading, setLoading] = useState(true);
+  const [activeTab, setActiveTab] = useState<InsightTab>('overview');
   const [taskDistribution, setTaskDistribution] = useState<any[]>([]);
   const [weeklyActivity, setWeeklyActivity] = useState<any[]>([]);
   const [pointsHistory, setPointsHistory] = useState<any[]>([]);
@@ -119,39 +129,181 @@ export function InsightsDashboard() {
     );
   }
 
-  return (
-    <div className="space-y-6">
-      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-        <Card className="col-span-2">
-          <CardHeader>
-            <CardTitle>Weekly Activity</CardTitle>
-            <CardDescription>Tasks assigned vs completed over the last 7 days</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <WeeklyActivityChart data={weeklyActivity} />
-          </CardContent>
-        </Card>
+  const tabs = [
+    { key: 'overview' as InsightTab, label: 'Overview', icon: BarChart3 },
+    { key: 'team-stats' as InsightTab, label: 'Team Stats', icon: Users },
+    { key: 'workload' as InsightTab, label: 'Workload', icon: Scale },
+    { key: 'personal' as InsightTab, label: 'My Activity', icon: Activity },
+  ];
 
-        <Card>
-          <CardHeader>
-            <CardTitle>Task Distribution</CardTitle>
-            <CardDescription>Breakdown by category</CardDescription>
-          </CardHeader>
-          <CardContent>
-            <TaskDistributionChart data={taskDistribution} />
-          </CardContent>
-        </Card>
+  return (
+    <div className="space-y-8">
+      {/* Header */}
+      <motion.div
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="flex flex-col md:flex-row md:items-center justify-between gap-4"
+      >
+        <div>
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 text-primary text-[10px] font-bold uppercase tracking-wider mb-2">
+            <Sparkles className="h-3 w-3" />
+            Analytics
+          </div>
+          <h2 className="text-2xl font-bold">Task Insights & Fairness</h2>
+          <p className="text-muted-foreground text-sm">
+            Track performance, workload balance, and task history
+          </p>
+        </div>
+      </motion.div>
+
+      {/* Tab Navigation */}
+      <div className="flex gap-2 p-1.5 bg-muted/30 rounded-2xl border border-border/50 overflow-x-auto">
+        {tabs.map((tab, index) => (
+          <motion.button
+            key={tab.key}
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: index * 0.05 }}
+            onClick={() => setActiveTab(tab.key)}
+            className={cn(
+              "flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-medium transition-all flex-shrink-0",
+              activeTab === tab.key
+                ? "bg-white dark:bg-slate-800 text-primary shadow-sm"
+                : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
+            )}
+          >
+            <tab.icon className="h-4 w-4" />
+            {tab.label}
+          </motion.button>
+        ))}
       </div>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Points Progression</CardTitle>
-          <CardDescription>Your points growth over time</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <PointsHistoryChart data={pointsHistory} />
-        </CardContent>
-      </Card>
+      {/* Tab Content */}
+      <AnimatePresence mode="wait">
+        {activeTab === 'overview' && (
+          <motion.div
+            key="overview"
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            className="space-y-6"
+          >
+            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+              <Card className="col-span-2 border-border/50">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Activity className="h-5 w-5 text-primary" />
+                    Weekly Activity
+                  </CardTitle>
+                  <CardDescription>Tasks assigned vs completed over the last 7 days</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <WeeklyActivityChart data={weeklyActivity} />
+                </CardContent>
+              </Card>
+
+              <Card className="border-border/50">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Target className="h-5 w-5 text-primary" />
+                    Task Distribution
+                  </CardTitle>
+                  <CardDescription>Breakdown by category</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <TaskDistributionChart data={taskDistribution} />
+                </CardContent>
+              </Card>
+            </div>
+
+            <Card className="border-border/50">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <TrendingUp className="h-5 w-5 text-primary" />
+                  Points Progression
+                </CardTitle>
+                <CardDescription>Your points growth over time</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <PointsHistoryChart data={pointsHistory} />
+              </CardContent>
+            </Card>
+          </motion.div>
+        )}
+
+        {activeTab === 'team-stats' && (
+          <motion.div
+            key="team-stats"
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+          >
+            <TaskStatsChart />
+          </motion.div>
+        )}
+
+        {activeTab === 'workload' && (
+          <motion.div
+            key="workload"
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+          >
+            <WorkloadBalanceChart />
+          </motion.div>
+        )}
+
+        {activeTab === 'personal' && (
+          <motion.div
+            key="personal"
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            className="space-y-6"
+          >
+            <div className="grid gap-6 md:grid-cols-2">
+              <Card className="border-border/50">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Activity className="h-5 w-5 text-primary" />
+                    My Weekly Activity
+                  </CardTitle>
+                  <CardDescription>Your task completion pattern</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <WeeklyActivityChart data={weeklyActivity} />
+                </CardContent>
+              </Card>
+
+              <Card className="border-border/50">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Target className="h-5 w-5 text-primary" />
+                    My Categories
+                  </CardTitle>
+                  <CardDescription>Tasks I've completed by type</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <TaskDistributionChart data={taskDistribution} />
+                </CardContent>
+              </Card>
+            </div>
+
+            <Card className="border-border/50">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <TrendingUp className="h-5 w-5 text-primary" />
+                  Points History
+                </CardTitle>
+                <CardDescription>Track your point accumulation</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <PointsHistoryChart data={pointsHistory} />
+              </CardContent>
+            </Card>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }

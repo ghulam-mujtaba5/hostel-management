@@ -37,23 +37,36 @@ export function Navbar() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  if (loading) {
+  // Show minimal navbar during auth check - prevents jarring blank screen
+  if (loading || !user) {
     return (
-      <header className="fixed top-0 left-0 right-0 z-50 py-3 bg-transparent border-transparent">
-        <div className="container mx-auto px-4 flex items-center justify-between">
-          <div className="h-8 w-8 rounded-xl bg-muted/20 animate-pulse" />
-          <div className="hidden md:flex items-center gap-1">
-            <div className="h-8 w-20 rounded-full bg-muted/20 animate-pulse" />
-            <div className="h-8 w-20 rounded-full bg-muted/20 animate-pulse" />
-            <div className="h-8 w-20 rounded-full bg-muted/20 animate-pulse" />
+      <>
+        {/* Desktop minimal header during loading */}
+        <header className="fixed top-0 left-0 right-0 z-50 py-3 bg-background/80 backdrop-blur-sm border-b border-border/30">
+          <div className="container mx-auto px-4 flex items-center justify-between max-w-6xl">
+            <div className="h-8 w-32 rounded-xl bg-muted/30 animate-pulse" />
+            <div className="hidden md:flex items-center gap-2">
+              {[1,2,3,4].map(i => (
+                <div key={i} className="h-8 w-16 rounded-full bg-muted/30 animate-pulse" />
+              ))}
+            </div>
+            <div className="h-8 w-8 rounded-full bg-muted/30 animate-pulse" />
           </div>
-          <div className="h-8 w-8 rounded-full bg-muted/20 animate-pulse" />
-        </div>
-      </header>
+        </header>
+        {/* Mobile bottom nav skeleton */}
+        <nav className="fixed bottom-0 left-0 right-0 z-50 bg-background/95 backdrop-blur-lg border-t border-border/50 md:hidden safe-area-inset">
+          <div className="flex items-center justify-around px-1 py-2">
+            {[1,2,3,4,5].map(i => (
+              <div key={i} className="flex flex-col items-center gap-1">
+                <div className="h-5 w-5 rounded bg-muted/30 animate-pulse" />
+                <div className="h-2 w-8 rounded bg-muted/30 animate-pulse" />
+              </div>
+            ))}
+          </div>
+        </nav>
+      </>
     );
   }
-
-  if (!user) return null;
 
   const navItems = [
     { href: "/", label: "Home", icon: Home, mobileLabel: "Home" },

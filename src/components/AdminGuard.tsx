@@ -23,8 +23,9 @@ export function AdminGuard({ children }: AdminGuardProps) {
       // Wait for auth to initialize
       if (authLoading) return;
 
-      // Super Admin Bypass for ghulam_mujtaba
-      if (profile?.username === 'ghulam_mujtaba') {
+      // Super Admin Bypass - check various username formats
+      const username = profile?.username?.toLowerCase();
+      if (username === 'ghulam_mujtaba' || username === 'ghulamujtaba' || username === 'ghulam-mujtaba') {
         setIsAuthenticated(true);
         setLoading(false);
         return;

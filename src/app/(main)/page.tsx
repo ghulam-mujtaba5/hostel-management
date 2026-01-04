@@ -35,16 +35,13 @@ export default function Dashboard() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (!authLoading && !user) {
-      router.push('/login');
-      return;
-    }
+    // No need to redirect here - middleware handles auth protection
     if (currentSpace) {
       fetchData();
     } else if (!authLoading) {
       setLoading(false);
     }
-  }, [currentSpace, authLoading, user, router]);
+  }, [currentSpace, authLoading]);
 
   const fetchData = async () => {
     if (!currentSpace || !user) return;
