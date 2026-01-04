@@ -29,11 +29,11 @@ export default function JoinSpacePage() {
     setError("");
 
     try {
-      // Find the space by invite code
+      // Find the space by invite code (codes are stored in uppercase)
       const { data: space, error: findError } = await supabase
         .from('spaces')
         .select('*')
-        .eq('invite_code', inviteCode.trim().toLowerCase())
+        .eq('invite_code', inviteCode.trim().toUpperCase())
         .single();
 
       if (findError || !space) {

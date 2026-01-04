@@ -141,7 +141,7 @@ export default function Dashboard() {
               </Link>
             </Button>
             <Button asChild variant="outline" size="lg" className="h-12 px-6 rounded-xl font-bold gap-2">
-              <Link href="/join">
+              <Link href="/spaces/join">
                 <Users className="h-4 w-4" /> Join Space
               </Link>
             </Button>

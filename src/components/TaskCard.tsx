@@ -172,7 +172,6 @@ export function TaskCard({ task, showAssignee = false, onUpdate, recommended = f
                     ref={fileInputRef}
                     type="file"
                     accept="image/*"
-                    capture="environment"
                     onChange={handleUploadProof}
                     className="hidden"
                     disabled={uploading}
