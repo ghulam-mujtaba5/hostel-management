@@ -143,7 +143,7 @@ function CreateSpaceContent() {
         
         <SlideInCard direction="down">
           <div className="text-center space-y-6">
-            <div className="mx-auto h-24 w-24 rounded-[2.5rem] bg-gradient-to-br from-green-400 to-emerald-600 flex items-center justify-center shadow-2xl shadow-green-500/20">
+            <div className="mx-auto h-24 w-24 rounded-[2.5rem] bg-linear-to-br from-green-400 to-emerald-600 flex items-center justify-center shadow-2xl shadow-green-500/20">
               <ShieldCheck className="h-12 w-12 text-white" />
             </div>
             <div className="space-y-2">
@@ -185,7 +185,7 @@ function CreateSpaceContent() {
 
               <div className="space-y-3">
                 <p className="text-xs font-black text-muted-foreground uppercase tracking-widest">Invite Code</p>
-                <div className="flex items-center justify-between p-6 bg-primary/5 rounded-[2rem] border-2 border-dashed border-primary/20">
+                <div className="flex items-center justify-between p-6 bg-primary/5 rounded-4xl border-2 border-dashed border-primary/20">
                   <code className="text-4xl font-black tracking-[0.3em] text-primary">{createdSpace.invite_code}</code>
                   <Button 
                     variant="ghost" 
@@ -201,7 +201,7 @@ function CreateSpaceContent() {
                 </div>
               </div>
 
-              <Button asChild className="w-full h-16 text-xl font-black rounded-[1.5rem] bg-gradient-to-r from-primary to-purple-600 shadow-xl shadow-primary/20 hover:scale-[1.02] active:scale-[0.98] transition-all">
+              <Button asChild className="w-full h-16 text-xl font-black rounded-3xl bg-linear-to-r from-primary to-purple-600 shadow-xl shadow-primary/20 hover:scale-[1.02] active:scale-[0.98] transition-all">
                 <Link href="/">
                   Go to Dashboard
                   <ArrowRight className="ml-3 h-6 w-6" />
@@ -217,7 +217,7 @@ function CreateSpaceContent() {
   if (!user) {
     return (
       <div className="min-h-[60vh] flex flex-col items-center justify-center text-center p-6">
-        <div className="h-20 w-20 rounded-[2rem] bg-muted flex items-center justify-center mb-6">
+        <div className="h-20 w-20 rounded-4xl bg-muted flex items-center justify-center mb-6">
           <Users className="h-10 w-10 text-muted-foreground" />
         </div>
         <h2 className="text-2xl font-black mb-2">Authentication Required</h2>
@@ -250,7 +250,7 @@ function CreateSpaceContent() {
       <SlideInCard direction="up" delay={0.1}>
         <Card className="border-0 shadow-2xl rounded-[3rem] bg-card/50 backdrop-blur-xl overflow-hidden">
           <CardHeader className="pt-10 pb-6 text-center">
-            <div className="mx-auto h-20 w-20 rounded-[2rem] bg-primary/10 flex items-center justify-center mb-6">
+            <div className="mx-auto h-20 w-20 rounded-4xl bg-primary/10 flex items-center justify-center mb-6">
               <Home className="h-10 w-10 text-primary" />
             </div>
             <CardTitle className="text-3xl font-black">New Hostel</CardTitle>
@@ -283,7 +283,7 @@ function CreateSpaceContent() {
 
               <Button 
                 type="submit" 
-                className="w-full h-16 text-xl font-black rounded-[1.5rem] bg-gradient-to-r from-primary to-purple-600 shadow-xl shadow-primary/20 hover:scale-[1.02] active:scale-[0.98] transition-all" 
+                className="w-full h-16 text-xl font-black rounded-3xl bg-linear-to-r from-primary to-purple-600 shadow-xl shadow-primary/20 hover:scale-[1.02] active:scale-[0.98] transition-all" 
                 disabled={loading}
               >
                 {loading ? (
@@ -304,7 +304,7 @@ function CreateSpaceContent() {
       </SlideInCard>
 
       <SlideInCard direction="up" delay={0.2}>
-        <div className="p-6 rounded-[2rem] bg-primary/5 border border-primary/10 text-center">
+        <div className="p-6 rounded-4xl bg-primary/5 border border-primary/10 text-center">
           <p className="text-sm font-bold text-primary/80">
             💡 After creating, you'll get a unique invite code to share with your flatmates.
           </p>

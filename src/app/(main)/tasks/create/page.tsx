@@ -71,10 +71,14 @@ export default function CreateTaskPage() {
     setLoading(true);
 
     try {
+      // Sanitize inputs to prevent XSS
+      const sanitizedTitle = sanitizeString(title.trim(), 100);
+      const sanitizedDescription = description ? sanitizeString(description.trim(), 500) : null;
+      
       const { error: insertError } = await supabase.from('tasks').insert({
         space_id: currentSpace.id,
-        title,
-        description: description || null,
+        title: sanitizedTitle,
+        description: sanitizedDescription,
         category,
         difficulty,
         due_date: dueDate || null,
@@ -88,7 +92,7 @@ export default function CreateTaskPage() {
         space_id: currentSpace.id,
         user_id: user.id,
         action: 'created_task',
-        details: { title, category, difficulty },
+        details: { title: sanitizedTitle, category, difficulty },
       });
 
       toast.success('Task created!', { emoji: '✨', subtitle: 'Task added to the list' });
