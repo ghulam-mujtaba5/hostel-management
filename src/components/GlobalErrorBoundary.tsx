@@ -1,7 +1,7 @@
 'use client';
 
-import { ReactNode, useState, useEffect } from 'react';
-import { AlertTriangle, RotateCcw, Home } from 'lucide-react';
+import { ReactNode, useState, useEffect, useCallback } from 'react';
+import { AlertTriangle, RotateCcw, Home, Bug, Copy, Check } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 
@@ -10,31 +10,103 @@ interface ErrorBoundaryProps {
   fallback?: (error: Error, reset: () => void) => ReactNode;
 }
 
+interface ErrorReport {
+  message: string;
+  stack?: string;
+  url: string;
+  userAgent: string;
+  timestamp: string;
+  componentStack?: string;
+}
+
+// Error reporting function
+async function reportError(errorReport: ErrorReport): Promise<void> {
+  // In production, send to error tracking service
+  if (process.env.NODE_ENV === 'production') {
+    try {
+      // Send to your error tracking endpoint
+      await fetch('/api/errors', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(errorReport),
+      });
+    } catch {
+      // Silently fail - don't cause more errors
+      console.error('Failed to report error:', errorReport);
+    }
+  } else {
+    console.error('[Error Report]', errorReport);
+  }
+}
+
 export function GlobalErrorBoundary({
   children,
   fallback,
 }: ErrorBoundaryProps) {
   const [error, setError] = useState<Error | null>(null);
+  const [errorId, setErrorId] = useState<string>('');
+  const [copied, setCopied] = useState(false);
 
-  useEffect(() => {
-    const handleError = (event: ErrorEvent) => {
-      setError(event.error);
-    };
+  const handleError = useCallback((err: Error, componentStack?: string) => {
+    const id = `ERR-${Date.now().toString(36).toUpperCase()}`;
+    setErrorId(id);
+    setError(err);
 
-    const handleUnhandledRejection = (event: PromiseRejectionEvent) => {
-      setError(event.reason instanceof Error ? event.reason : new Error(String(event.reason)));
-    };
-
-    window.addEventListener('error', handleError);
-    window.addEventListener('unhandledrejection', handleUnhandledRejection);
-
-    return () => {
-      window.removeEventListener('error', handleError);
-      window.removeEventListener('unhandledrejection', handleUnhandledRejection);
-    };
+    // Report error
+    reportError({
+      message: err.message,
+      stack: err.stack,
+      url: typeof window !== 'undefined' ? window.location.href : '',
+      userAgent: typeof navigator !== 'undefined' ? navigator.userAgent : '',
+      timestamp: new Date().toISOString(),
+      componentStack,
+    });
   }, []);
 
-  const reset = () => setError(null);
+  useEffect(() => {
+    const onError = (event: ErrorEvent) => {
+      handleError(event.error || new Error(event.message));
+    };
+
+    const onUnhandledRejection = (event: PromiseRejectionEvent) => {
+      handleError(
+        event.reason instanceof Error 
+          ? event.reason 
+          : new Error(String(event.reason))
+      );
+    };
+
+    window.addEventListener('error', onError);
+    window.addEventListener('unhandledrejection', onUnhandledRejection);
+
+    return () => {
+      window.removeEventListener('error', onError);
+      window.removeEventListener('unhandledrejection', onUnhandledRejection);
+    };
+  }, [handleError]);
+
+  const reset = useCallback(() => {
+    setError(null);
+    setErrorId('');
+    // Clear any cached state that might have caused the error
+    if (typeof window !== 'undefined') {
+      window.history.replaceState({}, '', window.location.pathname);
+    }
+  }, []);
+
+  const copyErrorDetails = useCallback(async () => {
+    if (!error) return;
+    
+    const details = `Error ID: ${errorId}\nMessage: ${error.message}\nStack: ${error.stack || 'N/A'}\nURL: ${window.location.href}\nTime: ${new Date().toISOString()}`;
+    
+    try {
+      await navigator.clipboard.writeText(details);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch {
+      console.error('Failed to copy');
+    }
+  }, [error, errorId]);
 
   if (error) {
     if (fallback) {
@@ -52,13 +124,26 @@ export function GlobalErrorBoundary({
             <div className="space-y-2">
               <h1 className="text-2xl font-bold text-white">Something went wrong</h1>
               <p className="text-muted-foreground">
-                We encountered an unexpected error. Please try again or return to the home page.
+                We encountered an unexpected error. Our team has been notified.
               </p>
+              {errorId && (
+                <p className="text-xs text-muted-foreground/60 font-mono">
+                  Error ID: {errorId}
+                </p>
+              )}
             </div>
 
             {process.env.NODE_ENV === 'development' && (
-              <div className="bg-slate-800/50 rounded-lg p-4 text-left overflow-auto max-h-48">
-                <p className="text-xs text-muted-foreground font-mono break-all">
+              <div className="bg-slate-800/50 rounded-lg p-4 text-left overflow-auto max-h-48 relative">
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  className="absolute top-2 right-2 h-7 w-7 p-0"
+                  onClick={copyErrorDetails}
+                >
+                  {copied ? <Check className="h-3 w-3" /> : <Copy className="h-3 w-3" />}
+                </Button>
+                <p className="text-xs text-red-400 font-mono break-all font-semibold">
                   {error.message}
                 </p>
                 {error.stack && (
@@ -89,6 +174,18 @@ export function GlobalErrorBoundary({
                 </Link>
               </Button>
             </div>
+
+            {process.env.NODE_ENV === 'development' && (
+              <Button
+                variant="ghost"
+                size="sm"
+                className="text-xs text-muted-foreground gap-1"
+                onClick={() => window.location.reload()}
+              >
+                <Bug className="h-3 w-3" />
+                Force Reload
+              </Button>
+            )}
           </div>
         </div>
       </div>

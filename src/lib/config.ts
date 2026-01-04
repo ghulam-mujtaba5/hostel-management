@@ -1,6 +1,28 @@
 /**
- * Production configuration and feature flags
+ * Production Configuration & Feature Flags
+ * Silicon Valley-grade configuration management
  */
+
+// Environment validation
+const requiredEnvVars = [
+  'NEXT_PUBLIC_SUPABASE_URL',
+  'NEXT_PUBLIC_SUPABASE_ANON_KEY',
+] as const;
+
+const optionalEnvVars = [
+  'NEXT_PUBLIC_APP_URL',
+  'NEXT_PUBLIC_GA_ID',
+  'SENTRY_DSN',
+  'NEXT_PUBLIC_MONITORING_ENDPOINT',
+] as const;
+
+// Validate required environment variables in production
+if (process.env.NODE_ENV === 'production') {
+  const missing = requiredEnvVars.filter(key => !process.env[key]);
+  if (missing.length > 0) {
+    throw new Error(`Missing required environment variables: ${missing.join(', ')}`);
+  }
+}
 
 export const CONFIG = {
   /**
@@ -8,22 +30,32 @@ export const CONFIG = {
    */
   app: {
     name: 'HostelMate',
-    description: 'Smart duty management for hostel living',
-    url:
-      process.env.NEXT_PUBLIC_APP_URL ||
-      'https://hostel-management.vercel.app',
+    tagline: 'Smart Duty Management',
+    description: 'AI-powered hostel duty management with fair task distribution, gamification, and team collaboration',
+    url: process.env.NEXT_PUBLIC_APP_URL || 'https://hostel-management.vercel.app',
     version: '1.0.0',
+    buildId: process.env.NEXT_PUBLIC_BUILD_ID || 'development',
+    environment: process.env.NODE_ENV as 'development' | 'production' | 'test',
   },
 
   /**
-   * Feature flags
+   * Feature flags - Toggle features without deployment
    */
   features: {
     realTimeUpdates: true,
     notifications: true,
-    analytics: true,
-    errorTracking: false, // Enable in production
-    performanceMonitoring: false, // Enable in production
+    analytics: process.env.NODE_ENV === 'production',
+    errorTracking: process.env.NODE_ENV === 'production',
+    performanceMonitoring: process.env.NODE_ENV === 'production',
+    // Advanced features
+    aiTaskRecommendations: true,
+    gamification: true,
+    socialFeatures: true,
+    offlineMode: true,
+    pushNotifications: false, // Requires additional setup
+    darkMode: true,
+    multiLanguage: false, // Future feature
+    advancedAnalytics: false, // Premium feature
   },
 
   /**
@@ -32,8 +64,16 @@ export const CONFIG = {
   performance: {
     imageOptimization: true,
     cacheTimeout: 5 * 60 * 1000, // 5 minutes
+    staleCacheTimeout: 60 * 60 * 1000, // 1 hour stale-while-revalidate
     requestTimeout: 10000, // 10 seconds
     maxRetries: 3,
+    retryDelay: 1000, // Base delay for exponential backoff
+    batchSize: 50, // Batch operations
+    debounceDelay: 300, // Debounce user inputs
+    throttleDelay: 100, // Throttle scroll/resize
+    preloadThreshold: '50px', // Intersection observer margin
+    lazyLoadImages: true,
+    prefetchLinks: true,
   },
 
   /**
@@ -43,7 +83,18 @@ export const CONFIG = {
     enableCSRFProtection: true,
     enableRateLimit: true,
     maxRequestsPerMinute: 100,
+    maxRequestsPerHour: 1000,
+    blockDurationMinutes: 5,
     enableContentSecurityPolicy: true,
+    enableStrictTransportSecurity: true,
+    sessionTimeout: 7 * 24 * 60 * 60 * 1000, // 7 days
+    maxLoginAttempts: 5,
+    passwordMinLength: 8,
+    requireStrongPassword: true,
+    allowedOrigins: [
+      process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000',
+      '*.supabase.co',
+    ],
   },
 
   /**

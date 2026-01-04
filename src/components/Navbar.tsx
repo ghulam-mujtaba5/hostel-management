@@ -37,31 +37,87 @@ export function Navbar() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  // Show minimal navbar during auth check - prevents jarring blank screen
+  // Show minimal navbar during auth check - but keep navigation functional
   if (loading || !user) {
     return (
       <>
         {/* Desktop minimal header during loading */}
         <header className="fixed top-0 left-0 right-0 z-50 py-3 bg-background/80 backdrop-blur-sm border-b border-border/30">
           <div className="container mx-auto px-4 flex items-center justify-between max-w-6xl">
-            <div className="h-8 w-32 rounded-xl bg-muted/30 animate-pulse" />
+            <Link href="/" className="hover:opacity-90 transition-opacity">
+              <Logo size="sm" />
+            </Link>
             <div className="hidden md:flex items-center gap-2">
-              {[1,2,3,4].map(i => (
-                <div key={i} className="h-8 w-16 rounded-full bg-muted/30 animate-pulse" />
+              {[
+                { href: "/", label: "Home" },
+                { href: "/tasks", label: "Tasks" },
+                { href: "/team", label: "Team" },
+                { href: "/leaderboard", label: "Rank" },
+                { href: "/profile", label: "Me" },
+              ].map(item => (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  className={cn(
+                    "px-4 py-2 rounded-xl text-sm font-medium transition-all duration-200",
+                    pathname === item.href
+                      ? "bg-primary text-primary-foreground shadow-sm shadow-primary/20"
+                      : "text-muted-foreground hover:text-foreground hover:bg-muted/80"
+                  )}
+                >
+                  {item.label}
+                </Link>
               ))}
             </div>
             <div className="h-8 w-8 rounded-full bg-muted/30 animate-pulse" />
           </div>
         </header>
-        {/* Mobile bottom nav skeleton */}
+        {/* Mobile bottom nav - functional even during loading */}
         <nav className="fixed bottom-0 left-0 right-0 z-50 bg-background/95 backdrop-blur-lg border-t border-border/50 md:hidden safe-area-inset">
-          <div className="flex items-center justify-around px-1 py-2">
-            {[1,2,3,4,5].map(i => (
-              <div key={i} className="flex flex-col items-center gap-1">
-                <div className="h-5 w-5 rounded bg-muted/30 animate-pulse" />
-                <div className="h-2 w-8 rounded bg-muted/30 animate-pulse" />
-              </div>
-            ))}
+          <div className="flex items-center justify-around px-1 py-1.5">
+            {[
+              { href: "/", label: "Home", icon: Home },
+              { href: "/tasks", label: "Tasks", icon: ListTodo },
+              { href: "/team", label: "Team", icon: Users },
+              { href: "/leaderboard", label: "Rank", icon: Trophy },
+              { href: "/profile", label: "Me", icon: User },
+            ].map(item => {
+              const Icon = item.icon;
+              const isActive = pathname === item.href || 
+                              (item.href !== '/' && pathname.startsWith(item.href));
+              return (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  className={cn(
+                    "relative flex flex-col items-center justify-center py-1.5 px-3 rounded-xl transition-all duration-200 touch-target-sm",
+                    isActive 
+                      ? "text-primary" 
+                      : "text-muted-foreground active:text-foreground"
+                  )}
+                >
+                  {isActive && (
+                    <motion.div 
+                      layoutId="activeTabLoading"
+                      className="absolute inset-0 bg-primary/10 rounded-xl"
+                      transition={{ type: "spring", duration: 0.5 }}
+                    />
+                  )}
+                  <Icon className={cn(
+                    "h-5 w-5 relative z-10 transition-transform",
+                    isActive && "scale-110"
+                  )} 
+                  strokeWidth={isActive ? 2.5 : 2}
+                  />
+                  <span className={cn(
+                    "text-[9px] font-semibold mt-0.5 relative z-10",
+                    isActive ? "text-primary" : "text-muted-foreground"
+                  )}>
+                    {item.label}
+                  </span>
+                </Link>
+              );
+            })}
           </div>
         </nav>
       </>
