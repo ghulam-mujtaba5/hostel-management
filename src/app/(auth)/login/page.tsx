@@ -22,18 +22,38 @@ function LoginContent() {
   const searchParams = useSearchParams();
   const hostelName = searchParams.get("hostelName");
   const mode = searchParams.get("mode");
+  const inviteCode = searchParams.get("invite");
   const returnTo = searchParams.get("returnTo") || searchParams.get("next");
   const { user, loading: authLoading, signIn, signUp, refreshSpaces, setCurrentSpace } = useAuth();
   const router = useRouter();
   
   const [authMode, setAuthMode] = useState<AuthMode>(
-    (mode === "signup" || hostelName) ? 'signup' : 'login'
+    (mode === "signup" || hostelName || inviteCode) ? 'signup' : 'login'
   );
   
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [username, setUsername] = useState("");
   const [loading, setLoading] = useState(false);
+  const [inviteSpaceName, setInviteSpaceName] = useState<string | null>(null);
+
+  // Fetch invite space name if invite code is present
+  useEffect(() => {
+    const fetchInviteSpace = async () => {
+      const code = inviteCode || localStorage.getItem('pendingInviteCode');
+      if (code) {
+        const { data } = await supabase
+          .from('spaces')
+          .select('name')
+          .eq('invite_code', code.toUpperCase())
+          .single();
+        if (data) {
+          setInviteSpaceName(data.name);
+        }
+      }
+    };
+    fetchInviteSpace();
+  }, [inviteCode]);
 
   // Redirect if already logged in (but only after initial auth check is complete)
   useEffect(() => {
@@ -96,7 +116,15 @@ function LoginContent() {
         const { error } = await signIn(email, password);
         if (error) throw error;
         toast.success('Welcome back!');
-        router.push(returnTo || "/");
+        
+        // Check for pending invite and auto-join
+        const pendingInvite = inviteCode || localStorage.getItem('pendingInviteCode');
+        if (pendingInvite) {
+          localStorage.removeItem('pendingInviteCode');
+          router.push(`/invite/${pendingInvite}`);
+        } else {
+          router.push(returnTo || "/");
+        }
       } else {
         const { data, error } = await signUp(email, password, username);
         if (error) throw error;
@@ -105,7 +133,15 @@ function LoginContent() {
           await handleHostelCreation(data.user.id, username);
         } else {
           toast.success('Account created successfully!');
-          router.push(returnTo || "/");
+          
+          // Check for pending invite and auto-join
+          const pendingInvite = inviteCode || localStorage.getItem('pendingInviteCode');
+          if (pendingInvite && data.user) {
+            localStorage.removeItem('pendingInviteCode');
+            await handleAutoJoinSpace(data.user.id, pendingInvite);
+          } else {
+            router.push(returnTo || "/");
+          }
         }
       }
     } catch (err: any) {
@@ -150,6 +186,58 @@ function LoginContent() {
     }
   };
 
+  const handleAutoJoinSpace = async (userId: string, code: string) => {
+    try {
+      // Find the space by invite code
+      const { data: space, error: findError } = await supabase
+        .from('spaces')
+        .select('*')
+        .eq('invite_code', code.toUpperCase())
+        .single();
+
+      if (findError || !space) {
+        toast.error('Invalid invite code');
+        router.push('/');
+        return;
+      }
+
+      // Check if already a member
+      const { data: existingMember } = await supabase
+        .from('space_members')
+        .select('*')
+        .eq('space_id', space.id)
+        .eq('user_id', userId)
+        .single();
+
+      if (!existingMember) {
+        // Add as member
+        await supabase.from('space_members').insert({
+          space_id: space.id,
+          user_id: userId,
+          role: 'member',
+          points: 0,
+        });
+
+        // Log activity
+        await supabase.from('activity_log').insert({
+          space_id: space.id,
+          user_id: userId,
+          action: 'joined_space',
+          details: { space_name: space.name, via: 'invite_link_signup' },
+        });
+      }
+
+      await refreshSpaces();
+      setCurrentSpace(space);
+      toast.success(`Welcome to ${space.name}!`);
+      router.push('/');
+    } catch (err: any) {
+      console.error('Auto-join error:', err);
+      toast.error('Failed to join space automatically');
+      router.push('/');
+    }
+  };
+
   return (
     <div className="min-h-screen w-full flex">
       {/* Left Side - Visual */}
@@ -184,6 +272,22 @@ function LoginContent() {
       {/* Right Side - Form */}
       <div className="flex-1 flex items-center justify-center p-6 lg:p-12 bg-background">
         <div className="w-full max-w-sm space-y-8">
+          {/* Invite Banner */}
+          {inviteSpaceName && (
+            <motion.div
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="p-4 rounded-xl bg-primary/10 border border-primary/20 text-center"
+            >
+              <p className="text-sm font-medium text-primary">
+                🎉 You're invited to join <span className="font-bold">{inviteSpaceName}</span>
+              </p>
+              <p className="text-xs text-muted-foreground mt-1">
+                {isLogin ? 'Sign in' : 'Create an account'} to automatically join
+              </p>
+            </motion.div>
+          )}
+
           <div className="text-center space-y-2">
             <Link href="/" className="inline-block mb-4">
               <Logo size="md" />
@@ -286,9 +390,16 @@ function LoginContent() {
             variant="outline"
             type="button"
             onClick={() => {
+              // Store invite code before OAuth redirect
+              const pendingInvite = inviteCode || localStorage.getItem('pendingInviteCode');
+              if (pendingInvite) {
+                localStorage.setItem('pendingInviteCode', pendingInvite.toUpperCase());
+              }
+              
+              const redirectPath = pendingInvite ? `/invite/${pendingInvite}` : (returnTo || '/');
               supabase.auth.signInWithOAuth({
                 provider: 'google',
-                options: { redirectTo: `${window.location.origin}/auth/callback` }
+                options: { redirectTo: `${window.location.origin}/auth/callback?next=${encodeURIComponent(redirectPath)}` }
               });
             }}
             className="w-full"

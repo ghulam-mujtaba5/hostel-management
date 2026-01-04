@@ -217,11 +217,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const signUp = async (email: string, password: string, username: string) => {
     try {
+      // Clean the username
+      const cleanUsername = username.replace(/\s+/g, '_').toLowerCase().trim();
+      
       const { data, error } = await supabase.auth.signUp({ 
         email, 
         password,
         options: {
-          data: { username }
+          data: { 
+            username: cleanUsername,
+            full_name: username
+          }
         }
       });
       
@@ -229,21 +235,32 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
       if (data.user) {
         // Wait a bit for the trigger to create the profile
-        await new Promise(resolve => setTimeout(resolve, 500));
+        await new Promise(resolve => setTimeout(resolve, 1000));
         
-        // Attempt to create profile (trigger might have already created it)
-        const { error: profileError } = await supabase
+        // Check if profile exists first
+        const { data: existingProfile } = await supabase
           .from('profiles')
-          .upsert({
-            id: data.user.id,
-            username,
-            full_name: username,
-          })
-          .select();
+          .select('id')
+          .eq('id', data.user.id)
+          .single();
+        
+        // Only create profile if it doesn't exist
+        if (!existingProfile) {
+          const { error: profileError } = await supabase
+            .from('profiles')
+            .upsert({
+              id: data.user.id,
+              username: cleanUsername,
+              full_name: username,
+              email: email,
+            }, {
+              onConflict: 'id'
+            })
+            .select();
 
-        if (profileError && !profileError.message?.includes('duplicate')) {
-          // Log the error but don't block signup
-          console.error('Profile creation/update error:', profileError);
+          if (profileError && !profileError.message?.includes('duplicate')) {
+            console.error('Profile creation/update error:', profileError);
+          }
         }
       }
       
