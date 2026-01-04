@@ -13,7 +13,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
   ];
 
   // Public marketing/info pages (if any)
-  const publicPages = [
+  const publicPages: typeof staticPages = [
     // Add public pages here as they are created
     // { route: '/features', priority: 0.7, changeFrequency: 'monthly' as const },
     // { route: '/pricing', priority: 0.7, changeFrequency: 'monthly' as const },

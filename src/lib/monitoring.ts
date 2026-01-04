@@ -99,7 +99,7 @@ export class MonitoringManager {
     // Record CLS on page hide
     document.addEventListener('visibilitychange', () => {
       if (document.visibilityState === 'hidden' && this.webVitals.CLS !== undefined) {
-        this.recordMetric('web_vitals_cls', this.webVitals.CLS * 1000, 'ms');
+        this.recordMetric('web_vitals_cls', (this.webVitals.CLS ?? 0) * 1000, 'ms');
       }
     });
 

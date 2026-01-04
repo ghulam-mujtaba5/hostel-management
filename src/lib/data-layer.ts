@@ -288,7 +288,7 @@ class SpaceRepository extends BaseRepository<Space> {
         .eq('user_id', userId);
 
       if (error) throw new AppError(error.message, 'DB_ERROR', 500);
-      return data?.map(d => d.spaces).filter(Boolean) as Space[] ?? [];
+      return (data?.map(d => d.spaces).filter(Boolean) as unknown as Space[]) ?? [];
     });
   }
 

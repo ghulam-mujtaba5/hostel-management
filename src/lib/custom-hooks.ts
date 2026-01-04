@@ -245,7 +245,7 @@ export const usePrefersReducedMotion = () => useMediaQuery('(prefers-reduced-mot
  * Previous value hook
  */
 export function usePrevious<T>(value: T): T | undefined {
-  const ref = useRef<T>();
+  const ref = useRef<T | undefined>(undefined);
   
   useEffect(() => {
     ref.current = value;
@@ -273,7 +273,7 @@ export function useClickOutside<T extends HTMLElement>(
     return () => document.removeEventListener('mousedown', handleClick);
   }, [callback]);
 
-  return ref;
+  return ref as React.RefObject<T>;
 }
 
 /**

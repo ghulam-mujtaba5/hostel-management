@@ -132,7 +132,7 @@ export function NotificationBell() {
                       >
                         <div className="flex gap-3">
                           <div className={cn(
-                            "h-10 w-10 rounded-xl flex items-center justify-center flex-shrink-0",
+                            "h-10 w-10 rounded-xl flex items-center justify-center shrink-0",
                             !notification.read ? "bg-primary/10" : "bg-muted/50"
                           )}>
                             {notificationIcons[notification.type] || <Bell className="h-4 w-4" />}
@@ -146,7 +146,7 @@ export function NotificationBell() {
                                 {notification.title}
                               </p>
                               {!notification.read && (
-                                <span className="h-2 w-2 rounded-full bg-primary flex-shrink-0 mt-1.5" />
+                                <span className="h-2 w-2 rounded-full bg-primary shrink-0 mt-1.5" />
                               )}
                             </div>
                             {notification.message && (

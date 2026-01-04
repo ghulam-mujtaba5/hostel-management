@@ -28,7 +28,7 @@ export default function GlobalError({ error, reset }: GlobalErrorProps) {
 
   return (
     <html lang="en">
-      <body className="min-h-screen bg-gradient-to-br from-slate-900 to-slate-950">
+      <body className="min-h-screen bg-linear-to-br from-slate-900 to-slate-950">
         <div className="min-h-screen flex items-center justify-center p-4">
           <div className="max-w-md w-full">
             <div className="text-center space-y-6">

@@ -114,7 +114,7 @@ export function GlobalErrorBoundary({
     }
 
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-900 to-slate-950 p-4">
+      <div className="min-h-screen flex items-center justify-center bg-linear-to-br from-slate-900 to-slate-950 p-4">
         <div className="max-w-md w-full">
           <div className="text-center space-y-6">
             <div className="inline-flex items-center justify-center h-16 w-16 rounded-full bg-destructive/10 mb-4">
