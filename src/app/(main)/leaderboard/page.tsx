@@ -23,8 +23,10 @@ export default function LeaderboardPage() {
   useEffect(() => {
     if (currentSpace) {
       fetchLeaderboard();
+    } else if (!authLoading) {
+      setLoading(false);
     }
-  }, [currentSpace, period]);
+  }, [currentSpace, period, authLoading]);
 
   const fetchLeaderboard = async () => {
     if (!currentSpace) return;

@@ -22,7 +22,7 @@ function LoginContent() {
   const searchParams = useSearchParams();
   const hostelName = searchParams.get("hostelName");
   const mode = searchParams.get("mode");
-  const returnTo = searchParams.get("returnTo");
+  const returnTo = searchParams.get("returnTo") || searchParams.get("next");
   const { user, loading: authLoading, signIn, signUp, refreshSpaces, setCurrentSpace } = useAuth();
   const router = useRouter();
   
@@ -35,24 +35,42 @@ function LoginContent() {
   const [username, setUsername] = useState("");
   const [loading, setLoading] = useState(false);
 
-  // Redirect if already logged in
+  // Redirect if already logged in (but only after initial auth check is complete)
   useEffect(() => {
     if (!authLoading && user) {
-      router.replace(returnTo || "/");
+      // Small delay to ensure state is stable
+      const timer = setTimeout(() => {
+        router.replace(returnTo || "/");
+      }, 100);
+      return () => clearTimeout(timer);
     }
   }, [user, authLoading, router, returnTo]);
 
   const isLogin = authMode === 'login';
   const isSignup = authMode === 'signup';
 
-  // Show loading while checking auth
-  if (authLoading || user) {
+  // Show loading only during initial auth check
+  if (authLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
         <div className="text-center space-y-4">
           <Loader2 className="h-8 w-8 animate-spin text-primary mx-auto" />
           <p className="text-sm text-muted-foreground">
-            {user ? "Redirecting to dashboard..." : "Checking authentication..."}
+            Checking authentication...
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  // If already logged in, show redirecting message
+  if (user) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-background">
+        <div className="text-center space-y-4">
+          <Loader2 className="h-8 w-8 animate-spin text-primary mx-auto" />
+          <p className="text-sm text-muted-foreground">
+            Redirecting to dashboard...
           </p>
         </div>
       </div>

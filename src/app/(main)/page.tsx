@@ -6,7 +6,8 @@ import { Button } from "@/components/ui/button";
 import { 
   ArrowRight, CheckCircle2, Trophy, Plus, Target, 
   LayoutDashboard, Calendar, Users, Settings, Flame,
-  TrendingUp, Clock, Sparkles, ChevronRight
+  TrendingUp, Clock, Sparkles, ChevronRight, LogIn, UserPlus,
+  Shield, Zap, Award
 } from "lucide-react";
 import Link from "next/link";
 import { useAuth } from "@/contexts/AuthContext";
@@ -19,6 +20,7 @@ import { MotivationWidget } from "@/components/MotivationWidget";
 import { MemberAccountability } from "@/components/MemberAccountability";
 import { useRouter } from "next/navigation";
 import { cn } from "@/lib/utils";
+import { Logo } from "@/components/Logo";
 
 export default function Dashboard() {
   const router = useRouter();
@@ -35,13 +37,13 @@ export default function Dashboard() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // No need to redirect here - middleware handles auth protection
-    if (currentSpace) {
+    // If user is logged in and has a space, fetch data
+    if (user && currentSpace) {
       fetchData();
     } else if (!authLoading) {
       setLoading(false);
     }
-  }, [currentSpace, authLoading]);
+  }, [user, currentSpace, authLoading]);
 
   const fetchData = async () => {
     if (!currentSpace || !user) return;
@@ -116,6 +118,93 @@ export default function Dashboard() {
   };
 
   if (authLoading || loading) return <DashboardSkeleton />;
+
+  // Show landing page for non-authenticated users
+  if (!user) {
+    return (
+      <div className="min-h-[80vh] flex flex-col">
+        {/* Hero Section */}
+        <div className="flex-1 flex flex-col items-center justify-center px-4 py-12">
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+            className="text-center space-y-8 max-w-3xl"
+          >
+            <div className="space-y-4">
+              <motion.div
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ delay: 0.1 }}
+                className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 text-primary text-sm font-bold"
+              >
+                <Sparkles className="h-4 w-4" />
+                Smart Hostel Management
+              </motion.div>
+              <h1 className="text-4xl md:text-6xl font-black tracking-tight">
+                Manage Your Hostel Life with{" "}
+                <span className="text-primary">Ease</span>
+              </h1>
+              <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto">
+                HostelMate helps you organize tasks, track responsibilities, and maintain harmony with your flatmates using smart, fair algorithms.
+              </p>
+            </div>
+
+            <div className="flex flex-col sm:flex-row gap-4 justify-center pt-4">
+              <Button asChild size="lg" className="h-14 px-8 rounded-xl font-bold text-lg gap-2 shadow-lg shadow-primary/20">
+                <Link href="/login?mode=signup">
+                  <UserPlus className="h-5 w-5" />
+                  Get Started Free
+                </Link>
+              </Button>
+              <Button asChild variant="outline" size="lg" className="h-14 px-8 rounded-xl font-bold text-lg gap-2">
+                <Link href="/login">
+                  <LogIn className="h-5 w-5" />
+                  Sign In
+                </Link>
+              </Button>
+            </div>
+          </motion.div>
+        </div>
+
+        {/* Features Grid */}
+        <motion.div 
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.3, duration: 0.5 }}
+          className="grid md:grid-cols-3 gap-6 pb-12"
+        >
+          {[
+            {
+              icon: Shield,
+              title: "Fair Task Distribution",
+              description: "Our smart algorithm ensures everyone contributes equally to keeping your space clean."
+            },
+            {
+              icon: Award,
+              title: "Gamification & Points",
+              description: "Earn points, climb leaderboards, and unlock achievements as you complete tasks."
+            },
+            {
+              icon: Zap,
+              title: "Real-time Updates",
+              description: "Stay in sync with your flatmates with instant notifications and live task tracking."
+            }
+          ].map((feature, i) => (
+            <Card key={i} className="border-border/50 rounded-2xl bg-white/50 dark:bg-slate-900/50 backdrop-blur-sm">
+              <CardContent className="p-6 text-center space-y-4">
+                <div className="h-14 w-14 rounded-xl bg-primary/10 flex items-center justify-center mx-auto">
+                  <feature.icon className="h-7 w-7 text-primary" />
+                </div>
+                <h3 className="text-lg font-bold">{feature.title}</h3>
+                <p className="text-sm text-muted-foreground">{feature.description}</p>
+              </CardContent>
+            </Card>
+          ))}
+        </motion.div>
+      </div>
+    );
+  }
 
   if (!currentSpace) {
     return (

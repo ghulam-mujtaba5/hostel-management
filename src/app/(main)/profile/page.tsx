@@ -152,7 +152,7 @@ export default function ProfilePage() {
   };
 
   // Show loading state - middleware handles auth protection
-  if (authLoading || !user) {
+  if (authLoading) {
     return (
       <div className="space-y-10 pb-24">
         <div className="h-64 rounded-4xl bg-muted/20 animate-pulse" />
@@ -160,6 +160,43 @@ export default function ProfilePage() {
           <div className="md:col-span-2 h-48 rounded-4xl bg-muted/20 animate-pulse" />
           <div className="h-48 rounded-4xl bg-muted/20 animate-pulse" />
         </div>
+      </div>
+    );
+  }
+
+  // Show sign-in prompt for non-authenticated users
+  if (!user) {
+    return (
+      <div className="min-h-[60vh] flex flex-col items-center justify-center text-center p-6">
+        <motion.div
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.3 }}
+          className="space-y-6 max-w-md"
+        >
+          <div className="h-24 w-24 rounded-3xl bg-gradient-to-br from-primary/20 to-purple-500/20 flex items-center justify-center mx-auto">
+            <User className="h-12 w-12 text-primary" />
+          </div>
+          <div className="space-y-2">
+            <h2 className="text-3xl font-black tracking-tight">Your Profile</h2>
+            <p className="text-muted-foreground font-medium">
+              Sign in to view your profile, achievements, and settings.
+            </p>
+          </div>
+          <div className="flex flex-col sm:flex-row gap-3 justify-center pt-4">
+            <Button asChild size="lg" className="rounded-xl px-8 font-bold gap-2">
+              <Link href="/login">
+                <User className="h-4 w-4" />
+                Sign In
+              </Link>
+            </Button>
+            <Button asChild size="lg" variant="outline" className="rounded-xl px-8 font-bold gap-2">
+              <Link href="/login?mode=signup">
+                Create Account
+              </Link>
+            </Button>
+          </div>
+        </motion.div>
       </div>
     );
   }

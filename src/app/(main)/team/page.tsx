@@ -30,7 +30,7 @@ interface MemberWithStats extends SpaceMember {
 }
 
 export default function TeamMembersPage() {
-  const { user, currentSpace, spaceMembership } = useAuth();
+  const { user, currentSpace, spaceMembership, loading: authLoading } = useAuth();
   const [members, setMembers] = useState<MemberWithStats[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
@@ -40,8 +40,10 @@ export default function TeamMembersPage() {
   useEffect(() => {
     if (currentSpace) {
       fetchMembers();
+    } else if (!authLoading) {
+      setLoading(false);
     }
-  }, [currentSpace]);
+  }, [currentSpace, authLoading]);
 
   const fetchMembers = async () => {
     if (!currentSpace) return;
@@ -201,6 +203,42 @@ export default function TeamMembersPage() {
   const isAdmin = spaceMembership?.role === 'admin';
   const totalOverdue = members.reduce((sum, m) => sum + m.tasksOverdue, 0);
   const avgWeeklyTasks = members.length ? Math.round(members.reduce((sum, m) => sum + m.weeklyTasks, 0) / members.length) : 0;
+
+  // Loading state
+  if (authLoading || loading) {
+    return (
+      <div className="space-y-4 pb-24">
+        <div className="h-12 bg-muted/20 rounded-xl animate-pulse" />
+        <div className="grid grid-cols-4 gap-1.5">
+          {[...Array(4)].map((_, i) => <div key={i} className="h-16 bg-muted/20 rounded-xl animate-pulse" />)}
+        </div>
+        {[...Array(5)].map((_, i) => <div key={i} className="h-16 bg-muted/20 rounded-xl animate-pulse" />)}
+      </div>
+    );
+  }
+
+  // Not logged in
+  if (!user) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-[60vh] px-4">
+        <div className="h-24 w-24 rounded-3xl bg-gradient-to-br from-primary/20 to-purple-500/20 flex items-center justify-center mx-auto mb-6">
+          <Users className="h-12 w-12 text-primary" />
+        </div>
+        <h2 className="text-2xl font-bold mb-2">Team Members</h2>
+        <p className="text-muted-foreground text-center mb-6 max-w-md">
+          Sign in to view your team members and their contribution stats.
+        </p>
+        <div className="flex gap-3">
+          <Button asChild className="rounded-xl">
+            <Link href="/login">Sign In</Link>
+          </Button>
+          <Button asChild variant="outline" className="rounded-xl">
+            <Link href="/login?mode=signup">Create Account</Link>
+          </Button>
+        </div>
+      </div>
+    );
+  }
 
   if (!currentSpace) {
     return (

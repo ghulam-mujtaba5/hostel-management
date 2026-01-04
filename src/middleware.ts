@@ -101,13 +101,14 @@ export async function middleware(request: NextRequest) {
     data: { user },
   } = await supabase.auth.getUser();
 
-  // Protected routes - redirect to login if not authenticated
-  const protectedPaths = ["/dashboard", "/duties", "/profile", "/settings", "/admin", "/tasks", "/leaderboard", "/insights", "/spaces", "/queue", "/notes", "/history", "/feedback", "/issues", "/team", "/guide", "/preferences", "/services", "/fairness-info"];
-  const isProtectedPath = protectedPaths.some((path) =>
+  // SIMPLIFIED AUTH: Only admin routes are strictly protected
+  // All other routes will handle their own auth display (show login prompt if needed)
+  const strictlyProtectedPaths = ["/admin"];
+  const isStrictlyProtected = strictlyProtectedPaths.some((path) =>
     request.nextUrl.pathname.startsWith(path)
   );
 
-  if (isProtectedPath && !user) {
+  if (isStrictlyProtected && !user) {
     const url = request.nextUrl.clone();
     url.pathname = "/login";
     url.searchParams.set("next", request.nextUrl.pathname);
