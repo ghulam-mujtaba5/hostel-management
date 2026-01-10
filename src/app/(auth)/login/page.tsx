@@ -117,6 +117,9 @@ function LoginContent() {
         if (error) throw error;
         toast.success('Welcome back!');
         
+        // Clear any stale data from previous sessions
+        sessionStorage.clear();
+        
         // Check for pending invite and auto-join
         const pendingInvite = inviteCode || localStorage.getItem('pendingInviteCode');
         if (pendingInvite) {

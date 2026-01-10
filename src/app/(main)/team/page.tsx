@@ -38,12 +38,14 @@ export default function TeamMembersPage() {
   const [selectedMember, setSelectedMember] = useState<string | null>(null);
 
   useEffect(() => {
-    if (currentSpace) {
+    if (currentSpace && user) {
       fetchMembers();
     } else if (!authLoading) {
+      // Clear members when no space or user
+      setMembers([]);
       setLoading(false);
     }
-  }, [currentSpace, authLoading]);
+  }, [currentSpace?.id, user?.id, authLoading]); // Depend on user ID too
 
   const fetchMembers = async () => {
     if (!currentSpace) return;

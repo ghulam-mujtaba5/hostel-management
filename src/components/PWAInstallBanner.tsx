@@ -217,9 +217,39 @@ export function useIsPWA() {
   const [isPWA, setIsPWA] = useState(false);
 
   useEffect(() => {
-    const standalone = window.matchMedia("(display-mode: standalone)").matches 
-      || (window.navigator as any).standalone === true;
-    setIsPWA(standalone);
+    // Check multiple methods for PWA detection
+    const checkStandalone = () => {
+      const isStandalone = 
+        window.matchMedia("(display-mode: standalone)").matches ||
+        window.matchMedia("(display-mode: fullscreen)").matches ||
+        window.matchMedia("(display-mode: minimal-ui)").matches ||
+        (window.navigator as any).standalone === true || // iOS Safari
+        document.referrer.includes('android-app://') || // Android TWA
+        window.matchMedia('(display-mode: window-controls-overlay)').matches;
+      
+      setIsPWA(isStandalone);
+    };
+    
+    checkStandalone();
+    
+    // Listen for display mode changes
+    const mediaQuery = window.matchMedia("(display-mode: standalone)");
+    const handler = (e: MediaQueryListEvent) => setIsPWA(e.matches);
+    
+    if (mediaQuery.addEventListener) {
+      mediaQuery.addEventListener('change', handler);
+    } else {
+      // Fallback for older browsers
+      mediaQuery.addListener(handler);
+    }
+    
+    return () => {
+      if (mediaQuery.removeEventListener) {
+        mediaQuery.removeEventListener('change', handler);
+      } else {
+        mediaQuery.removeListener(handler);
+      }
+    };
   }, []);
 
   return isPWA;

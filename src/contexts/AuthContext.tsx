@@ -152,10 +152,35 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, session) => {
-        console.log('Auth state changed:', event);
+        console.log('Auth state changed:', event, session?.user?.id);
+        
+        // Handle sign out event specifically
+        if (event === 'SIGNED_OUT') {
+          console.log('[Auth] User signed out, clearing all state');
+          setSession(null);
+          setUser(null);
+          setProfile(null);
+          setCurrentSpaceState(null);
+          setSpaceMembership(null);
+          setUserSpaces([]);
+          setLoading(false);
+          return;
+        }
+        
+        // Handle user change (switching accounts)
+        if (event === 'SIGNED_IN' && user && session?.user && user.id !== session.user.id) {
+          console.log('[Auth] Different user signed in, clearing old state');
+          setProfile(null);
+          setCurrentSpaceState(null);
+          setSpaceMembership(null);
+          setUserSpaces([]);
+          // Clear saved space since it belongs to old user
+          localStorage.removeItem('currentSpaceId');
+        }
+        
         setSession(session);
         setUser(session?.user ?? null);
-        setLoading(false); // Always set to false when state changes
+        setLoading(false);
       }
     );
 
@@ -188,10 +213,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     if (user && !initialized) return; // Don't run if just initializing
     
     if (user) {
+      // IMPORTANT: Clear old state immediately before fetching new user's data
+      // This prevents showing the previous user's profile
+      setProfile(null);
+      setCurrentSpaceState(null);
+      setSpaceMembership(null);
+      setUserSpaces([]);
+      
+      // Now fetch the new user's data
       refreshProfile();
       refreshSpaces();
       
-      // Restore last selected space
+      // Restore last selected space only if it belongs to current user
       const savedSpaceId = localStorage.getItem('currentSpaceId');
       if (savedSpaceId) {
         (async () => {
@@ -292,15 +325,47 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const signOut = async () => {
     try {
-      await supabase.auth.signOut();
+      // Clear all state immediately BEFORE signing out
       setUser(null);
       setProfile(null);
+      setSession(null);
       setCurrentSpaceState(null);
       setSpaceMembership(null);
       setUserSpaces([]);
-      localStorage.removeItem('currentSpaceId');
+      setInitialized(false);
+      
+      // Clear ALL app-related localStorage items
+      const keysToRemove = [
+        'currentSpaceId',
+        'pendingInviteCode',
+        'hostelmate_welcome_seen',
+        'pwa-banner-dismissed',
+        'help-tooltips-disabled',
+      ];
+      keysToRemove.forEach(key => localStorage.removeItem(key));
+      
+      // Clear sessionStorage
+      sessionStorage.clear();
+      
+      // Sign out from Supabase (this clears auth cookies)
+      await supabase.auth.signOut({ scope: 'global' });
+      
+      // Clear any cached data in service worker
+      if ('caches' in window) {
+        const cacheNames = await caches.keys();
+        await Promise.all(
+          cacheNames
+            .filter(name => name.includes('runtime'))
+            .map(name => caches.delete(name))
+        );
+      }
+      
+      // Force a hard reload to clear any in-memory state
+      window.location.href = '/login';
     } catch (err) {
       console.error('Sign out error:', err);
+      // Even on error, try to redirect
+      window.location.href = '/login';
     }
   };
 

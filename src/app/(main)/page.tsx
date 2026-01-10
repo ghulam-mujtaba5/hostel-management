@@ -124,7 +124,8 @@ export default function Dashboard() {
   };
 
   // Only show skeleton on very first load with user and space
-  if (user && currentSpace && loading) return <DashboardSkeleton />;
+  // Also show skeleton when profile is loading after user change
+  if ((user && currentSpace && loading) || (user && !profile && authLoading)) return <DashboardSkeleton />;
 
   // Show landing page for non-authenticated users
   if (!user && initialLoadDone) {

@@ -21,12 +21,14 @@ export default function LeaderboardPage() {
   const [period, setPeriod] = useState<'all' | 'week' | 'month'>('all');
 
   useEffect(() => {
-    if (currentSpace) {
+    if (currentSpace && user) {
       fetchLeaderboard();
     } else if (!authLoading) {
+      // Clear members when no space or user
+      setMembers([]);
       setLoading(false);
     }
-  }, [currentSpace, period, authLoading]);
+  }, [currentSpace?.id, user?.id, period, authLoading]); // Depend on user ID too
 
   const fetchLeaderboard = async () => {
     if (!currentSpace) return;

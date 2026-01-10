@@ -92,8 +92,12 @@ export default function TasksPage() {
       // Reset initial load flag when space changes
       setInitialLoadDone(false);
       fetchTasks(true);
+    } else {
+      // Clear tasks when no space is selected
+      setTasks([]);
+      setLoading(false);
     }
-  }, [currentSpace?.id]); // Only depend on space ID, not the whole object
+  }, [currentSpace?.id, user?.id]); // Depend on both space AND user ID
   
   // Separate effect for tab changes - don't show loading
   useEffect(() => {

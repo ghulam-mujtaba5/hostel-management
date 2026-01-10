@@ -155,7 +155,7 @@ export default function ProfilePage() {
   };
 
   // Show loading state - middleware handles auth protection
-  if (authLoading) {
+  if (authLoading || (user && !profile)) {
     return (
       <div className="space-y-10 pb-24">
         <div className="h-64 rounded-4xl bg-muted/20 animate-pulse" />

@@ -1,5 +1,5 @@
 // Cache version - increment this to force all clients to update
-const CACHE_VERSION = '20260104-v2'; // Updated with new branding
+const CACHE_VERSION = '20260110-v1'; // Fixed auth caching issues
 const CACHE_NAME = `hostelmate-${CACHE_VERSION}`;
 const RUNTIME_CACHE = `hostelmate-runtime-${CACHE_VERSION}`;
 
@@ -29,24 +29,31 @@ self.addEventListener('install', (event) => {
 self.addEventListener('fetch', (event) => {
   const url = new URL(event.request.url);
   
-  // Network-first for API calls
+  // NEVER cache auth-related requests - always go to network
+  if (url.pathname.includes('/auth') || 
+      url.pathname.includes('/login') || 
+      url.pathname.includes('/signup') ||
+      url.pathname.includes('/callback') ||
+      url.hostname.includes('supabase')) {
+    event.respondWith(fetch(event.request));
+    return;
+  }
+  
+  // Network-first for API calls (but don't cache user-specific data)
   if (url.pathname.startsWith('/api/')) {
     event.respondWith(
       fetch(event.request)
         .then((response) => {
-          // Clone the response
-          const clonedResponse = response.clone();
-          // Cache successful API responses
-          if (response.status === 200) {
-            caches.open(RUNTIME_CACHE).then((cache) => {
-              cache.put(event.request, clonedResponse);
-            });
-          }
+          // Don't cache API responses that may contain user-specific data
+          // Only cache truly static API responses
           return response;
         })
         .catch(() => {
-          // Fall back to cache for API calls
-          return caches.match(event.request);
+          // For API failures, just return error - don't serve stale user data
+          return new Response(JSON.stringify({ error: 'Network error' }), {
+            status: 503,
+            headers: { 'Content-Type': 'application/json' }
+          });
         })
     );
   }
