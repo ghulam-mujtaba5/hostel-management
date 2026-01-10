@@ -8,11 +8,12 @@ export default function manifest(): MetadataRoute.Manifest {
     name: 'HostelMate – Live Better, Together',
     short_name: 'HostelMate',
     description: 'The smart way to manage shared living. AI-powered fair task distribution, gamification, and seamless team collaboration. Trusted by students worldwide.',
-    start_url: '/',
+    start_url: '/?source=pwa',
     display: 'standalone',
+    display_override: ['standalone', 'minimal-ui'],
     background_color: '#020817', // Slate 950 - matches dark mode
     theme_color: '#10b981', // Emerald 500 - brand primary
-    orientation: 'portrait-primary',
+    orientation: 'any', // Allow both portrait and landscape for flexibility
     scope: '/',
     lang: 'en',
     dir: 'ltr',

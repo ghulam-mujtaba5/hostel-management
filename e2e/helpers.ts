@@ -28,15 +28,15 @@ export async function signUp(page: Page, email: string, password: string, userna
   await navigateTo(page, '/login');
   
   // Click Sign up button to switch to signup mode
-  await page.getByRole('button', { name: 'Sign up' }).click();
+  await page.getByText('Sign up').click();
   
   // Fill in signup form
-  await page.getByPlaceholder('you@example.com').fill(email);
+  await page.getByPlaceholder('name@example.com').fill(email);
   await page.getByPlaceholder('••••••••').fill(password);
-  await page.getByPlaceholder('Your name').fill(username);
+  await page.getByPlaceholder('johndoe').fill(username);
   
   // Submit
-  await page.getByRole('button', { name: 'Sign Up' }).click();
+  await page.getByRole('button', { name: 'Create Account' }).click();
   
   // Wait for navigation
   await page.waitForURL('**/', { timeout: 10000 });
@@ -45,7 +45,7 @@ export async function signUp(page: Page, email: string, password: string, userna
 export async function signIn(page: Page, email: string, password: string) {
   await navigateTo(page, '/login');
   
-  await page.getByPlaceholder('you@example.com').fill(email);
+  await page.getByPlaceholder('name@example.com').fill(email);
   await page.getByPlaceholder('••••••••').fill(password);
   
   await page.getByRole('button', { name: 'Sign In' }).click();

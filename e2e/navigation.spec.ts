@@ -11,11 +11,12 @@ test.describe('Navigation and UI', () => {
     // Either on home page or redirected to login
     const isOnLogin = page.url().includes('/login');
     if (isOnLogin) {
-      await expect(page.getByText('Welcome Back')).toBeVisible();
+      await expect(page.getByText('Welcome back')).toBeVisible();
     }
   });
 
-  test('should have working navigation in demo mode', async ({ page }) => {
+  // Demo mode has been removed from the app
+  test.skip('should have working navigation in demo mode', async ({ page }) => {
     await page.goto('/demo');
     
     // Skip tour
@@ -29,7 +30,8 @@ test.describe('Navigation and UI', () => {
     await expect(page.getByText('Demo Space')).toBeVisible();
   });
 
-  test('should display tasks in demo mode', async ({ page }) => {
+  // Demo mode has been removed from the app
+  test.skip('should display tasks in demo mode', async ({ page }) => {
     await page.goto('/demo');
     
     // Skip tour
@@ -41,7 +43,8 @@ test.describe('Navigation and UI', () => {
     await expect(page.getByText('Take out Trash')).toBeVisible();
   });
 
-  test('should display stats and progress in demo mode', async ({ page }) => {
+  // Demo mode has been removed from the app
+  test.skip('should display stats and progress in demo mode', async ({ page }) => {
     await page.goto('/demo');
     
     // Skip tour
@@ -55,7 +58,8 @@ test.describe('Navigation and UI', () => {
     await expect(page.getByText('1,250')).toBeVisible(); // Points
   });
 
-  test('should show weekly goal progress', async ({ page }) => {
+  // Demo mode has been removed from the app
+  test.skip('should show weekly goal progress', async ({ page }) => {
     await page.goto('/demo');
     
     await page.getByRole('button', { name: 'Skip Tour' }).click();
@@ -65,7 +69,8 @@ test.describe('Navigation and UI', () => {
     await expect(page.getByText('3/5 tasks completed')).toBeVisible();
   });
 
-  test('should have working restart tour button', async ({ page }) => {
+  // Demo mode has been removed from the app
+  test.skip('should have working restart tour button', async ({ page }) => {
     await page.goto('/demo');
     
     // Skip tour first
@@ -80,7 +85,8 @@ test.describe('Navigation and UI', () => {
     await expect(page.getByText('Welcome to HostelMate! 👋')).toBeVisible();
   });
 
-  test('should interact with task in demo mode', async ({ page }) => {
+  // Demo mode has been removed from the app
+  test.skip('should interact with task in demo mode', async ({ page }) => {
     await page.goto('/demo');
     
     // Must skip tour first to avoid overlay blocking button clicks

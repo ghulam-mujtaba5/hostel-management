@@ -6,6 +6,7 @@ export async function GET(request: Request) {
   const code = requestUrl.searchParams.get("code");
   const error_description = requestUrl.searchParams.get("error_description");
   const next = requestUrl.searchParams.get("next") ?? "/";
+  const isPWA = requestUrl.searchParams.get("pwa") === "1";
 
   // Handle OAuth errors
   if (error_description) {
@@ -72,9 +73,17 @@ export async function GET(request: Request) {
           .limit(1);
 
         // Redirect to onboarding if no spaces, otherwise to dashboard
-        const redirectPath = (!userSpaces || userSpaces.length === 0) 
+        let redirectPath = (!userSpaces || userSpaces.length === 0) 
           ? "/spaces/create?welcome=true" 
           : next;
+        
+        // For PWA OAuth flow, add a marker to help the client detect
+        // that auth completed and handle display mode restoration
+        if (isPWA) {
+          redirectPath = redirectPath.includes('?') 
+            ? `${redirectPath}&pwa_auth=1` 
+            : `${redirectPath}?pwa_auth=1`;
+        }
 
         // Successful auth - redirect with clean URL
         const redirectUrl = new URL(redirectPath, requestUrl.origin);

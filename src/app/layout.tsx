@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
+import { Suspense } from "react";
 import "./globals.css";
 import { cn } from "@/lib/utils";
 import { ThemeProvider } from "@/components/ThemeProvider";
@@ -11,6 +12,7 @@ import { HelpTooltipProvider } from "@/components/HelpTooltip";
 import { NetworkStatus } from "@/components/NetworkStatus";
 import { ServiceWorkerRegister } from "@/components/ServiceWorkerRegister";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
+import { PWAAuthHandler } from "@/components/PWAAuthHandler";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -88,6 +90,9 @@ export default function RootLayout({
                 <HelpTooltipProvider>
                   <NetworkStatus />
                   <ServiceWorkerRegister />
+                  <Suspense fallback={null}>
+                    <PWAAuthHandler />
+                  </Suspense>
                   <ToastProvider />
                   {children}
                 </HelpTooltipProvider>

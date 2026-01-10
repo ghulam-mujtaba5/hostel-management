@@ -211,6 +211,41 @@
     .pwa-notch-safe {
       padding-top: max(env(safe-area-inset-top, 0px), 1rem);
     }
+    
+    /* Ensure mobile layout is preserved in standalone mode */
+    html, body {
+      /* Force mobile viewport behavior in PWA */
+      max-width: 100vw;
+      overflow-x: hidden;
+    }
+  }
+
+  /* PWA Browser mode (opened via link from installed PWA) */
+  @media (display-mode: browser) {
+    /* Detect when app opened in browser but should be standalone */
+    html.pwa-browser {
+      /* Add visual indicator that user is in browser */
+    }
+  }
+
+  /* Mobile-first layout preservation for PWA */
+  @media (display-mode: standalone), (display-mode: minimal-ui) {
+    /* Ensure consistent mobile experience in PWA */
+    .login-container,
+    .auth-container {
+      flex-direction: column !important;
+    }
+    
+    /* Hide desktop-only elements in standalone PWA */
+    .desktop-visual {
+      display: none !important;
+    }
+    
+    /* Full width form in PWA mode */
+    .auth-form-container {
+      width: 100% !important;
+      max-width: 100% !important;
+    }
   }
 
   /* Touch-optimized buttons */

@@ -242,9 +242,9 @@ function LoginContent() {
   };
 
   return (
-    <div className="min-h-screen w-full flex">
-      {/* Left Side - Visual */}
-      <div className="hidden lg:flex w-1/2 bg-gradient-to-br from-emerald-50 via-teal-50 to-cyan-50 dark:from-emerald-950/30 dark:via-teal-950/20 dark:to-cyan-950/10 relative overflow-hidden items-center justify-center p-12">
+    <div className="min-h-screen w-full flex login-container">
+      {/* Left Side - Visual (hidden in PWA standalone mode) */}
+      <div className="hidden lg:flex w-1/2 bg-gradient-to-br from-emerald-50 via-teal-50 to-cyan-50 dark:from-emerald-950/30 dark:via-teal-950/20 dark:to-cyan-950/10 relative overflow-hidden items-center justify-center p-12 desktop-visual">
         {/* Premium gradient orbs */}
         <div className="absolute top-20 left-20 w-72 h-72 bg-emerald-400/20 rounded-full blur-3xl" />
         <div className="absolute bottom-20 right-20 w-96 h-96 bg-teal-400/20 rounded-full blur-3xl" />
@@ -328,7 +328,7 @@ function LoginContent() {
       </div>
 
       {/* Right Side - Form */}
-      <div className="flex-1 flex items-center justify-center p-6 lg:p-12 bg-background">
+      <div className="flex-1 flex items-center justify-center p-6 lg:p-12 bg-background auth-form-container">
         <div className="w-full max-w-sm space-y-8">
           {/* Invite Banner */}
           {inviteSpaceName && (
@@ -447,7 +447,7 @@ function LoginContent() {
           <Button
             variant="outline"
             type="button"
-            onClick={() => {
+            onClick={async () => {
               // Store invite code before OAuth redirect
               const pendingInvite = inviteCode || localStorage.getItem('pendingInviteCode');
               if (pendingInvite) {
@@ -455,9 +455,28 @@ function LoginContent() {
               }
               
               const redirectPath = pendingInvite ? `/invite/${pendingInvite}` : (returnTo || '/');
-              supabase.auth.signInWithOAuth({
+              
+              // Check if running as installed PWA
+              const isPWA = window.matchMedia('(display-mode: standalone)').matches ||
+                            (window.navigator as any).standalone === true ||
+                            document.referrer.includes('android-app://');
+              
+              // Store display mode preference to restore after OAuth
+              if (isPWA) {
+                localStorage.setItem('pwa_oauth_return', 'true');
+                localStorage.setItem('pwa_redirect_path', redirectPath);
+              }
+              
+              // For PWA, we need to handle the redirect carefully
+              // The callback will detect PWA mode and redirect appropriately
+              await supabase.auth.signInWithOAuth({
                 provider: 'google',
-                options: { redirectTo: `${window.location.origin}/auth/callback?next=${encodeURIComponent(redirectPath)}` }
+                options: { 
+                  redirectTo: `${window.location.origin}/auth/callback?next=${encodeURIComponent(redirectPath)}&pwa=${isPWA ? '1' : '0'}`,
+                  queryParams: {
+                    prompt: 'select_account'
+                  }
+                }
               });
             }}
             className="w-full"

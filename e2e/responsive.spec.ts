@@ -10,17 +10,16 @@ test.describe('Responsive Design', () => {
   for (const size of sizes) {
     test(`should render correctly on ${size.name}`, async ({ page }) => {
       await page.setViewportSize({ width: size.width, height: size.height });
-      await page.goto('/demo');
+      await page.goto('/login');
+      await page.waitForLoadState('networkidle');
       
-      await page.getByRole('button', { name: 'Skip Tour' }).click();
-      
-      // Check that main elements are visible
-      await expect(page.getByText('Hey, Demo User!')).toBeVisible();
-      await expect(page.getByText('Demo Space')).toBeVisible();
+      // Check that main elements are visible on login page
+      await expect(page.getByRole('link', { name: /HostelMate/ })).toBeVisible();
+      await expect(page.getByRole('button', { name: 'Sign In' })).toBeVisible();
       
       // Take screenshot for visual regression
       await page.screenshot({ 
-        path: `e2e/screenshots/${size.name.toLowerCase()}-demo.png`,
+        path: `e2e/screenshots/${size.name.toLowerCase()}-login.png`,
         fullPage: true 
       });
     });
@@ -28,26 +27,24 @@ test.describe('Responsive Design', () => {
 
   test('should have readable text on mobile', async ({ page }) => {
     await page.setViewportSize({ width: 375, height: 667 });
-    await page.goto('/demo');
+    await page.goto('/login');
+    await page.waitForLoadState('networkidle');
     
-    await page.getByRole('button', { name: 'Skip Tour' }).click();
-    
-    // Check font sizes are reasonable (text should be visible)
-    const heading = page.getByRole('heading', { name: /Hey, Demo User!/i });
-    await expect(heading).toBeVisible();
+    // Check text is visible on mobile
+    await expect(page.getByText('Welcome back')).toBeVisible();
+    await expect(page.getByRole('button', { name: 'Sign In' })).toBeVisible();
   });
 
   test('should have clickable buttons on mobile', async ({ page }) => {
     await page.setViewportSize({ width: 375, height: 667 });
-    await page.goto('/demo');
-    
-    await page.getByRole('button', { name: 'Skip Tour' }).click();
+    await page.goto('/login');
+    await page.waitForLoadState('networkidle');
     
     // All buttons should be clickable
-    const takeTaskButton = page.getByRole('button', { name: 'Take This Task' }).first();
-    await expect(takeTaskButton).toBeVisible();
+    const signInButton = page.getByRole('button', { name: 'Sign In' });
+    await expect(signInButton).toBeVisible();
     
-    const boundingBox = await takeTaskButton.boundingBox();
+    const boundingBox = await signInButton.boundingBox();
     expect(boundingBox?.height).toBeGreaterThan(30); // Touch target should be at least 30px
   });
 });

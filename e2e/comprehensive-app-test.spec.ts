@@ -34,7 +34,7 @@ test.describe('Complete App Feature Test - Full User Journey', () => {
     // Fill signup form with correct placeholders
     const emailInput = page.getByPlaceholder('name@example.com');
     const passwordInput = page.getByPlaceholder('••••••••');
-    const usernameInput = page.getByPlaceholder('Full name');
+    const usernameInput = page.getByPlaceholder('johndoe');
     
     await emailInput.fill(testEmail);
     await passwordInput.fill(testPassword);
@@ -273,7 +273,7 @@ test.describe('Complete App Feature Test - Full User Journey', () => {
     
     await page.getByPlaceholder('name@example.com').fill(testEmail);
     await page.getByPlaceholder('••••••••').fill(testPassword);
-    await page.getByPlaceholder('Full name').fill(testUser);
+    await page.getByPlaceholder('johndoe').fill(testUser);
     
     await page.getByRole('button', { name: 'Create Account' }).click();
     
