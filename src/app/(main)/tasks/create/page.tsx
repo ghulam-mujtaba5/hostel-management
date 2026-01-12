@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { ArrowLeft, Calendar, FileText, Tag, Check, AlertCircle, Sparkles, Gauge } from "lucide-react";
+import { ArrowLeft, FileText, Tag, Check, AlertCircle, Sparkles, Gauge, RefreshCw } from "lucide-react";
 import Link from "next/link";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/lib/supabase";
@@ -36,7 +36,7 @@ export default function CreateTaskPage() {
   const [description, setDescription] = useState("");
   const [category, setCategory] = useState<TaskCategory>("other");
   const [difficulty, setDifficulty] = useState(5);
-  const [dueDate, setDueDate] = useState("");
+  const [isReusable, setIsReusable] = useState(true); // Tasks are reusable by default
 
   const difficultyInfo = getDifficultyInfo(difficulty);
 
@@ -81,7 +81,7 @@ export default function CreateTaskPage() {
         description: sanitizedDescription,
         category,
         difficulty,
-        due_date: dueDate || null,
+        is_reusable: isReusable,
         created_by: user.id,
         status: 'todo',
       });
@@ -297,23 +297,47 @@ export default function CreateTaskPage() {
                 </div>
               </motion.div>
 
-              {/* Due Date */}
+              {/* Reusable Task Toggle */}
               <motion.div 
-                className="space-y-2"
+                className="space-y-3"
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: 0.35 }}
               >
                 <label className="text-sm font-medium flex items-center gap-2">
-                  <Calendar className="h-4 w-4 text-primary" />
-                  Due Date (optional)
+                  <RefreshCw className="h-4 w-4 text-primary" />
+                  Reusable Task
                 </label>
-                <Input
-                  type="datetime-local"
-                  value={dueDate}
-                  onChange={(e) => setDueDate(e.target.value)}
-                  className="h-12"
-                />
+                <div 
+                  className={`p-4 rounded-xl border-2 transition-all cursor-pointer ${
+                    isReusable 
+                      ? 'border-primary bg-primary/10 dark:bg-primary/20' 
+                      : 'border-border hover:border-primary/50'
+                  }`}
+                  onClick={() => setIsReusable(!isReusable)}
+                >
+                  <div className="flex items-center justify-between">
+                    <div className="space-y-1">
+                      <p className="font-medium text-sm">
+                        {isReusable ? 'Task can be retaken' : 'One-time task'}
+                      </p>
+                      <p className="text-xs text-muted-foreground">
+                        {isReusable 
+                          ? 'After completion, any member can retake this task in the future'
+                          : 'Task will be archived after completion'}
+                      </p>
+                    </div>
+                    <div className={`h-6 w-11 rounded-full transition-colors flex items-center px-0.5 ${
+                      isReusable ? 'bg-primary' : 'bg-muted'
+                    }`}>
+                      <motion.div 
+                        className="h-5 w-5 rounded-full bg-white shadow-sm"
+                        animate={{ x: isReusable ? 20 : 0 }}
+                        transition={{ type: "spring", stiffness: 500, damping: 30 }}
+                      />
+                    </div>
+                  </div>
+                </div>
               </motion.div>
 
               <AnimatePresence>

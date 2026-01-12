@@ -195,7 +195,7 @@ export default function TasksPage() {
       if (activeTab === 'completed') {
         return {
           title: 'No Completed Tasks',
-          description: 'Great work! Once you complete tasks, they\'ll appear here.',
+          description: 'Completed tasks will appear here. You can retake them anytime!',
           action: { label: 'View Available Tasks', onClick: () => setActiveTab('available') }
         };
       }
@@ -378,6 +378,7 @@ export default function TasksPage() {
                     task={task}
                     showAssignee={activeTab !== 'my'}
                     onUpdate={fetchTasks}
+                    showRetake={activeTab === 'completed'}
                   />
                 </motion.div>
               ))}

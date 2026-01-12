@@ -177,6 +177,8 @@ export interface Task {
   category: TaskCategory;
   assignee?: Profile;
   creator?: Profile;
+  is_reusable?: boolean; // If true, task can be retaken after completion
+  original_task_id?: string | null; // Links to the original task if this was retaken
 }
 
 export type TaskCategory = 

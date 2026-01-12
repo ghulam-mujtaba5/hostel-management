@@ -5,7 +5,7 @@ import { supabase } from "@/lib/supabase";
 import { Task, TASK_CATEGORIES } from "@/types";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Clock, User, Camera, Check, Sparkles, ArrowUpRight, Timer, CalendarClock, ChevronRight, AlertCircle } from "lucide-react";
+import { Clock, User, Camera, Check, Sparkles, ArrowUpRight, Timer, CalendarClock, ChevronRight, AlertCircle, RefreshCw } from "lucide-react";
 import { formatDistanceToNow, isToday, isTomorrow, isPast, differenceInHours } from "date-fns";
 import { useState, useRef } from "react";
 import { useAuth } from "@/contexts/AuthContext";
@@ -20,16 +20,37 @@ interface TaskCardProps {
   recommended?: boolean;
   matchScore?: number;
   compact?: boolean;
+  showRetake?: boolean; // Show retake button for completed tasks
 }
 
-export function TaskCard({ task, showAssignee = false, onUpdate, recommended = false, matchScore, compact = false }: TaskCardProps) {
+export function TaskCard({ task, showAssignee = false, onUpdate, recommended = false, matchScore, compact = false, showRetake = false }: TaskCardProps) {
   const { user, currentSpace } = useAuth();
   const [uploading, setUploading] = useState(false);
   const [taking, setTaking] = useState(false);
+  const [retaking, setRetaking] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   
   const category = TASK_CATEGORIES[task.category] || TASK_CATEGORIES.other;
   const isAssignedToMe = task.assigned_to === user?.id;
+  const isCompleted = task.status === 'done';
+  const canRetake = isCompleted && task.is_reusable !== false;
+
+  // Helper function to show user-friendly error messages
+  const handleError = (err: any, defaultMessage: string) => {
+    const errorMessage = err?.message || defaultMessage;
+    // Make error messages more user-friendly
+    if (errorMessage.includes('Finish your current task')) {
+      toast.error('Complete your active task first', { description: 'You can only work on one task at a time' });
+    } else if (errorMessage.includes('weekly limit') || errorMessage.includes('weekly_limit')) {
+      toast.error('Weekly limit reached', { description: 'Wait for next week or ask admin to adjust limits' });
+    } else if (errorMessage.includes('Fairness rule')) {
+      toast.error('Balance needed', { description: 'Try picking a medium or hard task for variety' });
+    } else if (errorMessage.includes('not available')) {
+      toast.error('Task unavailable', { description: 'Someone else may have taken this task' });
+    } else {
+      toast.error(errorMessage);
+    }
+  };
 
   const handleTakeTask = async (e: React.MouseEvent) => {
     e.preventDefault();
@@ -45,9 +66,29 @@ export function TaskCard({ task, showAssignee = false, onUpdate, recommended = f
       toast.success(`You took: ${task.title}`);
       onUpdate?.();
     } catch (err: any) {
-      toast.error(err.message);
+      handleError(err, 'Failed to take task');
     } finally {
       setTaking(false);
+    }
+  };
+
+  const handleRetakeTask = async (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (!user) return;
+    
+    setRetaking(true);
+
+    try {
+      const { error } = await supabase.rpc("retake_task", { p_task_id: task.id });
+      if (error) throw error;
+
+      toast.success(`Task retaken: ${task.title}`, { description: 'A new instance has been assigned to you' });
+      onUpdate?.();
+    } catch (err: any) {
+      handleError(err, 'Failed to retake task');
+    } finally {
+      setRetaking(false);
     }
   };
 
@@ -87,7 +128,7 @@ export function TaskCard({ task, showAssignee = false, onUpdate, recommended = f
       toast.success("Proof uploaded!");
       onUpdate?.();
     } catch (err: any) {
-      toast.error(err.message);
+      handleError(err, 'Failed to upload proof');
     } finally {
       setUploading(false);
     }
@@ -190,6 +231,22 @@ export function TaskCard({ task, showAssignee = false, onUpdate, recommended = f
                   >
                     <Camera className="h-3.5 w-3.5" />
                     {uploading ? "Uploading..." : "Complete with Proof"}
+                  </Button>
+                </div>
+              )}
+              
+              {/* Retake button for completed tasks in compact view */}
+              {showRetake && canRetake && (
+                <div className="mt-2 pt-2 border-t border-border/50">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="w-full h-8 text-xs rounded-lg gap-1.5 border-primary/30 hover:bg-primary/10"
+                    onClick={handleRetakeTask}
+                    disabled={retaking}
+                  >
+                    <RefreshCw className={cn("h-3.5 w-3.5", retaking && "animate-spin")} />
+                    {retaking ? "Retaking..." : "Retake Task"}
                   </Button>
                 </div>
               )}
@@ -323,6 +380,28 @@ export function TaskCard({ task, showAssignee = false, onUpdate, recommended = f
                 >
                   <Camera className="h-3.5 w-3.5" />
                   {uploading ? "Uploading..." : "Upload Proof"}
+                </Button>
+              </div>
+            </motion.div>
+          )}
+
+          {/* Retake button for completed reusable tasks */}
+          {showRetake && canRetake && (
+            <motion.div
+              initial={{ height: 0 }}
+              animate={{ height: "auto" }}
+              exit={{ height: 0 }}
+              className="overflow-hidden"
+            >
+              <div className="px-5 pb-5 pt-0">
+                <Button 
+                  variant="outline"
+                  className="w-full h-9 text-xs gap-2 border-primary/30 hover:bg-primary/10"
+                  onClick={handleRetakeTask}
+                  disabled={retaking}
+                >
+                  <RefreshCw className={cn("h-3.5 w-3.5", retaking && "animate-spin")} />
+                  {retaking ? "Retaking..." : "Retake Task"}
                 </Button>
               </div>
             </motion.div>
