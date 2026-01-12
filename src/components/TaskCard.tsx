@@ -28,6 +28,7 @@ export function TaskCard({ task, showAssignee = false, onUpdate, recommended = f
   const [uploading, setUploading] = useState(false);
   const [taking, setTaking] = useState(false);
   const [retaking, setRetaking] = useState(false);
+  const [completing, setCompleting] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   
   const category = TASK_CATEGORIES[task.category] || TASK_CATEGORIES.other;
@@ -55,17 +56,26 @@ export function TaskCard({ task, showAssignee = false, onUpdate, recommended = f
   const handleTakeTask = async (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    if (!user) return;
+    if (!user || taking) return;
     
     setTaking(true);
 
     try {
-      const { error } = await supabase.rpc("take_task", { task_id: task.id });
-      if (error) throw error;
+      const { data, error } = await supabase.rpc("take_task", { task_id: task.id });
+      
+      if (error) {
+        console.error('Take task error:', error);
+        handleError(error, 'Failed to take task');
+        return;
+      }
 
       toast.success(`You took: ${task.title}`);
-      onUpdate?.();
+      // Call onUpdate to refresh the task list
+      if (onUpdate) {
+        onUpdate();
+      }
     } catch (err: any) {
+      console.error('Take task exception:', err);
       handleError(err, 'Failed to take task');
     } finally {
       setTaking(false);
@@ -89,6 +99,37 @@ export function TaskCard({ task, showAssignee = false, onUpdate, recommended = f
       handleError(err, 'Failed to retake task');
     } finally {
       setRetaking(false);
+    }
+  };
+
+  const handleCompleteTask = async (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (!user || completing) return;
+    
+    setCompleting(true);
+
+    try {
+      const { data, error } = await supabase.rpc("complete_task_direct", { p_task_id: task.id });
+      
+      if (error) {
+        console.error('Complete task error:', error);
+        handleError(error, 'Failed to complete task');
+        return;
+      }
+
+      toast.success(`Task completed! +${task.difficulty} points`, { 
+        description: task.title 
+      });
+      
+      if (onUpdate) {
+        onUpdate();
+      }
+    } catch (err: any) {
+      console.error('Complete task exception:', err);
+      handleError(err, 'Failed to complete task');
+    } finally {
+      setCompleting(false);
     }
   };
 
@@ -208,7 +249,7 @@ export function TaskCard({ task, showAssignee = false, onUpdate, recommended = f
 
               {/* Quick Action for assigned tasks */}
               {isAssignedToMe && (task.status === "in_progress" || task.status === "todo") && (
-                <div className="mt-2 pt-2 border-t border-border/50">
+                <div className="mt-2 pt-2 border-t border-border/50 space-y-2">
                   <input
                     ref={fileInputRef}
                     type="file"
@@ -218,20 +259,32 @@ export function TaskCard({ task, showAssignee = false, onUpdate, recommended = f
                     disabled={uploading}
                     aria-label="Upload proof image"
                   />
-                  <Button
-                    variant="secondary"
-                    size="sm"
-                    className="w-full h-8 text-xs rounded-lg gap-1.5"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      e.stopPropagation();
-                      fileInputRef.current?.click();
-                    }}
-                    disabled={uploading}
-                  >
-                    <Camera className="h-3.5 w-3.5" />
-                    {uploading ? "Uploading..." : "Complete with Proof"}
-                  </Button>
+                  <div className="grid grid-cols-2 gap-2">
+                    <Button
+                      variant="default"
+                      size="sm"
+                      className="h-8 text-xs rounded-lg gap-1.5"
+                      onClick={handleCompleteTask}
+                      disabled={completing}
+                    >
+                      <Check className="h-3.5 w-3.5" />
+                      {completing ? "..." : "Done"}
+                    </Button>
+                    <Button
+                      variant="secondary"
+                      size="sm"
+                      className="h-8 text-xs rounded-lg gap-1.5"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        fileInputRef.current?.click();
+                      }}
+                      disabled={uploading}
+                    >
+                      <Camera className="h-3.5 w-3.5" />
+                      {uploading ? "..." : "Photo"}
+                    </Button>
+                  </div>
                 </div>
               )}
               
@@ -357,7 +410,7 @@ export function TaskCard({ task, showAssignee = false, onUpdate, recommended = f
               exit={{ height: 0 }}
               className="overflow-hidden"
             >
-              <div className="px-5 pb-5 pt-0">
+              <div className="px-5 pb-5 pt-0 space-y-2">
                 <input
                   ref={fileInputRef}
                   type="file"
@@ -368,19 +421,29 @@ export function TaskCard({ task, showAssignee = false, onUpdate, recommended = f
                   aria-label="Upload proof image"
                   title="Upload proof image"
                 />
-                <Button
-                  variant="secondary"
-                  className="w-full h-9 text-xs gap-2"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    fileInputRef.current?.click();
-                  }}
-                  disabled={uploading}
-                >
-                  <Camera className="h-3.5 w-3.5" />
-                  {uploading ? "Uploading..." : "Upload Proof"}
-                </Button>
+                <div className="grid grid-cols-2 gap-2">
+                  <Button
+                    className="h-9 text-xs gap-2"
+                    onClick={handleCompleteTask}
+                    disabled={completing}
+                  >
+                    <Check className="h-3.5 w-3.5" />
+                    {completing ? "Completing..." : "Mark Done"}
+                  </Button>
+                  <Button
+                    variant="secondary"
+                    className="h-9 text-xs gap-2"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
+                      fileInputRef.current?.click();
+                    }}
+                    disabled={uploading}
+                  >
+                    <Camera className="h-3.5 w-3.5" />
+                    {uploading ? "Uploading..." : "With Proof"}
+                  </Button>
+                </div>
               </div>
             </motion.div>
           )}

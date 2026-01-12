@@ -1,21 +1,23 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/lib/supabase";
+import { useRealtimeSubscription } from "@/lib/realtime";
 import { TaskDistributionChart } from "./TaskDistributionChart";
 import { WeeklyActivityChart } from "./WeeklyActivityChart";
 import { PointsHistoryChart } from "./PointsHistoryChart";
 import { TaskStatsChart } from "./TaskStatsChart";
 import { WorkloadBalanceChart } from "./WorkloadBalanceChart";
-import { TASK_CATEGORIES, TaskCategory } from "@/types";
+import { TASK_CATEGORIES, TaskCategory, Task } from "@/types";
 import { startOfWeek, endOfWeek, format, subDays, eachDayOfInterval } from "date-fns";
 import { 
   Loader2, BarChart3, Users, Activity, TrendingUp, 
-  Scale, Target, Sparkles 
+  Scale, Target, Sparkles, RefreshCw 
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -24,26 +26,27 @@ type InsightTab = 'overview' | 'team-stats' | 'workload' | 'personal';
 export function InsightsDashboard() {
   const { user, currentSpace } = useAuth();
   const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
   const [activeTab, setActiveTab] = useState<InsightTab>('overview');
   const [taskDistribution, setTaskDistribution] = useState<any[]>([]);
   const [weeklyActivity, setWeeklyActivity] = useState<any[]>([]);
   const [pointsHistory, setPointsHistory] = useState<any[]>([]);
+  const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
 
-  useEffect(() => {
-    if (user && currentSpace) {
-      fetchInsights();
-    }
-  }, [user, currentSpace]);
-
-  const fetchInsights = async () => {
+  const fetchInsights = useCallback(async (showLoading = true) => {
     if (!user || !currentSpace) return;
-    setLoading(true);
+    
+    if (showLoading) {
+      setLoading(true);
+    } else {
+      setRefreshing(true);
+    }
 
     try {
       // 1. Task Distribution by Category
       const { data: tasks } = await supabase
         .from('tasks')
-        .select('category, status')
+        .select('category, status, difficulty, completed_at, created_at')
         .eq('space_id', currentSpace.id)
         .eq('assigned_to', user.id)
         .eq('status', 'done');
@@ -58,53 +61,100 @@ export function InsightsDashboard() {
         const chartData = Object.entries(distribution).map(([key, value]) => ({
           name: TASK_CATEGORIES[key as TaskCategory]?.label || key,
           value,
-          color: TASK_CATEGORIES[key as TaskCategory]?.color.split(' ')[0].replace('bg-', '').replace('-100', '') // Simplified color extraction
-        })).map(item => ({
-            ...item,
-            color: getColorForCategory(item.name) // Helper function for colors
+          color: getColorForCategory(TASK_CATEGORIES[key as TaskCategory]?.label || key)
         }));
         setTaskDistribution(chartData);
       }
 
-      // 2. Weekly Activity
-      const start = startOfWeek(new Date());
-      const end = endOfWeek(new Date());
-      
+      // 2. Weekly Activity - using completed_at for accurate data
       const { data: weeklyTasks } = await supabase
         .from('tasks')
-        .select('created_at, status, due_date')
+        .select('completed_at, created_at, status, difficulty')
         .eq('space_id', currentSpace.id)
         .eq('assigned_to', user.id)
-        .gte('due_date', subDays(new Date(), 7).toISOString());
+        .gte('completed_at', subDays(new Date(), 7).toISOString());
 
       if (weeklyTasks) {
         const days = eachDayOfInterval({ start: subDays(new Date(), 6), end: new Date() });
         const activityData = days.map(day => {
           const dateStr = format(day, 'yyyy-MM-dd');
-          const dayTasks = weeklyTasks.filter(t => t.due_date?.startsWith(dateStr));
+          const dayTasks = weeklyTasks.filter(t => 
+            t.completed_at?.startsWith(dateStr) || 
+            (!t.completed_at && t.created_at?.startsWith(dateStr))
+          );
           return {
             name: format(day, 'EEE'),
             completed: dayTasks.filter(t => t.status === 'done').length,
-            assigned: dayTasks.length
+            assigned: dayTasks.length,
+            points: dayTasks.reduce((sum, t) => sum + (t.difficulty || 1), 0)
           };
         });
         setWeeklyActivity(activityData);
       }
 
-      // 3. Points History (Mock data for now as we don't have a points history table yet)
-      // In a real app, you'd query a points_history table
-      const mockPointsHistory = Array.from({ length: 7 }).map((_, i) => ({
-        date: format(subDays(new Date(), 6 - i), 'MMM dd'),
-        points: Math.floor(Math.random() * 50) + (i * 10)
-      }));
-      setPointsHistory(mockPointsHistory);
+      // 3. Points History from activity log
+      const { data: activityLog } = await supabase
+        .from('activity_log')
+        .select('created_at, details')
+        .eq('space_id', currentSpace.id)
+        .eq('user_id', user.id)
+        .eq('action', 'completed_task')
+        .gte('created_at', subDays(new Date(), 7).toISOString())
+        .order('created_at', { ascending: true });
+
+      if (activityLog && activityLog.length > 0) {
+        const days = eachDayOfInterval({ start: subDays(new Date(), 6), end: new Date() });
+        let cumulativePoints = 0;
+        const pointsData = days.map(day => {
+          const dateStr = format(day, 'yyyy-MM-dd');
+          const dayActivities = activityLog.filter(a => a.created_at?.startsWith(dateStr));
+          const dayPoints = dayActivities.reduce((sum, a) => sum + (a.details?.points || 0), 0);
+          cumulativePoints += dayPoints;
+          return {
+            date: format(day, 'MMM dd'),
+            points: cumulativePoints,
+            dailyPoints: dayPoints
+          };
+        });
+        setPointsHistory(pointsData);
+      } else {
+        // Fallback to showing current points distribution
+        const days = eachDayOfInterval({ start: subDays(new Date(), 6), end: new Date() });
+        const pointsData = days.map((day, i) => ({
+          date: format(day, 'MMM dd'),
+          points: 0,
+          dailyPoints: 0
+        }));
+        setPointsHistory(pointsData);
+      }
+
+      setLastUpdated(new Date());
 
     } catch (error) {
       console.error("Error fetching insights:", error);
     } finally {
       setLoading(false);
+      setRefreshing(false);
     }
-  };
+  }, [user, currentSpace]);
+
+  // Subscribe to real-time task updates
+  useRealtimeSubscription<Task>(
+    'tasks',
+    useCallback((payload) => {
+      if (currentSpace && payload.new.space_id === currentSpace.id) {
+        // Refresh insights when tasks change
+        fetchInsights(false);
+      }
+    }, [currentSpace, fetchInsights]),
+    currentSpace ? `space_id=eq.${currentSpace.id}` : undefined
+  );
+
+  useEffect(() => {
+    if (user && currentSpace) {
+      fetchInsights();
+    }
+  }, [user, currentSpace, fetchInsights]);
 
   // Helper to map category names to hex colors for charts
   const getColorForCategory = (name: string) => {
@@ -152,8 +202,23 @@ export function InsightsDashboard() {
           <h2 className="text-2xl font-bold">Task Insights & Fairness</h2>
           <p className="text-muted-foreground text-sm">
             Track performance, workload balance, and task history
+            {lastUpdated && (
+              <span className="ml-2 text-xs">
+                • Updated {format(lastUpdated, 'HH:mm')}
+              </span>
+            )}
           </p>
         </div>
+        <Button 
+          variant="outline" 
+          size="sm" 
+          className="rounded-xl gap-2"
+          onClick={() => fetchInsights(false)}
+          disabled={refreshing}
+        >
+          <RefreshCw className={cn("h-4 w-4", refreshing && "animate-spin")} />
+          {refreshing ? "Refreshing..." : "Refresh"}
+        </Button>
       </motion.div>
 
       {/* Tab Navigation */}

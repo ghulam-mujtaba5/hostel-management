@@ -95,16 +95,53 @@ export default function ProfilePage() {
     const file = e.target.files?.[0];
     if (!file || !user) return;
 
+    // Validate file size (max 5MB)
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error('File too large (max 5MB)');
+      return;
+    }
+
+    // Validate file type
+    if (!file.type.startsWith('image/')) {
+      toast.error('Please select an image file');
+      return;
+    }
+
     setUploadingPhoto(true);
     try {
-      const fileExt = file.name.split('.').pop();
-      const filePath = `avatars/${user.id}-${Date.now()}.${fileExt}`;
+      const fileExt = file.name.split('.').pop()?.toLowerCase() || 'jpg';
+      const fileName = `${user.id}-${Date.now()}.${fileExt}`;
+      const filePath = `${user.id}/${fileName}`;
+
+      // Delete old avatar if exists
+      if (profile?.avatar_url) {
+        try {
+          const oldPath = profile.avatar_url.split('/avatars/')[1];
+          if (oldPath) {
+            await supabase.storage.from('avatars').remove([oldPath]);
+          }
+        } catch (deleteErr) {
+          // Ignore deletion errors, continue with upload
+          console.log('Could not delete old avatar:', deleteErr);
+        }
+      }
 
       const { error: uploadError } = await supabase.storage
         .from('avatars')
-        .upload(filePath, file);
+        .upload(filePath, file, {
+          cacheControl: '3600',
+          upsert: true
+        });
 
-      if (uploadError) throw uploadError;
+      if (uploadError) {
+        console.error('Storage upload error:', uploadError);
+        if (uploadError.message?.includes('bucket') || uploadError.message?.includes('not found')) {
+          toast.error('Storage not configured. Please contact admin.');
+        } else {
+          toast.error(`Upload failed: ${uploadError.message}`);
+        }
+        return;
+      }
 
       const { data: { publicUrl } } = supabase.storage
         .from('avatars')
@@ -115,15 +152,23 @@ export default function ProfilePage() {
         .update({ avatar_url: publicUrl })
         .eq('id', user.id);
 
-      if (error) throw error;
+      if (error) {
+        console.error('Profile update error:', error);
+        toast.error('Failed to update profile');
+        return;
+      }
 
       await refreshProfile();
       toast.success('Profile photo updated!');
-    } catch (err) {
+    } catch (err: any) {
       console.error('Upload failed:', err);
-      toast.error('Failed to upload photo');
+      toast.error(err.message || 'Failed to upload photo');
     } finally {
       setUploadingPhoto(false);
+      // Reset file input
+      if (fileInputRef.current) {
+        fileInputRef.current.value = '';
+      }
     }
   };
 

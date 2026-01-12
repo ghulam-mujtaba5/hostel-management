@@ -9,13 +9,15 @@ import {
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Button } from "@/components/ui/button";
 import { 
   Users, CheckCircle2, AlertTriangle, 
-  Award, BarChart3, Target, Flame, Shield
+  Award, BarChart3, Target, Flame, Shield, RefreshCw
 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/lib/supabase";
-import { TaskCategory, TASK_CATEGORIES } from "@/types";
+import { useRealtimeSubscription } from "@/lib/realtime";
+import { TaskCategory, TASK_CATEGORIES, Task } from "@/types";
 import { cn } from "@/lib/utils";
 
 interface TaskStats {
@@ -50,11 +52,17 @@ export function TaskStatsChart() {
   const [memberStats, setMemberStats] = useState<TaskStats[]>([]);
   const [taskTypeStats, setTaskTypeStats] = useState<TaskTypeCount[]>([]);
   const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
   const [activeView, setActiveView] = useState<'overview' | 'members' | 'tasks'>('overview');
 
-  const fetchTaskStats = useCallback(async () => {
+  const fetchTaskStats = useCallback(async (showLoading = true) => {
     if (!currentSpace) return;
-    setLoading(true);
+    
+    if (showLoading) {
+      setLoading(true);
+    } else {
+      setRefreshing(true);
+    }
 
     try {
       // Fetch all members with their profiles
@@ -150,8 +158,21 @@ export function TaskStatsChart() {
       console.error('Error fetching task stats:', error);
     } finally {
       setLoading(false);
+      setRefreshing(false);
     }
   }, [currentSpace]);
+
+  // Subscribe to real-time task updates
+  useRealtimeSubscription<Task>(
+    'tasks',
+    useCallback((payload) => {
+      if (currentSpace && payload.new.space_id === currentSpace.id) {
+        // Refresh stats when tasks change
+        fetchTaskStats(false);
+      }
+    }, [currentSpace, fetchTaskStats]),
+    currentSpace ? `space_id=eq.${currentSpace.id}` : undefined
+  );
 
   useEffect(() => {
     if (currentSpace) {
@@ -213,6 +234,20 @@ export function TaskStatsChart() {
 
   return (
     <div className="space-y-6">
+      {/* Refresh Button */}
+      <div className="flex justify-end">
+        <Button 
+          variant="ghost" 
+          size="sm" 
+          className="rounded-xl gap-2"
+          onClick={() => fetchTaskStats(false)}
+          disabled={refreshing}
+        >
+          <RefreshCw className={cn("h-4 w-4", refreshing && "animate-spin")} />
+          {refreshing ? "Refreshing..." : "Refresh Stats"}
+        </Button>
+      </div>
+
       {/* Quick Stats Overview */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         <motion.div

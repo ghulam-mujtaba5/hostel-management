@@ -9,13 +9,15 @@ import {
 } from "recharts";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Button } from "@/components/ui/button";
 import { 
   TrendingUp, TrendingDown, Scale, AlertCircle, 
-  CheckCircle, Activity, Zap
+  CheckCircle, Activity, Zap, RefreshCw
 } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/lib/supabase";
-import { TASK_CATEGORIES, TaskCategory } from "@/types";
+import { useRealtimeSubscription } from "@/lib/realtime";
+import { TASK_CATEGORIES, TaskCategory, Task } from "@/types";
 import { cn } from "@/lib/utils";
 import { format, subDays, eachDayOfInterval } from "date-fns";
 
@@ -40,11 +42,17 @@ export function WorkloadBalanceChart() {
   const { user, currentSpace } = useAuth();
   const [workloadData, setWorkloadData] = useState<WorkloadData[]>([]);
   const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
   const [selectedMember, setSelectedMember] = useState<string | null>(null);
 
-  const fetchWorkloadData = useCallback(async () => {
+  const fetchWorkloadData = useCallback(async (showLoading = true) => {
     if (!currentSpace) return;
-    setLoading(true);
+    
+    if (showLoading) {
+      setLoading(true);
+    } else {
+      setRefreshing(true);
+    }
 
     try {
       // Fetch members
@@ -147,8 +155,21 @@ export function WorkloadBalanceChart() {
       console.error('Error fetching workload data:', error);
     } finally {
       setLoading(false);
+      setRefreshing(false);
     }
   }, [currentSpace, user]);
+
+  // Subscribe to real-time task updates
+  useRealtimeSubscription<Task>(
+    'tasks',
+    useCallback((payload) => {
+      if (currentSpace && payload.new.space_id === currentSpace.id) {
+        // Refresh workload data when tasks change
+        fetchWorkloadData(false);
+      }
+    }, [currentSpace, fetchWorkloadData]),
+    currentSpace ? `space_id=eq.${currentSpace.id}` : undefined
+  );
 
   useEffect(() => {
     if (currentSpace) {
@@ -187,6 +208,19 @@ export function WorkloadBalanceChart() {
 
   return (
     <div className="space-y-6">
+      {/* Refresh Button */}
+      <div className="flex justify-end">
+        <Button 
+          variant="ghost" 
+          size="sm" 
+          className="rounded-xl gap-2"
+          onClick={() => fetchWorkloadData(false)}
+          disabled={refreshing}
+        >
+          <RefreshCw className={cn("h-4 w-4", refreshing && "animate-spin")} />
+          {refreshing ? "Refreshing..." : "Refresh Data"}
+        </Button>
+      </div>
       {/* Member Selection */}
       <div className="flex gap-2 overflow-x-auto pb-2">
         {workloadData.map((member, index) => (

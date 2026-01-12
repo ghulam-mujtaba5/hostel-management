@@ -26,6 +26,7 @@ export default function TaskDetailPage({ params }: { params: Promise<{ id: strin
   const [uploading, setUploading] = useState(false);
   const [taking, setTaking] = useState(false);
   const [verifying, setVerifying] = useState(false);
+  const [completing, setCompleting] = useState(false);
   const { celebrate, CelebrationComponent } = useCelebration();
 
   useEffect(() => {
@@ -68,6 +69,30 @@ export default function TaskDetailPage({ params }: { params: Promise<{ id: strin
       toast.error(`${errorMsg.title}: ${errorMsg.message}`);
     } finally {
       setTaking(false);
+    }
+  };
+
+  const handleCompleteTask = async () => {
+    if (!task || !user) return;
+
+    setCompleting(true);
+    try {
+      const { error } = await supabase.rpc('complete_task_direct', { p_task_id: task.id });
+      if (error) {
+        const errorCode = parseSupabaseError(error);
+        const errorMsg = getErrorMessage(errorCode);
+        toast.error(`${errorMsg.title}: ${errorMsg.message}`);
+        return;
+      }
+
+      celebrate('task_completed', { points: task.difficulty });
+      toast.taskCompleted(task.title, task.difficulty);
+      fetchTask();
+    } catch (err) {
+      const errorMsg = getErrorMessage('NETWORK_ERROR');
+      toast.error(`${errorMsg.title}: ${errorMsg.message}`);
+    } finally {
+      setCompleting(false);
     }
   };
 
@@ -343,9 +368,24 @@ export default function TaskDetailPage({ params }: { params: Promise<{ id: strin
             </motion.div>
           )}
 
-          {/* Upload Proof */}
+          {/* Complete Task Options */}
           {isAssignedToMe && (task.status === 'in_progress' || task.status === 'todo') && (
-            <div>
+            <div className="space-y-3">
+              {/* Mark Complete directly */}
+              <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
+                <LoadingButton 
+                  className="w-full h-14 bg-linear-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-base min-h-14" 
+                  size="lg" 
+                  onClick={handleCompleteTask}
+                  loading={completing}
+                  loadingText="Completing..."
+                >
+                  <Check className="mr-2 h-5 w-5" />
+                  Mark as Complete
+                </LoadingButton>
+              </motion.div>
+
+              {/* Upload Proof as alternative */}
               <input
                 type="file"
                 accept="image/*"
@@ -360,10 +400,11 @@ export default function TaskDetailPage({ params }: { params: Promise<{ id: strin
                 <Button 
                   className="w-full h-14 bg-linear-to-r from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 text-base" 
                   size="lg" 
+                  variant="outline"
                   asChild
                   disabled={uploading}
                 >
-                  <label htmlFor="proof-upload" className="cursor-pointer flex items-center justify-center">
+                  <label htmlFor="proof-upload" className="cursor-pointer flex items-center justify-center border-blue-500/30 hover:bg-blue-500/10">
                     <AnimatePresence mode="wait">
                       {uploading ? (
                         <motion.span
@@ -376,7 +417,7 @@ export default function TaskDetailPage({ params }: { params: Promise<{ id: strin
                           <motion.div
                             animate={{ rotate: 360 }}
                             transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-                            className="h-5 w-5 border-2 border-white border-t-transparent rounded-full"
+                            className="h-5 w-5 border-2 border-blue-500 border-t-transparent rounded-full"
                           />
                           Uploading...
                         </motion.span>
@@ -386,10 +427,10 @@ export default function TaskDetailPage({ params }: { params: Promise<{ id: strin
                           initial={{ opacity: 0 }}
                           animate={{ opacity: 1 }}
                           exit={{ opacity: 0 }}
-                          className="flex items-center gap-2"
+                          className="flex items-center gap-2 text-blue-600 dark:text-blue-400"
                         >
                           <Camera className="h-5 w-5" />
-                          Upload Proof Photo
+                          Or Upload Proof Photo
                         </motion.span>
                       )}
                     </AnimatePresence>

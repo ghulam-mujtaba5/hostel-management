@@ -107,22 +107,30 @@ export default function PickTaskPage() {
   };
 
   const handleTakeTask = async (task: Task) => {
-    if (!user) return;
+    if (!user || taking) return;
     
     setTaking(task.id);
 
-    const { error } = await supabase.rpc('take_task', { task_id: task.id });
-    if (error) {
-      setTaking(null);
-      // Surface fairness/guardrail messages coming from Postgres
-      toast.error(error.message);
-      return;
-    }
+    try {
+      const { data, error } = await supabase.rpc('take_task', { task_id: task.id });
+      
+      if (error) {
+        console.error('Take task error:', error);
+        // Surface fairness/guardrail messages coming from Postgres
+        toast.error(error.message);
+        return;
+      }
 
-    setShowConfetti(true);
-    setTimeout(() => {
-      router.push(`/tasks/${task.id}`);
-    }, 1500);
+      setShowConfetti(true);
+      setTimeout(() => {
+        router.push(`/tasks/${task.id}`);
+      }, 1500);
+    } catch (err: any) {
+      console.error('Take task exception:', err);
+      toast.error(err.message || 'Failed to take task');
+    } finally {
+      setTaking(null);
+    }
   };
 
   if (!currentSpace) {
