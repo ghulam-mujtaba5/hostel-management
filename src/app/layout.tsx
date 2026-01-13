@@ -22,21 +22,25 @@ export const metadata: Metadata = {
   manifest: "/manifest.webmanifest",
   appleWebApp: {
     capable: true,
-    statusBarStyle: "default",
+    statusBarStyle: "black-translucent",
     title: "HostelMate",
-    startupImage: "/icon.svg",
   },
   icons: {
     icon: [
-      { url: "/icon.svg?v2", type: "image/svg+xml" },
-      { url: "/icon-192.png?v2", type: "image/png", sizes: "192x192" },
-      { url: "/icon-512.png?v2", type: "image/png", sizes: "512x512" },
+      { url: "/favicon.ico", sizes: "32x32" },
+      { url: "/icon.svg?v3", type: "image/svg+xml" },
+      { url: "/favicon-16x16.png?v3", type: "image/png", sizes: "16x16" },
+      { url: "/favicon-32x32.png?v3", type: "image/png", sizes: "32x32" },
+      { url: "/icon-192.png?v3", type: "image/png", sizes: "192x192" },
+      { url: "/icon-512.png?v3", type: "image/png", sizes: "512x512" },
     ],
     apple: [
-      { url: "/icon-192.png?v2", sizes: "192x192" },
-      { url: "/icon-512.png?v2", sizes: "512x512" },
+      { url: "/apple-touch-icon.png?v3", sizes: "180x180", type: "image/png" },
+      { url: "/apple-touch-icon-152x152.png?v3", sizes: "152x152", type: "image/png" },
+      { url: "/apple-touch-icon-167x167.png?v3", sizes: "167x167", type: "image/png" },
+      { url: "/apple-touch-icon-180x180.png?v3", sizes: "180x180", type: "image/png" },
     ],
-    shortcut: "/icon-192.png?v2",
+    shortcut: "/icon-192.png?v3",
   },
   keywords: ["hostel management", "shared living", "task management", "flatmates", "roommates", "chores app", "fair distribution", "student life", "coliving", "dorm management"],
   authors: [{ name: "HostelMate" }],
@@ -74,6 +78,14 @@ export default function RootLayout({
       <head>
         <meta name="color-scheme" content="light dark" />
         <meta name="format-detection" content="telephone=no" />
+        {/* Apple Touch Icons - explicit links for maximum iOS compatibility */}
+        <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+        <link rel="apple-touch-icon" sizes="152x152" href="/apple-touch-icon-152x152.png" />
+        <link rel="apple-touch-icon" sizes="167x167" href="/apple-touch-icon-167x167.png" />
+        <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon-180x180.png" />
+        {/* Preconnect to improve loading performance */}
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
       </head>
       <body className={cn(inter.className, "min-h-screen bg-background antialiased")}>
         {/* Skip to main content for keyboard users */}

@@ -1,7 +1,7 @@
 import { MetadataRoute } from 'next';
 
 // Cache bust version - increment when icons change
-const ICON_VERSION = 'v2';
+const ICON_VERSION = 'v3';
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
@@ -20,10 +20,48 @@ export default function manifest(): MetadataRoute.Manifest {
     categories: ['productivity', 'lifestyle', 'utilities', 'education'],
     id: 'com.hostelmate.app',
     icons: [
+      // SVG icon for any size (modern browsers)
       {
         src: `/icon.svg?${ICON_VERSION}`,
         sizes: 'any',
         type: 'image/svg+xml',
+        purpose: 'any',
+      },
+      // Standard PNG icons for broad compatibility
+      {
+        src: `/icon-48.png?${ICON_VERSION}`,
+        sizes: '48x48',
+        type: 'image/png',
+        purpose: 'any',
+      },
+      {
+        src: `/icon-72.png?${ICON_VERSION}`,
+        sizes: '72x72',
+        type: 'image/png',
+        purpose: 'any',
+      },
+      {
+        src: `/icon-96.png?${ICON_VERSION}`,
+        sizes: '96x96',
+        type: 'image/png',
+        purpose: 'any',
+      },
+      {
+        src: `/icon-128.png?${ICON_VERSION}`,
+        sizes: '128x128',
+        type: 'image/png',
+        purpose: 'any',
+      },
+      {
+        src: `/icon-144.png?${ICON_VERSION}`,
+        sizes: '144x144',
+        type: 'image/png',
+        purpose: 'any',
+      },
+      {
+        src: `/icon-152.png?${ICON_VERSION}`,
+        sizes: '152x152',
+        type: 'image/png',
         purpose: 'any',
       },
       {
@@ -33,11 +71,24 @@ export default function manifest(): MetadataRoute.Manifest {
         purpose: 'any',
       },
       {
+        src: `/icon-256.png?${ICON_VERSION}`,
+        sizes: '256x256',
+        type: 'image/png',
+        purpose: 'any',
+      },
+      {
+        src: `/icon-384.png?${ICON_VERSION}`,
+        sizes: '384x384',
+        type: 'image/png',
+        purpose: 'any',
+      },
+      {
         src: `/icon-512.png?${ICON_VERSION}`,
         sizes: '512x512',
         type: 'image/png',
         purpose: 'any',
       },
+      // Maskable icons for Android (with safe zone padding)
       {
         src: `/icon-maskable-192.png?${ICON_VERSION}`,
         sizes: '192x192',
