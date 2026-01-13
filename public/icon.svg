@@ -1,27 +1,27 @@
 <svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
-  <!-- Background with premium gradient -->
-  <rect width="512" height="512" rx="112" fill="url(#bg-gradient)"/>
+  <!-- Full solid background without rounded corners for clean PWA display -->
+  <rect width="512" height="512" fill="url(#bg-gradient)"/>
   
-  <!-- Subtle inner glow for depth -->
-  <rect x="24" y="24" width="464" height="464" rx="88" fill="url(#inner-glow)" fill-opacity="0.3"/>
+  <!-- Subtle inner glow for depth - smaller, centered -->
+  <rect x="32" y="32" width="448" height="448" fill="url(#inner-glow)" fill-opacity="0.2"/>
   
-  <!-- Main house/H mark - symbolizing home, unity, community -->
-  <path d="M256 96L96 224V432H176V320C176 308.954 184.954 300 196 300H316C327.046 300 336 308.954 336 320V432H416V224L256 96Z" fill="white" fill-opacity="0.95"/>
+  <!-- Main house/H mark - centered with safe margins for icon masking -->
+  <path d="M256 100L108 220V420H180V316C180 304.954 188.954 296 200 296H312C323.046 296 332 304.954 332 316V420H404V220L256 100Z" fill="white" fill-opacity="0.95"/>
   
   <!-- Inner structure - representing harmony and organization -->
-  <path d="M256 160L160 232V352H208V280C208 274.477 212.477 270 218 270H294C299.523 270 304 274.477 304 280V352H352V232L256 160Z" fill="url(#bg-gradient)" fill-opacity="0.2"/>
+  <path d="M256 160L168 228V340H212V276C212 270.477 216.477 266 222 266H290C295.523 266 300 270.477 300 276V340H344V228L256 160Z" fill="url(#bg-gradient)" fill-opacity="0.25"/>
   
   <!-- Connection bridge - symbolizing teamwork -->
-  <rect x="218" y="320" width="76" height="16" rx="8" fill="url(#bg-gradient)" fill-opacity="0.3"/>
+  <rect x="222" y="310" width="68" height="14" rx="7" fill="url(#bg-gradient)" fill-opacity="0.35"/>
   
-  <!-- Excellence sparkle cluster (Ihsan) -->
-  <circle cx="400" cy="120" r="24" fill="#FBBF24"/>
-  <circle cx="400" cy="120" r="16" fill="#FDE047"/>
-  <circle cx="432" cy="88" r="12" fill="#FBBF24" fill-opacity="0.7"/>
-  <circle cx="440" cy="144" r="8" fill="#FBBF24" fill-opacity="0.5"/>
+  <!-- Excellence sparkle - moved inward to avoid edge clipping -->
+  <circle cx="380" cy="130" r="22" fill="#FBBF24"/>
+  <circle cx="380" cy="130" r="14" fill="#FDE047"/>
+  <circle cx="408" cy="102" r="10" fill="#FBBF24" fill-opacity="0.7"/>
+  <circle cx="414" cy="152" r="7" fill="#FBBF24" fill-opacity="0.5"/>
   
   <!-- Subtle star accent -->
-  <path d="M400 108L404 116L412 120L404 124L400 132L396 124L388 120L396 116L400 108Z" fill="white" fill-opacity="0.9"/>
+  <path d="M380 118L383 126L391 130L383 134L380 142L377 134L369 130L377 126L380 118Z" fill="white" fill-opacity="0.9"/>
   
   <defs>
     <!-- Premium emerald-teal gradient - trust, growth, harmony -->

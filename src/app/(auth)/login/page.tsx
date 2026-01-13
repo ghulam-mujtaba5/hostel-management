@@ -328,8 +328,8 @@ function LoginContent() {
       </div>
 
       {/* Right Side - Form */}
-      <div className="flex-1 flex items-center justify-center p-6 lg:p-12 bg-background auth-form-container">
-        <div className="w-full max-w-sm space-y-8">
+      <div className="flex-1 flex items-center justify-center p-4 sm:p-6 lg:p-12 bg-background auth-form-container overflow-x-hidden">
+        <div className="w-full max-w-sm space-y-6 sm:space-y-8">
           {/* Invite Banner */}
           {inviteSpaceName && (
             <motion.div

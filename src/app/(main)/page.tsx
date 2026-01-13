@@ -130,54 +130,54 @@ export default function Dashboard() {
   // Show landing page for non-authenticated users
   if (!user && initialLoadDone) {
     return (
-      <div className="min-h-[80vh] flex flex-col">
+      <div className="min-h-[80vh] flex flex-col overflow-hidden">
         {/* Hero Section */}
-        <div className="flex-1 flex flex-col items-center justify-center px-4 py-12 relative overflow-hidden">
+        <div className="flex-1 flex flex-col items-center justify-center px-2 sm:px-4 py-8 sm:py-12 relative overflow-hidden">
           {/* Premium gradient orbs */}
-          <div className="absolute top-10 left-10 w-72 h-72 bg-emerald-400/10 rounded-full blur-3xl" />
-          <div className="absolute bottom-10 right-10 w-96 h-96 bg-teal-400/10 rounded-full blur-3xl" />
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-cyan-400/5 rounded-full blur-3xl" />
+          <div className="absolute top-10 left-10 w-48 sm:w-72 h-48 sm:h-72 bg-emerald-400/10 rounded-full blur-3xl" />
+          <div className="absolute bottom-10 right-10 w-64 sm:w-96 h-64 sm:h-96 bg-teal-400/10 rounded-full blur-3xl" />
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-48 sm:w-64 h-48 sm:h-64 bg-cyan-400/5 rounded-full blur-3xl" />
           
           <motion.div 
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
-            className="text-center space-y-8 max-w-3xl relative z-10"
+            className="text-center space-y-6 sm:space-y-8 max-w-3xl relative z-10 w-full px-2"
           >
             {/* Trust badge */}
             <motion.div
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
-              className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r from-emerald-500/10 via-teal-500/10 to-cyan-500/10 border border-emerald-500/20 text-sm font-semibold"
+              className="inline-flex items-center gap-2 px-3 sm:px-4 py-1.5 sm:py-2 rounded-full bg-gradient-to-r from-emerald-500/10 via-teal-500/10 to-cyan-500/10 border border-emerald-500/20 text-xs sm:text-sm font-semibold"
             >
-              <Sparkles className="h-4 w-4 text-emerald-500" />
+              <Sparkles className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-emerald-500" />
               <span className="text-emerald-700 dark:text-emerald-300">AI-Powered Fair Task Management</span>
             </motion.div>
 
-            <div className="space-y-4">
-              <h1 className="text-4xl md:text-6xl font-black tracking-tight leading-tight">
+            <div className="space-y-3 sm:space-y-4">
+              <h1 className="text-3xl sm:text-4xl md:text-6xl font-black tracking-tight leading-tight">
                 Live Better,{" "}
                 <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-500 via-teal-500 to-cyan-500">
                   Together
                 </span>
               </h1>
-              <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto">
+              <p className="text-base sm:text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto px-2">
                 HostelMate transforms shared living with intelligent task distribution, 
                 gamification, and real-time collaboration. No more conflicts—just harmony.
               </p>
             </div>
 
             {/* CTA Buttons */}
-            <div className="flex flex-col sm:flex-row gap-4 justify-center pt-4">
-              <Button asChild size="lg" className="h-14 px-8 rounded-2xl font-bold text-lg gap-2 shadow-xl shadow-emerald-500/20 bg-gradient-to-r from-emerald-500 via-teal-500 to-teal-600 hover:from-emerald-600 hover:via-teal-600 hover:to-teal-700 transition-all duration-300">
+            <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center pt-2 sm:pt-4 px-4">
+              <Button asChild size="lg" className="h-12 sm:h-14 px-6 sm:px-8 rounded-2xl font-bold text-base sm:text-lg gap-2 shadow-xl shadow-emerald-500/20 bg-gradient-to-r from-emerald-500 via-teal-500 to-teal-600 hover:from-emerald-600 hover:via-teal-600 hover:to-teal-700 transition-all duration-300 w-full sm:w-auto">
                 <Link href="/login?mode=signup">
-                  <UserPlus className="h-5 w-5" />
+                  <UserPlus className="h-4 w-4 sm:h-5 sm:w-5" />
                   Get Started Free
                 </Link>
               </Button>
-              <Button asChild variant="outline" size="lg" className="h-14 px-8 rounded-2xl font-bold text-lg gap-2 border-2 border-emerald-500/30 hover:bg-emerald-500/5 hover:border-emerald-500/50 transition-all duration-300">
+              <Button asChild variant="outline" size="lg" className="h-12 sm:h-14 px-6 sm:px-8 rounded-2xl font-bold text-base sm:text-lg gap-2 border-2 border-emerald-500/30 hover:bg-emerald-500/5 hover:border-emerald-500/50 transition-all duration-300 w-full sm:w-auto">
                 <Link href="/login">
-                  <LogIn className="h-5 w-5" />
+                  <LogIn className="h-4 w-4 sm:h-5 sm:w-5" />
                   Sign In
                 </Link>
               </Button>
@@ -188,21 +188,21 @@ export default function Dashboard() {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.3 }}
-              className="flex items-center justify-center gap-6 pt-4"
+              className="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-6 pt-2 sm:pt-4"
             >
-              <div className="flex items-center gap-2 text-sm text-muted-foreground">
+              <div className="flex items-center gap-2 text-xs sm:text-sm text-muted-foreground">
                 <div className="flex -space-x-2">
                   {['🧑‍🎓', '👩‍🎓', '👨‍🎓'].map((emoji, i) => (
-                    <div key={i} className="h-7 w-7 rounded-full bg-gradient-to-br from-emerald-400 to-teal-500 flex items-center justify-center text-xs border-2 border-background">
+                    <div key={i} className="h-6 w-6 sm:h-7 sm:w-7 rounded-full bg-gradient-to-br from-emerald-400 to-teal-500 flex items-center justify-center text-xs border-2 border-background">
                       {emoji}
                     </div>
                   ))}
                 </div>
                 <span>Trusted by students</span>
               </div>
-              <span className="h-4 w-px bg-border" />
-              <div className="flex items-center gap-1.5 text-sm text-muted-foreground">
-                <Zap className="h-4 w-4 text-yellow-500" />
+              <span className="hidden sm:block h-4 w-px bg-border" />
+              <div className="flex items-center gap-1.5 text-xs sm:text-sm text-muted-foreground">
+                <Zap className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-yellow-500" />
                 <span>Free to use</span>
               </div>
             </motion.div>
@@ -214,7 +214,7 @@ export default function Dashboard() {
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3, duration: 0.5 }}
-          className="grid md:grid-cols-3 gap-6 pb-12"
+          className="grid sm:grid-cols-2 md:grid-cols-3 gap-4 sm:gap-6 pb-8 sm:pb-12 px-2"
         >
           {[
             {

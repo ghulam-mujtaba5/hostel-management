@@ -1,7 +1,7 @@
 import { MetadataRoute } from 'next';
 
 // Cache bust version - increment when icons change
-const ICON_VERSION = 'v3';
+const ICON_VERSION = 'v4';
 
 export default function manifest(): MetadataRoute.Manifest {
   return {

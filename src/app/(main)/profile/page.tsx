@@ -462,7 +462,7 @@ export default function ProfilePage() {
 
       {/* Quick Links */}
       <SlideInCard direction="up" delay={0.2}>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4">
           {[
             { href: "/services", icon: ClipboardList, color: "blue", title: "Services", desc: "Manage services" },
             { href: "/notes", icon: StickyNote, color: "yellow", title: "Notes", desc: "Personal notes" },
@@ -472,13 +472,13 @@ export default function ProfilePage() {
             <Link 
               key={i}
               href={item.href} 
-              className="group p-4 md:p-6 rounded-4xl bg-white dark:bg-slate-900 border border-border/50 shadow-sm hover:border-primary/30 transition-all"
+              className="group p-3 sm:p-4 md:p-6 rounded-2xl sm:rounded-4xl bg-white dark:bg-slate-900 border border-border/50 shadow-sm hover:border-primary/30 transition-all"
             >
-              <div className={`h-10 w-10 md:h-12 md:w-12 rounded-xl bg-muted/50 flex items-center justify-center mb-4 group-hover:scale-105 transition-transform`}>
-                <item.icon className={`h-5 w-5 md:h-6 md:w-6 text-primary`} />
+              <div className={`h-9 w-9 sm:h-10 sm:w-10 md:h-12 md:w-12 rounded-lg sm:rounded-xl bg-muted/50 flex items-center justify-center mb-2 sm:mb-4 group-hover:scale-105 transition-transform`}>
+                <item.icon className={`h-4 w-4 sm:h-5 sm:w-5 md:h-6 md:w-6 text-primary`} />
               </div>
-              <h4 className="text-base md:text-lg font-bold mb-1">{item.title}</h4>
-              <p className="text-[10px] md:text-xs text-muted-foreground font-medium">{item.desc}</p>
+              <h4 className="text-sm sm:text-base md:text-lg font-bold mb-0.5 sm:mb-1 truncate">{item.title}</h4>
+              <p className="text-[9px] sm:text-[10px] md:text-xs text-muted-foreground font-medium truncate">{item.desc}</p>
             </Link>
           ))}
         </div>

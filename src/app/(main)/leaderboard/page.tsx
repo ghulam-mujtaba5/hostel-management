@@ -133,10 +133,10 @@ export default function LeaderboardPage() {
   return (
     <div className="space-y-10 pb-24">
       {/* Header Section */}
-      <div className="relative">
+      <div className="relative overflow-hidden">
         <div className="absolute -top-20 -left-20 w-64 h-64 bg-primary/5 rounded-full blur-3xl -z-10" />
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
-          <div className="space-y-2">
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 md:gap-6">
+          <div className="space-y-2 min-w-0 flex-1">
             <motion.div
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
@@ -145,17 +145,17 @@ export default function LeaderboardPage() {
               <Trophy className="h-3 w-3" />
               Hall of Fame
             </motion.div>
-            <h1 className="text-3xl md:text-5xl font-bold tracking-tight">
-              Community <br />
+            <h1 className="text-2xl sm:text-3xl md:text-5xl font-bold tracking-tight">
+              Community <br className="hidden sm:block" />
               <span className="text-primary">Leaderboard</span>
             </h1>
-            <p className="text-muted-foreground font-medium flex items-center gap-2 text-sm md:text-base">
-              <Star className="h-4 w-4 text-yellow-500 fill-yellow-500" />
-              Ranking for {currentSpace.name}
+            <p className="text-muted-foreground font-medium flex items-center gap-2 text-xs sm:text-sm md:text-base truncate">
+              <Star className="h-4 w-4 text-yellow-500 fill-yellow-500 shrink-0" />
+              <span className="truncate">Ranking for {currentSpace.name}</span>
             </p>
           </div>
 
-          <div className="flex p-1 bg-muted/30 border border-border/50 rounded-xl overflow-x-auto">
+          <div className="flex p-1 bg-muted/30 border border-border/50 rounded-xl overflow-x-auto shrink-0">
             {[
               { key: 'all' as const, label: 'All Time' },
               { key: 'month' as const, label: 'Monthly' },
@@ -164,7 +164,7 @@ export default function LeaderboardPage() {
               <button
                 key={p.key}
                 onClick={() => setPeriod(p.key)}
-                className={`px-4 md:px-6 py-2 text-xs md:text-sm font-bold rounded-lg transition-all whitespace-nowrap ${
+                className={`px-3 sm:px-4 md:px-6 py-2 text-xs md:text-sm font-bold rounded-lg transition-all whitespace-nowrap ${
                   period === p.key 
                     ? 'bg-white dark:bg-slate-800 text-primary shadow-sm' 
                     : 'text-muted-foreground hover:text-foreground'
@@ -196,7 +196,7 @@ export default function LeaderboardPage() {
         <>
           {/* Podium for Top 3 */}
           {topThree.length > 0 && (
-            <div className="flex justify-center items-end gap-4 md:gap-12 py-16 px-4 relative">
+            <div className="flex justify-center items-end gap-2 sm:gap-4 md:gap-12 py-8 sm:py-16 px-2 sm:px-4 relative overflow-hidden">
               <div className="absolute inset-0 bg-gradient-to-b from-primary/5 via-transparent to-transparent blur-3xl -z-10" />
               
               {/* 2nd Place */}
@@ -205,23 +205,23 @@ export default function LeaderboardPage() {
                   initial={{ opacity: 0, y: 30 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.3 }}
-                  className="flex flex-col items-center flex-1 max-w-[120px]"
+                  className="flex flex-col items-center flex-1 max-w-[100px] sm:max-w-[120px]"
                 >
-                  <div className="relative mb-4 group">
-                    <div className="h-20 w-20 md:h-24 md:w-24 rounded-2xl bg-slate-100 dark:bg-slate-800 border-2 border-slate-200 dark:border-slate-700 flex items-center justify-center text-3xl font-bold text-slate-400 shadow-lg group-hover:scale-105 transition-transform duration-500">
+                  <div className="relative mb-2 sm:mb-4 group">
+                    <div className="h-14 w-14 sm:h-20 md:h-24 sm:w-20 md:w-24 rounded-xl sm:rounded-2xl bg-slate-100 dark:bg-slate-800 border-2 border-slate-200 dark:border-slate-700 flex items-center justify-center text-xl sm:text-3xl font-bold text-slate-400 shadow-lg group-hover:scale-105 transition-transform duration-500">
                       {(topThree[1]?.profile?.username?.[0] || topThree[1]?.profile?.full_name?.[0] || '?').toUpperCase()}
                     </div>
-                    <div className="absolute -bottom-3 -right-3 h-10 w-10 rounded-xl bg-white dark:bg-slate-900 border-2 border-slate-200 dark:border-slate-700 flex items-center justify-center text-xl shadow-md">
+                    <div className="absolute -bottom-2 sm:-bottom-3 -right-2 sm:-right-3 h-7 w-7 sm:h-10 sm:w-10 rounded-lg sm:rounded-xl bg-white dark:bg-slate-900 border-2 border-slate-200 dark:border-slate-700 flex items-center justify-center text-base sm:text-xl shadow-md">
                       🥈
                     </div>
                   </div>
-                  <p className="font-bold text-sm text-center truncate w-full mb-1">
+                  <p className="font-bold text-xs sm:text-sm text-center truncate w-full mb-1">
                     {topThree[1]?.profile?.username || 'User'}
                   </p>
-                  <div className="px-3 py-1 rounded-full bg-slate-100 dark:bg-slate-800 text-[10px] font-bold text-slate-500 uppercase tracking-wider">
+                  <div className="px-2 sm:px-3 py-0.5 sm:py-1 rounded-full bg-slate-100 dark:bg-slate-800 text-[8px] sm:text-[10px] font-bold text-slate-500 uppercase tracking-wider">
                     {topThree[1]?.points} PTS
                   </div>
-                  <div className="h-20 w-full bg-slate-100/50 dark:bg-slate-800/50 rounded-t-2xl mt-6 border-x border-t border-slate-200/50 dark:border-slate-700/50" />
+                  <div className="h-12 sm:h-20 w-full bg-slate-100/50 dark:bg-slate-800/50 rounded-t-xl sm:rounded-t-2xl mt-3 sm:mt-6 border-x border-t border-slate-200/50 dark:border-slate-700/50" />
                 </motion.div>
               )}
 
@@ -231,34 +231,34 @@ export default function LeaderboardPage() {
                   initial={{ opacity: 0, y: 30 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.2 }}
-                  className="flex flex-col items-center flex-1 max-w-[160px] z-10"
+                  className="flex flex-col items-center flex-1 max-w-[120px] sm:max-w-[160px] z-10"
                 >
                   <motion.div
                     animate={{ y: [0, -8, 0] }}
                     transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
-                    className="relative mb-6 group"
+                    className="relative mb-3 sm:mb-6 group"
                   >
-                    <div className="h-28 w-28 md:h-32 md:w-32 rounded-3xl bg-gradient-to-br from-yellow-400 to-amber-500 flex items-center justify-center text-5xl font-bold text-white shadow-2xl shadow-yellow-500/20 ring-8 ring-yellow-500/5 group-hover:scale-105 transition-transform duration-500">
+                    <div className="h-20 w-20 sm:h-28 md:h-32 sm:w-28 md:w-32 rounded-2xl sm:rounded-3xl bg-gradient-to-br from-yellow-400 to-amber-500 flex items-center justify-center text-3xl sm:text-5xl font-bold text-white shadow-2xl shadow-yellow-500/20 ring-4 sm:ring-8 ring-yellow-500/5 group-hover:scale-105 transition-transform duration-500">
                       {(topThree[0]?.profile?.username?.[0] || topThree[0]?.profile?.full_name?.[0] || '?').toUpperCase()}
                     </div>
                     <motion.div
                       animate={{ rotate: [-10, 10, -10], scale: [1, 1.1, 1] }}
                       transition={{ duration: 3, repeat: Infinity }}
-                      className="absolute -top-12 left-1/2 -translate-x-1/2 text-5xl drop-shadow-xl"
+                      className="absolute -top-8 sm:-top-12 left-1/2 -translate-x-1/2 text-3xl sm:text-5xl drop-shadow-xl"
                     >
                       👑
                     </motion.div>
-                    <div className="absolute -bottom-4 -right-4 h-14 w-14 rounded-2xl bg-white dark:bg-slate-900 border-4 border-yellow-400 flex items-center justify-center text-3xl shadow-xl">
+                    <div className="absolute -bottom-3 sm:-bottom-4 -right-3 sm:-right-4 h-10 w-10 sm:h-14 sm:w-14 rounded-xl sm:rounded-2xl bg-white dark:bg-slate-900 border-2 sm:border-4 border-yellow-400 flex items-center justify-center text-xl sm:text-3xl shadow-xl">
                       🥇
                     </div>
                   </motion.div>
-                  <p className="font-bold text-lg text-center truncate w-full mb-1">
+                  <p className="font-bold text-sm sm:text-lg text-center truncate w-full mb-1">
                     {topThree[0]?.profile?.username || 'User'}
                   </p>
-                  <div className="px-4 py-1.5 rounded-full bg-yellow-500/10 text-xs font-bold text-yellow-600 dark:text-yellow-400 uppercase tracking-wider border border-yellow-500/20">
+                  <div className="px-3 sm:px-4 py-1 sm:py-1.5 rounded-full bg-yellow-500/10 text-[10px] sm:text-xs font-bold text-yellow-600 dark:text-yellow-400 uppercase tracking-wider border border-yellow-500/20">
                     {topThree[0]?.points} PTS
                   </div>
-                  <div className="h-32 w-full bg-yellow-500/10 rounded-t-3xl mt-6 border-x border-t border-yellow-500/20" />
+                  <div className="h-20 sm:h-32 w-full bg-yellow-500/10 rounded-t-2xl sm:rounded-t-3xl mt-3 sm:mt-6 border-x border-t border-yellow-500/20" />
                 </motion.div>
               )}
 
@@ -268,23 +268,23 @@ export default function LeaderboardPage() {
                   initial={{ opacity: 0, y: 30 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.4 }}
-                  className="flex flex-col items-center flex-1 max-w-[120px]"
+                  className="flex flex-col items-center flex-1 max-w-[100px] sm:max-w-[120px]"
                 >
-                  <div className="relative mb-4 group">
-                    <div className="h-16 w-16 md:h-20 md:w-20 rounded-2xl bg-orange-50 dark:bg-orange-900/20 border-2 border-orange-100 dark:border-orange-900/30 flex items-center justify-center text-2xl font-bold text-orange-400 shadow-lg group-hover:scale-105 transition-transform duration-500">
+                  <div className="relative mb-2 sm:mb-4 group">
+                    <div className="h-12 w-12 sm:h-16 md:h-20 sm:w-16 md:w-20 rounded-xl sm:rounded-2xl bg-orange-50 dark:bg-orange-900/20 border-2 border-orange-100 dark:border-orange-900/30 flex items-center justify-center text-lg sm:text-2xl font-bold text-orange-400 shadow-lg group-hover:scale-105 transition-transform duration-500">
                       {(topThree[2]?.profile?.username?.[0] || topThree[2]?.profile?.full_name?.[0] || '?').toUpperCase()}
                     </div>
-                    <div className="absolute -bottom-2 -right-2 h-8 w-8 rounded-lg bg-white dark:bg-slate-900 border-2 border-orange-200 dark:border-orange-800 flex items-center justify-center text-lg shadow-md">
+                    <div className="absolute -bottom-1.5 sm:-bottom-2 -right-1.5 sm:-right-2 h-6 w-6 sm:h-8 sm:w-8 rounded-md sm:rounded-lg bg-white dark:bg-slate-900 border-2 border-orange-200 dark:border-orange-800 flex items-center justify-center text-sm sm:text-lg shadow-md">
                       🥉
                     </div>
                   </div>
-                  <p className="font-bold text-sm text-center truncate w-full mb-1">
+                  <p className="font-bold text-xs sm:text-sm text-center truncate w-full mb-1">
                     {topThree[2]?.profile?.username || 'User'}
                   </p>
-                  <div className="px-3 py-1 rounded-full bg-orange-50 dark:bg-orange-900/20 text-[10px] font-bold text-orange-600 uppercase tracking-wider">
+                  <div className="px-2 sm:px-3 py-0.5 sm:py-1 rounded-full bg-orange-50 dark:bg-orange-900/20 text-[8px] sm:text-[10px] font-bold text-orange-600 uppercase tracking-wider">
                     {topThree[2]?.points} PTS
                   </div>
-                  <div className="h-16 w-full bg-orange-50/50 dark:bg-orange-900/10 rounded-t-2xl mt-6 border-x border-t border-orange-100 dark:border-orange-900/20" />
+                  <div className="h-10 sm:h-16 w-full bg-orange-50/50 dark:bg-orange-900/10 rounded-t-xl sm:rounded-t-2xl mt-3 sm:mt-6 border-x border-t border-orange-100 dark:border-orange-900/20" />
                 </motion.div>
               )}
             </div>

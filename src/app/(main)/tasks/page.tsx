@@ -227,10 +227,10 @@ export default function TasksPage() {
   return (
     <div className="space-y-10 pb-24">
       {/* Header Section */}
-      <div className="relative">
+      <div className="relative overflow-hidden">
         <div className="absolute -top-20 -right-20 w-64 h-64 bg-primary/5 rounded-full blur-3xl -z-10" />
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
-          <div className="space-y-2">
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 md:gap-6">
+          <div className="space-y-2 min-w-0 flex-1">
             <motion.div
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
@@ -239,8 +239,8 @@ export default function TasksPage() {
               <ListTodo className="h-3 w-3" />
               Task Management
             </motion.div>
-            <h1 className="text-3xl md:text-5xl font-bold tracking-tight">
-              Hostel <br />
+            <h1 className="text-2xl sm:text-3xl md:text-5xl font-bold tracking-tight">
+              Hostel <br className="hidden sm:block" />
               <span className="text-primary">Operations</span>
             </h1>
             <p className="text-muted-foreground font-medium text-sm md:text-base">
@@ -248,17 +248,17 @@ export default function TasksPage() {
             </p>
           </div>
 
-          <div className="flex gap-3 w-full md:w-auto">
-            <Button asChild size="lg" variant="outline" className="flex-1 md:flex-none h-12 px-6 rounded-xl font-bold border-orange-500/30 hover:bg-orange-500/10 hover:text-orange-600 hover:border-orange-500/50 transition-all">
+          <div className="flex gap-2 sm:gap-3 w-full md:w-auto">
+            <Button asChild size="lg" variant="outline" className="flex-1 md:flex-none h-11 sm:h-12 px-3 sm:px-6 rounded-xl font-bold border-orange-500/30 hover:bg-orange-500/10 hover:text-orange-600 hover:border-orange-500/50 transition-all text-sm">
               <Link href="/tasks/request">
-                <Hand className="mr-2 h-5 w-5" />
-                Request Help
+                <Hand className="mr-1.5 sm:mr-2 h-4 sm:h-5 w-4 sm:w-5" />
+                <span className="hidden xs:inline">Request </span>Help
               </Link>
             </Button>
-            <Button asChild size="lg" className="flex-1 md:flex-none h-12 px-8 rounded-xl font-bold shadow-lg shadow-primary/20 bg-primary hover:bg-primary/90 transition-all group">
+            <Button asChild size="lg" className="flex-1 md:flex-none h-11 sm:h-12 px-3 sm:px-8 rounded-xl font-bold shadow-lg shadow-primary/20 bg-primary hover:bg-primary/90 transition-all group text-sm">
               <Link href="/tasks/create">
-                <Plus className="mr-2 h-5 w-5 group-hover:rotate-90 transition-transform duration-300" />
-                Create Task
+                <Plus className="mr-1.5 sm:mr-2 h-4 sm:h-5 w-4 sm:w-5 group-hover:rotate-90 transition-transform duration-300" />
+                Create<span className="hidden xs:inline"> Task</span>
               </Link>
             </Button>
           </div>
@@ -266,8 +266,8 @@ export default function TasksPage() {
       </div>
 
       {/* Search and Tabs */}
-      <div className="grid lg:grid-cols-3 gap-8">
-        <div className="lg:col-span-2 space-y-6">
+      <div className="grid lg:grid-cols-3 gap-4 md:gap-8">
+        <div className="lg:col-span-2 space-y-4 md:space-y-6">
           <div className="relative group">
             <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground group-focus-within:text-primary transition-colors" />
             <input
@@ -275,11 +275,11 @@ export default function TasksPage() {
               placeholder="Search tasks..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-12 pr-4 py-3.5 bg-white dark:bg-slate-900 border border-border/50 rounded-xl shadow-sm focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-base font-medium outline-none"
+              className="w-full pl-12 pr-4 py-3 md:py-3.5 bg-white dark:bg-slate-900 border border-border/50 rounded-xl shadow-sm focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all text-base font-medium outline-none"
             />
           </div>
 
-          <div className="flex p-1 bg-muted/30 border border-border/50 rounded-xl">
+          <div className="flex p-1 bg-muted/30 border border-border/50 rounded-xl overflow-x-auto">
             {[
               { key: 'my' as TabType, label: 'My Tasks', icon: Clock },
               { key: 'available' as TabType, label: 'Available', icon: Sparkles },
@@ -288,14 +288,14 @@ export default function TasksPage() {
               <button
                 key={tab.key}
                 onClick={() => setActiveTab(tab.key)}
-                className={`flex-1 flex items-center justify-center gap-2 py-2.5 text-sm font-bold rounded-lg transition-all ${
-                  activeTab === tab.key 
-                    ? 'bg-white dark:bg-slate-800 text-primary shadow-sm' 
+                className={`flex-1 flex items-center justify-center gap-1.5 sm:gap-2 py-2.5 text-xs sm:text-sm font-bold rounded-lg transition-all whitespace-nowrap min-w-[90px] ${activeTab === tab.key
+                    ? 'bg-white dark:bg-slate-800 text-primary shadow-sm'
                     : 'text-muted-foreground hover:text-foreground'
-                }`}
+                  }`}
               >
                 <tab.icon className="h-4 w-4" />
-                {tab.label}
+                <span className="hidden xs:inline">{tab.label}</span>
+                <span className="xs:hidden">{tab.label.split(' ')[0]}</span>
               </button>
             ))}
           </div>
@@ -303,12 +303,12 @@ export default function TasksPage() {
 
         <div className="space-y-4">
           <h3 className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest px-1">Categories</h3>
-          <div className="flex flex-wrap gap-2">
+          <div className="flex flex-wrap gap-2 overflow-x-auto pb-1">
             <Button
               variant={filterCategory === 'all' ? 'default' : 'outline'}
               size="sm"
               onClick={() => setFilterCategory('all')}
-              className={`rounded-lg px-4 font-bold h-9 ${filterCategory === 'all' ? 'shadow-md shadow-primary/20' : 'border-border/50 bg-white dark:bg-slate-900'}`}
+              className={`rounded-lg px-3 sm:px-4 font-bold h-8 sm:h-9 text-xs sm:text-sm ${filterCategory === 'all' ? 'shadow-md shadow-primary/20' : 'border-border/50 bg-white dark:bg-slate-900'}`}
             >
               All
             </Button>
@@ -318,9 +318,9 @@ export default function TasksPage() {
                 variant={filterCategory === key ? 'default' : 'outline'}
                 size="sm"
                 onClick={() => setFilterCategory(key as TaskCategory)}
-                className={`rounded-lg px-4 font-bold h-9 whitespace-nowrap ${filterCategory === key ? 'shadow-md shadow-primary/20' : 'border-border/50 bg-white dark:bg-slate-900'}`}
+                className={`rounded-lg px-3 sm:px-4 font-bold h-8 sm:h-9 whitespace-nowrap text-xs sm:text-sm ${filterCategory === key ? 'shadow-md shadow-primary/20' : 'border-border/50 bg-white dark:bg-slate-900'}`}
               >
-                <span className="mr-2">{emoji}</span>
+                <span className="mr-1.5 sm:mr-2">{emoji}</span>
                 {label}
               </Button>
             ))}
