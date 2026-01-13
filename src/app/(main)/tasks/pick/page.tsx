@@ -12,6 +12,7 @@ import { calculateTaskRecommendations } from "@/lib/fairness";
 import { useRouter } from "next/navigation";
 import { Confetti } from "@/components/Confetti";
 import { toast } from "@/components/Toast";
+import { getErrorMessage, parseSupabaseError } from "@/lib/errorMessages";
 
 export default function PickTaskPage() {
   const { user, currentSpace } = useAuth();
@@ -116,18 +117,23 @@ export default function PickTaskPage() {
       
       if (error) {
         console.error('Take task error:', error);
-        // Surface fairness/guardrail messages coming from Postgres
-        toast.error(error.message);
+        const errorCode = parseSupabaseError(error);
+        const errorMsg = getErrorMessage(errorCode);
+        toast.error(`${errorMsg.title}: ${errorMsg.message}`);
+        // Refresh to get updated task list in case task was taken by someone else
+        fetchRecommendations();
         return;
       }
 
       setShowConfetti(true);
+      toast.success(`You took: ${task.title}`);
       setTimeout(() => {
         router.push(`/tasks/${task.id}`);
       }, 1500);
     } catch (err: any) {
       console.error('Take task exception:', err);
-      toast.error(err.message || 'Failed to take task');
+      const errorMsg = getErrorMessage('NETWORK_ERROR');
+      toast.error(`${errorMsg.title}: ${errorMsg.message}`);
     } finally {
       setTaking(null);
     }
