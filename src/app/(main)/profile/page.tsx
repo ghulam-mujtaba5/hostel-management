@@ -44,6 +44,8 @@ export default function ProfilePage() {
     task_reminders: true,
     marketing_emails: false
   });
+  const [roomNumber, setRoomNumber] = useState('');
+  const [bedNumber, setBedNumber] = useState('');
 
   // Placeholder badges - in production, these would come from the database
   const earnedBadges: BadgeType[] = ['first_task', 'team_player'];
@@ -61,10 +63,14 @@ export default function ProfilePage() {
         setNotificationPrefs(profile.notification_preferences as NotificationPreferences);
       }
     }
-  }, [profile]);
+    if (spaceMembership) {
+      setRoomNumber((spaceMembership as any)?.room_number || '');
+      setBedNumber((spaceMembership as any)?.bed_number || '');
+    }
+  }, [profile, spaceMembership]);
 
   const handleSave = async () => {
-    if (!user) return;
+    if (!user || !currentSpace) return;
     
     setSaving(true);
     
@@ -79,6 +85,22 @@ export default function ProfilePage() {
         .eq('id', user.id);
 
       if (error) throw error;
+
+      // Update space_members with room and bed information
+      if (roomNumber || bedNumber) {
+        const { error: memberError } = await supabase
+          .from('space_members')
+          .update({
+            room_number: roomNumber || null,
+            bed_number: bedNumber || null
+          })
+          .eq('user_id', user.id)
+          .eq('space_id', currentSpace.id);
+
+        if (memberError) {
+          console.error('Error updating space member:', memberError);
+        }
+      }
 
       await refreshProfile();
       setEditing(false);
@@ -448,11 +470,31 @@ export default function ProfilePage() {
               <div className="grid gap-3">
                 <div className="p-4 rounded-xl bg-muted/30 border border-border/50">
                   <p className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground mb-1">Room Number</p>
-                  <p className="text-2xl font-bold text-primary">{(spaceMembership as any)?.room_number || 'TBD'}</p>
+                  {editing ? (
+                    <Input
+                      type="text"
+                      placeholder="Enter room number"
+                      value={roomNumber}
+                      onChange={(e) => setRoomNumber(e.target.value)}
+                      className="h-10 rounded-lg text-lg font-bold"
+                    />
+                  ) : (
+                    <p className="text-2xl font-bold text-primary">{roomNumber || 'TBD'}</p>
+                  )}
                 </div>
                 <div className="p-4 rounded-xl bg-muted/30 border border-border/50">
                   <p className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground mb-1">Bed Position</p>
-                  <p className="text-2xl font-bold text-primary">{(spaceMembership as any)?.bed_number || 'TBD'}</p>
+                  {editing ? (
+                    <Input
+                      type="text"
+                      placeholder="Enter bed position"
+                      value={bedNumber}
+                      onChange={(e) => setBedNumber(e.target.value)}
+                      className="h-10 rounded-lg text-lg font-bold"
+                    />
+                  ) : (
+                    <p className="text-2xl font-bold text-primary">{bedNumber || 'TBD'}</p>
+                  )}
                 </div>
               </div>
             </CardContent>

@@ -77,16 +77,37 @@ export default function TaskDetailPage({ params }: { params: Promise<{ id: strin
 
     setCompleting(true);
     try {
-      const { error } = await supabase.rpc('complete_task_direct', { p_task_id: task.id });
-      if (error) {
-        const errorCode = parseSupabaseError(error);
-        const errorMsg = getErrorMessage(errorCode);
-        toast.error(`${errorMsg.title}: ${errorMsg.message}`);
-        return;
+      // If task has proof, submit for verification
+      if (task.proof_image_url) {
+        const { error } = await supabase.rpc('submit_task_proof', {
+          task_id: task.id,
+          proof_image_url: task.proof_image_url,
+        });
+
+        if (error) {
+          const errorCode = parseSupabaseError(error);
+          const errorMsg = getErrorMessage(errorCode);
+          toast.error(`${errorMsg.title}: ${errorMsg.message}`);
+          return;
+        }
+
+        celebrate('task_completed', { points: task.difficulty });
+        toast.success('Proof submitted for verification!', { emoji: '⏳' });
+      } else {
+        // No proof, complete directly
+        const { error } = await supabase.rpc('complete_task_direct', { p_task_id: task.id });
+        
+        if (error) {
+          const errorCode = parseSupabaseError(error);
+          const errorMsg = getErrorMessage(errorCode);
+          toast.error(`${errorMsg.title}: ${errorMsg.message}`);
+          return;
+        }
+
+        celebrate('task_completed', { points: task.difficulty });
+        toast.taskCompleted(task.title, task.difficulty);
       }
 
-      celebrate('task_completed', { points: task.difficulty });
-      toast.taskCompleted(task.title, task.difficulty);
       fetchTask();
     } catch (err) {
       const errorMsg = getErrorMessage('NETWORK_ERROR');
@@ -117,14 +138,16 @@ export default function TaskDetailPage({ params }: { params: Promise<{ id: strin
         .from('proofs')
         .getPublicUrl(filePath);
 
-      const { error } = await supabase.rpc('submit_task_proof', {
-        task_id: task.id,
-        proof_image_url: publicUrl,
-      });
+      // IMPORTANT: Just save the image URL, don't auto-submit
+      // User must click "Mark Done" to submit for verification
+      const { error } = await supabase
+        .from('tasks')
+        .update({ proof_image_url: publicUrl })
+        .eq('id', task.id);
 
       if (error) throw error;
 
-      toast.success('Proof uploaded! Waiting for verification.', { emoji: '📸' });
+      toast.success('Proof photo added! Click "Mark Done" to submit for verification.', { emoji: '📸' });
       fetchTask();
     } catch (err) {
       console.error('Upload failed:', err);

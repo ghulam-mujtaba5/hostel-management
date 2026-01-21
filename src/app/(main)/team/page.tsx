@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { 
@@ -12,6 +12,7 @@ import {
 import Link from "next/link";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/lib/supabase";
+import { useRealtimeSubscription } from "@/lib/realtime";
 import { Profile, SpaceMember } from "@/types";
 import { motion, AnimatePresence } from "framer-motion";
 import { toast } from "sonner";
@@ -47,7 +48,7 @@ export default function TeamMembersPage() {
     }
   }, [currentSpace?.id, user?.id, authLoading]); // Depend on user ID too
 
-  const fetchMembers = async () => {
+  const fetchMembers = useCallback(async () => {
     if (!currentSpace) return;
     setLoading(true);
 
@@ -156,7 +157,24 @@ export default function TeamMembersPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [currentSpace]);
+
+  // Subscribe to real-time updates for tasks and space members
+  useRealtimeSubscription(
+    'tasks',
+    useCallback(() => {
+      if (currentSpace) fetchMembers();
+    }, [currentSpace, fetchMembers]),
+    currentSpace ? `space_id=eq.${currentSpace.id}` : undefined
+  );
+
+  useRealtimeSubscription(
+    'space_members',
+    useCallback(() => {
+      if (currentSpace) fetchMembers();
+    }, [currentSpace, fetchMembers]),
+    currentSpace ? `space_id=eq.${currentSpace.id}` : undefined
+  );
 
   const getMemberStatus = (member: MemberWithStats) => {
     if (member.tasksOverdue > 2) return 'warning';

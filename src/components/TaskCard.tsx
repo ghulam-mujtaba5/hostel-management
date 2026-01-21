@@ -110,17 +110,36 @@ export function TaskCard({ task, showAssignee = false, onUpdate, recommended = f
     setCompleting(true);
 
     try {
-      const { data, error } = await supabase.rpc("complete_task_direct", { p_task_id: task.id });
-      
-      if (error) {
-        console.error('Complete task error:', error);
-        handleError(error, 'Failed to complete task');
-        return;
-      }
+      // If task has proof, submit for verification
+      if (task.proof_image_url) {
+        const { error } = await supabase.rpc("submit_task_proof", {
+          task_id: task.id,
+          proof_image_url: task.proof_image_url,
+        });
 
-      toast.success(`Task completed! +${task.difficulty} points`, { 
-        description: task.title 
-      });
+        if (error) {
+          console.error('Submit proof error:', error);
+          handleError(error, 'Failed to submit proof');
+          return;
+        }
+
+        toast.success(`Proof submitted for verification!`, { 
+          description: 'An admin will review and approve your work. ⏳'
+        });
+      } else {
+        // No proof, complete directly
+        const { data, error } = await supabase.rpc("complete_task_direct", { p_task_id: task.id });
+        
+        if (error) {
+          console.error('Complete task error:', error);
+          handleError(error, 'Failed to complete task');
+          return;
+        }
+
+        toast.success(`Task completed! +${task.difficulty} points`, { 
+          description: task.title 
+        });
+      }
       
       if (onUpdate) {
         onUpdate();
@@ -159,14 +178,16 @@ export function TaskCard({ task, showAssignee = false, onUpdate, recommended = f
         .from("proofs")
         .getPublicUrl(filePath);
 
-      const { error } = await supabase.rpc("submit_task_proof", {
-        task_id: task.id,
-        proof_image_url: publicUrl,
-      });
+      // IMPORTANT: Just save the image URL, don't auto-submit
+      // User must click "Mark Done" to submit for verification
+      const { error } = await supabase
+        .from('tasks')
+        .update({ proof_image_url: publicUrl })
+        .eq('id', task.id);
 
       if (error) throw error;
 
-      toast.success("Proof uploaded!");
+      toast.success("Proof photo added! Click 'Mark Done' to submit for verification.", { description: '📸 Photo saved' });
       onUpdate?.();
     } catch (err: any) {
       handleError(err, 'Failed to upload proof');

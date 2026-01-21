@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -17,7 +17,8 @@ import {
   Clock,
   CheckCircle,
   HelpCircle,
-  Image as ImageIcon
+  Image as ImageIcon,
+  Trash2
 } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -28,6 +29,7 @@ import { toast } from "sonner";
 import { motion, AnimatePresence } from "framer-motion";
 import { SlideInCard } from "@/components/Animations";
 import { cn } from "@/lib/utils";
+import { useRealtimeSubscription } from "@/lib/realtime";
 
 export default function RequestCleaningPage() {
   const { user, currentSpace } = useAuth();
@@ -35,6 +37,7 @@ export default function RequestCleaningPage() {
   const [loading, setLoading] = useState(false);
   const [tokenInfo, setTokenInfo] = useState<TaskToken | null>(null);
   const [myRequests, setMyRequests] = useState<TaskRequest[]>([]);
+  const [allRequests, setAllRequests] = useState<TaskRequest[]>([]);
   const [formData, setFormData] = useState({
     title: "",
     description: "",
@@ -48,8 +51,27 @@ export default function RequestCleaningPage() {
     if (currentSpace && user) {
       fetchTokenInfo();
       fetchMyRequests();
+      fetchAllRequests();
     }
   }, [currentSpace, user]);
+
+  const fetchAllRequests = useCallback(async () => {
+    if (!currentSpace) return;
+
+    const { data } = await supabase
+      .from("task_requests")
+      .select(`
+        *,
+        requester:requester_id(id, username, full_name, avatar_url)
+      `)
+      .eq("space_id", currentSpace.id)
+      .order("created_at", { ascending: false })
+      .limit(20);
+
+    if (data) {
+      setAllRequests(data);
+    }
+  }, [currentSpace]);
 
   const fetchTokenInfo = async () => {
     if (!currentSpace || !user) return;
@@ -79,7 +101,7 @@ export default function RequestCleaningPage() {
     }
   };
 
-  const fetchMyRequests = async () => {
+  const fetchMyRequests = useCallback(async () => {
     if (!currentSpace || !user) return;
 
     const { data } = await supabase
@@ -96,7 +118,19 @@ export default function RequestCleaningPage() {
     if (data) {
       setMyRequests(data);
     }
-  };
+  }, [currentSpace, user]);
+
+  // Subscribe to real-time updates
+  useRealtimeSubscription(
+    'task_requests',
+    useCallback(() => {
+      if (currentSpace) {
+        fetchMyRequests();
+        fetchAllRequests();
+      }
+    }, [currentSpace, fetchMyRequests, fetchAllRequests]),
+    currentSpace ? `space_id=eq.${currentSpace.id}` : undefined
+  );
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -190,11 +224,30 @@ export default function RequestCleaningPage() {
       // Refresh data
       fetchTokenInfo();
       fetchMyRequests();
+      fetchAllRequests();
     } catch (err: any) {
       console.error("Request submission error:", err);
       toast.error(err.message || "Failed to submit request");
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleDeleteRequest = async (requestId: string) => {
+    try {
+      const { error } = await supabase
+        .from("task_requests")
+        .delete()
+        .eq("id", requestId);
+
+      if (error) throw error;
+
+      toast.success("Request deleted");
+      fetchMyRequests();
+      fetchAllRequests();
+    } catch (err: any) {
+      console.error("Delete error:", err);
+      toast.error("Failed to delete request");
     }
   };
 
@@ -226,7 +279,7 @@ export default function RequestCleaningPage() {
             </Link>
           </Button>
           <div>
-            <h1 className="text-3xl font-black tracking-tight">Request Cleaning</h1>
+            <h1 className="text-3xl font-black tracking-tight">Create Request</h1>
             <p className="text-muted-foreground font-bold">Ask your flatmates for help with a task</p>
           </div>
         </div>
@@ -483,6 +536,91 @@ export default function RequestCleaningPage() {
           </SlideInCard>
         </div>
       </div>
+
+      {/* All Requests for Space */}
+      {allRequests.length > 0 && (
+        <SlideInCard direction="up" delay={0.3}>
+          <Card className="border-0 shadow-xl rounded-[2rem]">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <HelpCircle className="h-5 w-5 text-primary" />
+                Active Help Requests in {currentSpace?.name}
+              </CardTitle>
+              <CardDescription>
+                Help your flatmates with these requests and earn points
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="grid gap-4">
+                {allRequests.map((req) => (
+                  <div
+                    key={req.id}
+                    className="p-4 rounded-xl bg-muted/30 border border-border/50 hover:border-primary/30 transition-all"
+                  >
+                    <div className="flex items-start justify-between gap-4">
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2 mb-2">
+                          <span className="text-2xl">{(req as any)?.category_emoji || '📋'}</span>
+                          <div>
+                            <p className="font-bold text-lg">{req.title}</p>
+                            <p className="text-sm text-muted-foreground">
+                              by <span className="font-semibold">{(req as any)?.requester?.full_name || (req as any)?.requester?.username || 'Unknown'}</span>
+                            </p>
+                          </div>
+                        </div>
+                        {req.description && (
+                          <p className="text-sm text-muted-foreground mt-2 mb-3">{req.description}</p>
+                        )}
+                        {req.proof_image_url && (
+                          <div className="mb-3">
+                            <img
+                              src={req.proof_image_url}
+                              alt="Request proof"
+                              className="max-h-32 rounded-lg object-cover"
+                            />
+                          </div>
+                        )}
+                        <div className="flex items-center gap-3 flex-wrap">
+                          <span className={cn(
+                            "px-2 py-1 rounded-lg text-[10px] font-bold uppercase",
+                            req.priority === 'low' && "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400",
+                            req.priority === 'normal' && "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400",
+                            req.priority === 'high' && "bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400",
+                            req.priority === 'urgent' && "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400",
+                          )}>
+                            {req.priority}
+                          </span>
+                          <span className={cn(
+                            "px-2 py-1 rounded-lg text-[10px] font-bold uppercase",
+                            req.status === 'completed' && "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400",
+                            req.status === 'pending' && "bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400",
+                            req.status === 'in_progress' && "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400",
+                          )}>
+                            {req.status}
+                          </span>
+                          <p className="text-xs text-muted-foreground">
+                            {new Date(req.created_at).toLocaleDateString()}
+                          </p>
+                        </div>
+                      </div>
+                      {user?.id === req.requester_id && (
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="text-destructive hover:bg-destructive/10 flex-shrink-0"
+                          onClick={() => handleDeleteRequest(req.id)}
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        </SlideInCard>
+      )}
     </div>
   );
 }

@@ -107,6 +107,9 @@ CREATE POLICY "Users can view their own notifications" ON notifications
 CREATE POLICY "Users can update their own notifications" ON notifications
   FOR UPDATE USING (auth.uid() = user_id);
 
+CREATE POLICY "Users can delete their own notifications" ON notifications
+  FOR DELETE USING (auth.uid() = user_id);
+
 CREATE POLICY "System can insert notifications" ON notifications
   FOR INSERT WITH CHECK (true);
 
@@ -130,6 +133,12 @@ CREATE POLICY "Space members can create requests" ON task_requests
 
 CREATE POLICY "Requester or admin can update requests" ON task_requests
   FOR UPDATE USING (
+    requester_id = auth.uid() OR
+    EXISTS (SELECT 1 FROM space_members WHERE space_id = task_requests.space_id AND user_id = auth.uid() AND role = 'admin')
+  );
+
+CREATE POLICY "Requester or admin can delete requests" ON task_requests
+  FOR DELETE USING (
     requester_id = auth.uid() OR
     EXISTS (SELECT 1 FROM space_members WHERE space_id = task_requests.space_id AND user_id = auth.uid() AND role = 'admin')
   );

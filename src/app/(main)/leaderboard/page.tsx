@@ -1,11 +1,12 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Trophy, Medal, TrendingUp, Crown, Star, Info, ArrowUp, ArrowDown, CheckCircle, LogIn, UserPlus } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/lib/supabase";
+import { useRealtimeSubscription } from "@/lib/realtime";
 import { SpaceMember, Profile } from "@/types";
 import { motion, AnimatePresence } from "framer-motion";
 import { calculateLevel, LevelProgress } from "@/components/Achievements";
@@ -47,6 +48,17 @@ export default function LeaderboardPage() {
     if (data) setMembers(data as (SpaceMember & { profile: Profile })[]);
     setLoading(false);
   };
+
+  // Subscribe to real-time updates for space members
+  useRealtimeSubscription(
+    'space_members',
+    useCallback((payload: any) => {
+      if (currentSpace && payload?.new?.space_id === currentSpace.id) {
+        fetchLeaderboard(); // Refresh leaderboard on any member update
+      }
+    }, [currentSpace]),
+    currentSpace ? `space_id=eq.${currentSpace.id}` : undefined
+  );
 
   // Show loading while checking auth
   if (authLoading) {

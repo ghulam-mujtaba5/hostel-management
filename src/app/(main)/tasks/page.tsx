@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Plus, Filter, CheckCircle, Calendar, ListTodo, Clock, CheckCircle2, Search, Sparkles, LogIn, UserPlus, Hand } from "lucide-react";
+import { Plus, Filter, CheckCircle, Calendar, ListTodo, Clock, CheckCircle2, Search, Sparkles, LogIn, UserPlus, Hand, Shield, AlertCircle } from "lucide-react";
 import Link from "next/link";
 import { useAuth } from "@/contexts/AuthContext";
 import { supabase } from "@/lib/supabase";
@@ -249,6 +249,14 @@ export default function TasksPage() {
           </div>
 
           <div className="flex gap-2 sm:gap-3 w-full md:w-auto">
+            {user && currentSpace && (
+              <>
+                {/* Check if user is admin */}
+                <div className="hidden md:contents">
+                  <AdminVerificationButton spaceId={currentSpace.id} userId={user.id} />
+                </div>
+              </>
+            )}
             <Button asChild size="lg" variant="outline" className="flex-1 md:flex-none h-11 sm:h-12 px-3 sm:px-6 rounded-xl font-bold border-orange-500/30 hover:bg-orange-500/10 hover:text-orange-600 hover:border-orange-500/50 transition-all text-sm">
               <Link href="/tasks/request">
                 <Hand className="mr-1.5 sm:mr-2 h-4 sm:h-5 w-4 sm:w-5" />
@@ -389,3 +397,61 @@ export default function TasksPage() {
     </div>
   );
 }
+
+// Component to check if user is admin and show verification button
+function AdminVerificationButton({ spaceId, userId }: { spaceId: string; userId: string }) {
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [pendingCount, setPendingCount] = useState(0);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    checkAdminStatus();
+  }, [spaceId, userId]);
+
+  const checkAdminStatus = async () => {
+    try {
+      const { data } = await supabase
+        .from('space_members')
+        .select('role')
+        .eq('space_id', spaceId)
+        .eq('user_id', userId)
+        .single();
+
+      const adminStatus = data?.role === 'admin';
+      setIsAdmin(adminStatus);
+
+      if (adminStatus) {
+        // Fetch pending verification count
+        const { count } = await supabase
+          .from('tasks')
+          .select('*', { count: 'exact', head: true })
+          .eq('space_id', spaceId)
+          .eq('status', 'pending_verification');
+        
+        setPendingCount(count || 0);
+      }
+    } catch (error) {
+      console.error('Error checking admin status:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (!isAdmin || loading) return null;
+
+  return (
+    <Button asChild size="lg" variant="outline" className={`h-11 sm:h-12 px-3 sm:px-6 rounded-xl font-bold transition-all text-sm ${
+      pendingCount > 0 
+        ? 'border-yellow-500/30 hover:bg-yellow-500/10 hover:text-yellow-600 hover:border-yellow-500/50 ring-1 ring-yellow-500/20' 
+        : 'border-border/50'
+    }`}>
+      <Link href="/tasks/verification">
+        {pendingCount > 0 && <AlertCircle className="mr-1.5 sm:mr-2 h-4 sm:h-5 w-4 sm:w-5 animate-pulse" />}
+        {!pendingCount && <Shield className="mr-1.5 sm:mr-2 h-4 sm:h-5 w-4 sm:w-5" />}
+        <span className="hidden xs:inline">Verify</span>
+        {pendingCount > 0 && <span className="ml-2 px-2 py-1 rounded bg-yellow-500/20 text-yellow-600 text-xs font-bold">{pendingCount}</span>}
+      </Link>
+    </Button>
+  );
+}
+

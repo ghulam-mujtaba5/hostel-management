@@ -1,0 +1,32 @@
+https://hostel-management-topaz-ten.vercel.app/tasks when  i create hostel task but to other hostelmates all tasks are not available/visible so they can see and take.
+
+When I once took the task which I created and click prof button to upload proof then after uploading photo itself it  submit itself. This isnot correct correct it that when hostel member click submit or done then it submit  also I  am admin of hostel and admin dashboard is not showing to me , and my task which I do is pending for verification who will verify, also no button for  done verification. I am admin no admin dashboard available to me laso no task for verification comes to me.
+
+ And when I create new task and try to take it was taken and that button of “Take task” it was not working . also all task which I created after it the “take Task” button was not working.
+https://hostel-management-topaz-ten.vercel.app/tasks/request and when i ask for help  and create “Request” https://hostel-management-topaz-ten.vercel.app/tasks/request#:~:text=Submit%20Request%20(%2D1%20token)  when I click the button “Submit Request” it was after submitting not show any confirmation that help request is submitted laso this help request was not visible in aviable tasks or to all other hostel members so they can help that member. Also the picture I submit during help https://hostel-management-topaz-ten.vercel.app/tasks/request#:~:text=Photo%20(optional%20but%20helpful) make this help  and this image all adetails aviable to all members laso to the person who ask.
+
+The person who create task or help is just seen to him not to others members so correct this.
+In my tasks when I took task an dupload proof it took to much time in uploading photo. Also no onirmation that image added successfully when its addaed and before clicking “Mark Done ” button it just go for verification. 
+
+The tasks which member complete also not shown in history.
+
+After first time when creating second time task  and help its not wokrig cannot be taken. And there is no proper way for help request to taken not shown to alla help request and tasks.
+
+App database  is not updating whole app statistics when, database not working like when I complete one task, or took on etask or took two taks it show that statistics in app laos show all atotal stts of hostel to all members updated that how many viable how many active like this alla stats.
+Even if work on one task one time then the issue is its not aviable to for members os all seen an done took that task and after doing taks and uploading proof its autaomatciallay submitted without clicking mark done button which isnot correct laos Ito admin not admin tab aviable laos how a  dn which have to verify tak I create hostel but no taks come to me efor verificatiaon even I completetask s.
+
+Ensure same tasks which all mebrs created are aviable to all members members.
+Leadership board stats not working not functional not wowkieng
+Points stats not working.
+https://hostel-management-topaz-ten.vercel.app/insights not working not showing correct graph updated graph not showing.
+https://hostel-management-topaz-ten.vercel.app/team in team all team member srea showing no member is showing, laos team page stats not functional not working. laso make sure show allmbers also update alla sats of members each time whole appa stats must be correct updated.
+https://hostel-management-topaz-ten.vercel.app/leaderboard in rank other mebers are not showing also make is correctly functional correctly working updating dtabase correct realtime database an dleadership borad working.
+
+in light mode app show many black mode boxes black boxes correct llight mode so all website is in llight mode when I click light mode , and nowdark mdoe is perfect.
+https://hostel-management-topaz-ten.vercel.app/profile#:~:text=50%20PTS%20REMAINING-,ACCOMMODATION,TBD,-Services and make this fields which hostel member canitself update an dsave these fields room no he itself can save and also accaomatiaon.
+
+https://hostel-management-topaz-ten.vercel.app/feedback make sure the user which send sent feedaback was actualy aend an din thi page also show user which feedback it sne dwhn an dits status  wo which extent it is solved.
+
+https://hostel-management-topaz-ten.vercel.app/tasks/request#:~:text=1-,Request%20Cleaning,-Ask%20your%20flatmates why in this form at top “Cleaning” word comes.remove it just write create request or sometiing ike this .
+Also add this functionality even one person took one task but all other hostel mates can still see which task is taken by which hostel mate so they know.
+In notifications, deleyte dustinbin button not working .
