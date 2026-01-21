@@ -28,15 +28,15 @@ export const metadata: Metadata = {
   },
   icons: {
     icon: [
-      { url: "/icon.svg?v2", type: "image/svg+xml" },
-      { url: "/icon-192.png?v2", type: "image/png", sizes: "192x192" },
-      { url: "/icon-512.png?v2", type: "image/png", sizes: "512x512" },
+      { url: "/icon.svg?v5", type: "image/svg+xml" },
+      { url: "/favicon-32x32.png?v5", type: "image/png", sizes: "32x32" },
+      { url: "/icon-192.png?v5", type: "image/png", sizes: "192x192" },
+      { url: "/icon-512.png?v5", type: "image/png", sizes: "512x512" },
     ],
     apple: [
-      { url: "/icon-192.png?v2", sizes: "192x192" },
-      { url: "/icon-512.png?v2", sizes: "512x512" },
+      { url: "/apple-touch-icon.png?v5", sizes: "180x180" },
     ],
-    shortcut: "/icon-192.png?v2",
+    shortcut: "/icon-192.png?v5",
   },
   keywords: ["hostel management", "shared living", "task management", "flatmates", "roommates", "chores app", "fair distribution", "student life", "coliving", "dorm management"],
   authors: [{ name: "HostelMate" }],

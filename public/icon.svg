@@ -2,8 +2,8 @@
   <!-- Full solid background without rounded corners for clean PWA display -->
   <rect width="512" height="512" fill="url(#bg-gradient)"/>
   
-  <!-- Subtle inner glow for depth - smaller, centered -->
-  <rect x="32" y="32" width="448" height="448" fill="url(#inner-glow)" fill-opacity="0.2"/>
+  <!-- Subtle inner glow for depth - full size to avoid boundary issues -->
+  <rect width="512" height="512" fill="url(#inner-glow)" fill-opacity="0.2"/>
   
   <!-- Main house/H mark - centered with safe margins for icon masking -->
   <path d="M256 100L108 220V420H180V316C180 304.954 188.954 296 200 296H312C323.046 296 332 304.954 332 316V420H404V220L256 100Z" fill="white" fill-opacity="0.95"/>

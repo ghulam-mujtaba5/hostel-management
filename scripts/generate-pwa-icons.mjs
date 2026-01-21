@@ -52,21 +52,15 @@ async function generateIcons() {
     try {
       const outputPath = join(publicDir, name);
       
-      if (maskable) {
-        // For maskable icons, add padding (safe zone is 80% of the icon)
-        // This ensures the icon looks good when masked to a circle
-        const padding = Math.round(size * 0.1); // 10% padding on each side
-        const innerSize = size - (padding * 2);
-        
+      // The current icon.svg already has built-in safe margins (~18-20%)
+      // and a solid edge-to-edge background. We don't need additional 
+      // padding which causes the "multiple boundaries" issue.
+      
+      if (maskable || name.startsWith('apple-touch-icon')) {
+        // For maskable and Apple icons, we ensure they are high quality 
+        // but keep the SVG's own background edge-to-edge.
         await sharp(svgBuffer)
-          .resize(innerSize, innerSize)
-          .extend({
-            top: padding,
-            bottom: padding,
-            left: padding,
-            right: padding,
-            background: { r: 16, g: 185, b: 129, alpha: 1 } // Emerald 500
-          })
+          .resize(size, size)
           .png({ quality: 100, compressionLevel: 9 })
           .toFile(outputPath);
       } else {

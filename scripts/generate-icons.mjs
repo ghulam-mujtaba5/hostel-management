@@ -45,20 +45,10 @@ if (sharpAvailable) {
     console.log(`Generated: icon-${size}.png`);
   }
 
-  // Generate maskable icons (with padding for safe zone)
+  // Generate maskable icons (SVG already has padding for safe zone)
   for (const size of sizes) {
-    const padding = Math.floor(size * 0.1); // 10% padding for safe zone
-    const innerSize = size - (padding * 2);
-    
     await sharp(svgBuffer)
-      .resize(innerSize, innerSize)
-      .extend({
-        top: padding,
-        bottom: padding,
-        left: padding,
-        right: padding,
-        background: { r: 16, g: 185, b: 129, alpha: 1 } // Emerald 500
-      })
+      .resize(size, size)
       .png()
       .toFile(path.join(publicDir, `icon-maskable-${size}.png`));
     console.log(`Generated: icon-maskable-${size}.png`);
